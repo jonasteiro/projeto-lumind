@@ -38,20 +38,21 @@ Certifique-se de ter um ambiente de servidor local instalado na sua máquina, co
    ```bash
    git clone (https://github.com/jonasteiro/projeto-lumind.git
 
-   Mova a pasta "projeto-lumind" para o diretório público do seu servidor (ex: C:\xampp\htdocs).
+2. Mova a pasta "projeto-lumind" para o diretório público do seu servidor (ex: C:\xampp\htdocs).
 
-2. Inicie os serviços do Apache e MySQL no painel de controle do seu servidor local.
+3. Inicie os serviços do Apache e MySQL no painel de controle do seu servidor local.
 
-3. Configuração do Banco de Dados
+4. Configuração do Banco de Dados
 Abra o navegador e acesse o gerenciador do banco (geralmente http://localhost/phpmyadmin).
 
-4. Crie um novo banco de dados (verifique o nome exato esperado no arquivo de conexão PHP, ex: lumind_db).
+5. Crie um novo banco de dados (verifique o nome exato esperado no arquivo de conexão PHP, ex: lumind_db).
 
-5. Localize o arquivo de dump SQL na raiz deste projeto (ex: database.sql) e importe-o para o banco recém-criado. Isso irá gerar as tabelas necessárias para o sistema funcionar.
+6. Localize o arquivo de dump SQL na raiz deste projeto (ex: database.sql) e importe-o para o banco recém-criado. Isso irá gerar as tabelas necessárias para o sistema funcionar.
 
-6. Acesso ao Sistema
+7. Acesso ao Sistema
 Com o banco configurado e o servidor rodando, abra seu navegador e acesse a porta de entrada da aplicação:
 
 http://localhost/projeto-lumind/login/index.html
+
 Desenvolvido com foco em acessibilidade e engenharia de software inclusiva.
 Engenharia de Software - PUCPR.

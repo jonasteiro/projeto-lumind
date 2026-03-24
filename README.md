@@ -1,38 +1,58 @@
-# Lumind - Suporte ao Transtorno do Espectro Autista (TEA)
+# Lumind - Tecnologia Inclusiva e Gestão para o Espectro Autista (TEA)
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
-## 📌 Sobre o Projeto
-O **Lumind** é uma solução computacional desenvolvida para a disciplina de Experiência Criativa: Projetando Soluções Computacionais. O objetivo central do software é fornecer uma plataforma de gestão e suporte voltada para pessoas com Transtorno do Espectro Autista (TEA) e suas redes de apoio.
+## 🎯 Propósito e o Fator Humano
+O **Lumind** não é apenas um sistema de gestão de dados; é uma plataforma desenvolvida com foco empático para apoiar pessoas com Transtorno do Espectro Autista (TEA) e suas redes de apoio. Nascido como uma solução para a disciplina de *Experiência Criativa: Projetando Soluções Computacionais*, o sistema visa organizar informações críticas de forma acessível, segura e, acima de tudo, confortável para o usuário.
 
-A interface foi projetada com rigorosos critérios de acessibilidade e usabilidade (UX). A paleta de cores neutra (tons sálvia) e a ausência de excessos visuais foram decisões de engenharia arquitetadas para evitar sobrecarga sensorial, garantindo uma navegação confortável e inclusiva.
+Pessoas no espectro autista frequentemente enfrentam desafios com sobrecarga sensorial. Por isso, a arquitetura visual do Lumind foi projetada sob rigorosos critérios de acessibilidade (a11y):
+* **Baixo Contraste Sensorial:** Uso de paletas neutras (tons sálvia e fundos brancos) para evitar fadiga visual.
+* **Interface Limpa (Clean UI):** Remoção de animações desnecessárias e elementos poluentes que causam distração ou desconforto.
+* **Navegação Previsível:** Estruturas lógicas claras e feedback imediato para reduzir a ansiedade na interação com o software.
 
-## 🚀 Funcionalidades
-- **Autenticação Segura:** Sistema de login com validação de credenciais e feedback visual imediato.
-- **Dashboard de Gestão (Read):** Listagem dinâmica e responsiva de perfis e registros do sistema.
-- **Cadastro Inclusivo (Create):** Formulário otimizado para a adição de novos usuários/pacientes no sistema.
-- **Atualização de Prontuários (Update):** Interface de edição populada dinamicamente para alteração rápida de dados.
-- **Controle de Status:** Gerenciamento do status de atividade do usuário através de *toggle switches* modernos.
+## 🚀 Funcionalidades Principais
+A aplicação oferece uma interface de gestão completa (CRUD) operando de forma assíncrona para garantir fluidez:
+- **Autenticação Segura:** Login protegido com validação de sessão e feedback visual claro de erros.
+- **Painel de Controle (Dashboard):** Visualização em formato *Data Grid* limpo para leitura de registros e perfis ativos.
+- **Gestão de Usuários/Pacientes:** Formulários otimizados com *Floating Labels* e *Toggle Switches* amigáveis para cadastro e atualização de prontuários.
+- **Processamento Assíncrono:** Uso de requisições AJAX (Fetch API) para que a interface não recarregue abruptamente, mantendo a estabilidade visual para o usuário.
 
-## 🛠️ Arquitetura e Tecnologias
-- **Front-end:** HTML5 semântico, CSS3 (com customização modular) e Vanilla JavaScript (ES6+).
-- **Estilização e Componentes:** Bootstrap 5.3 + Bootstrap Icons.
-- **Comunicação:** Fetch API para requisições assíncronas (AJAX) sem recarregamento de página.
-- **Back-end:** PHP 8+ lidando com as regras de negócio e sanitização de dados.
-- **Banco de Dados:** MySQL.
+## 🛠️ Stack Tecnológica
+- **Front-end:** HTML5 Semântico, CSS3 (Modular e Customizado), JavaScript Vanilla (ES6+).
+- **Framework de UI:** Bootstrap 5.3 (Estrutura responsiva) e Bootstrap Icons.
+- **Back-end:** PHP 8+ (Regras de negócio e comunicação com o banco).
+- **Banco de Dados:** MySQL (Persistência e integridade relacional).
 
-## ⚙️ Pré-requisitos
-Para executar este projeto em ambiente de desenvolvimento local, é necessário:
-* Um servidor web local configurado (Apache via [XAMPP](https://www.apachefriends.org/), WAMP ou Laragon).
-* PHP 8.0 ou superior.
-* Servidor MySQL operando na porta padrão (3306).
+## ⚙️ Como Executar o Projeto Localmente
+Para avaliadores e desenvolvedores que desejam testar a aplicação localmente, siga os passos abaixo:
 
-## 🚀 Instalação e Execução
+### 1. Pré-requisitos
+Certifique-se de ter um ambiente de servidor local instalado na sua máquina, como o [XAMPP](https://www.apachefriends.org/), WAMP ou Laragon, que inclua **Apache** e **MySQL**.
 
-1. **Clone o repositório:**
+### 2. Configuração do Repositório e Servidor
+1. Clone este repositório:
    ```bash
-   git clone [https://github.com/jonasteiro/projeto-lumind.git](https://github.com/jonasteiro/projeto-lumind.git)
+   git clone (https://github.com/jonasteiro/projeto-lumind.git
+
+   Mova a pasta projeto-lumind para o diretório público do seu servidor (ex: pasta htdocs no XAMPP).
+
+Inicie os serviços do Apache e MySQL no painel de controle do seu servidor local.
+
+3. Configuração do Banco de Dados
+Abra o navegador e acesse o gerenciador do banco (geralmente http://localhost/phpmyadmin).
+
+Crie um novo banco de dados (verifique o nome exato esperado no arquivo de conexão PHP, ex: lumind_db).
+
+Localize o arquivo de dump SQL na raiz deste projeto (ex: database.sql) e importe-o para o banco recém-criado. Isso irá gerar as tabelas necessárias para o sistema funcionar.
+
+4. Acesso ao Sistema
+Com o banco configurado e o servidor rodando, abra seu navegador e acesse a porta de entrada da aplicação:
+
+Plaintext
+http://localhost/projeto-lumind/login/index.html
+Desenvolvido com foco em acessibilidade e engenharia de software inclusiva.
+Engenharia de Software - PUCPR.

@@ -45,11 +45,11 @@ Certifique-se de ter um ambiente de servidor local instalado na sua máquina, co
 3. Configuração do Banco de Dados
 Abra o navegador e acesse o gerenciador do banco (geralmente http://localhost/phpmyadmin).
 
-Crie um novo banco de dados (verifique o nome exato esperado no arquivo de conexão PHP, ex: lumind_db).
+4. Crie um novo banco de dados (verifique o nome exato esperado no arquivo de conexão PHP, ex: lumind_db).
 
-Localize o arquivo de dump SQL na raiz deste projeto (ex: database.sql) e importe-o para o banco recém-criado. Isso irá gerar as tabelas necessárias para o sistema funcionar.
+5. Localize o arquivo de dump SQL na raiz deste projeto (ex: database.sql) e importe-o para o banco recém-criado. Isso irá gerar as tabelas necessárias para o sistema funcionar.
 
-4. Acesso ao Sistema
+6. Acesso ao Sistema
 Com o banco configurado e o servidor rodando, abra seu navegador e acesse a porta de entrada da aplicação:
 
 http://localhost/projeto-lumind/login/index.html

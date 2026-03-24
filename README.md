@@ -1,4 +1,4 @@
-# Lumind - Sistema de Gestão
+# Lumind - Suporte ao Transtorno do Espectro Autista (TEA)
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
@@ -7,25 +7,31 @@
 ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
 
 ## 📌 Sobre o Projeto
-O Lumind é uma solução computacional desenvolvida para a disciplina de **Experiência Criativa: Projetando Soluções Computacionais**. O objetivo central deste software é [EXPLICAR EM UMA LINHA O QUE ELE RESOLVE, EX: "fornecer uma interface intuitiva e segura para o gerenciamento de clientes/usuários"].
+O **Lumind** é uma solução computacional desenvolvida para a disciplina de Experiência Criativa: Projetando Soluções Computacionais. O objetivo central do software é fornecer uma plataforma de gestão e suporte voltada para pessoas com Transtorno do Espectro Autista (TEA) e suas redes de apoio.
 
-A interface foi construída com foco em usabilidade (UX) e design limpo (UI), utilizando interações dinâmicas no lado do cliente (Vanilla JS) e processamento assíncrono (Fetch API) para comunicação com o back-end em PHP.
+A interface foi projetada com rigorosos critérios de acessibilidade e usabilidade (UX). A paleta de cores neutra (tons sálvia) e a ausência de excessos visuais foram decisões de engenharia arquitetadas para evitar sobrecarga sensorial, garantindo uma navegação confortável e inclusiva.
 
-## 🚀 Funcionalidades (CRUD)
-- **Autenticação:** Sistema de login seguro com validação de sessão e feedback visual.
-- **Leitura (Read):** Dashboard moderno com listagem dinâmica de registros [ESPECIFICAR O QUE É LISTADO, EX: "de clientes ativos e inativos"].
-- **Criação (Create):** Formulário de cadastro com validação de campos essenciais (Nome, Email, Usuário, Senha, Instagram, Status).
-- **Atualização (Update):** Interface de edição populada dinamicamente para alteração rápida de dados.
-- **Exclusão (Delete):** Remoção de registros [EXPLICAR SE É EXCLUSÃO LÓGICA OU FÍSICA NO BANCO].
+## 🚀 Funcionalidades
+- **Autenticação Segura:** Sistema de login com validação de credenciais e feedback visual imediato.
+- **Dashboard de Gestão (Read):** Listagem dinâmica e responsiva de perfis e registros do sistema.
+- **Cadastro Inclusivo (Create):** Formulário otimizado para a adição de novos usuários/pacientes no sistema.
+- **Atualização de Prontuários (Update):** Interface de edição populada dinamicamente para alteração rápida de dados.
+- **Controle de Status:** Gerenciamento do status de atividade do usuário através de *toggle switches* modernos.
 
-## 🛠️ Pré-requisitos
-Para rodar este projeto localmente, você precisará de:
-* Um servidor local configurado (ex: [XAMPP](https://www.apachefriends.org/), WAMP ou Laragon).
+## 🛠️ Arquitetura e Tecnologias
+- **Front-end:** HTML5 semântico, CSS3 (com customização modular) e Vanilla JavaScript (ES6+).
+- **Estilização e Componentes:** Bootstrap 5.3 + Bootstrap Icons.
+- **Comunicação:** Fetch API para requisições assíncronas (AJAX) sem recarregamento de página.
+- **Back-end:** PHP 8+ lidando com as regras de negócio e sanitização de dados.
+- **Banco de Dados:** MySQL.
+
+## ⚙️ Pré-requisitos
+Para executar este projeto em ambiente de desenvolvimento local, é necessário:
+* Um servidor web local configurado (Apache via [XAMPP](https://www.apachefriends.org/), WAMP ou Laragon).
 * PHP 8.0 ou superior.
-* Servidor MySQL rodando na porta padrão (3306).
-* Navegador web moderno.
+* Servidor MySQL operando na porta padrão (3306).
 
-## ⚙️ Instalação e Execução
+## 🚀 Instalação e Execução
 
 1. **Clone o repositório:**
    ```bash

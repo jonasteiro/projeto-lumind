@@ -1,0 +1,150 @@
+/* --- VARIÁVEIS DO SISTEMA (Nova Paleta Clean e Neutra) --- */
+:root {
+    /* Novo Verde Neutro Claro (estilo Sálvia) */
+    --neutral-green-main: #8abf9a; /* Mais claro e suave */
+    --neutral-green-dark: #6a9c79; /* Tom mais sóbrio */
+    --neutral-green-hover: #a1cfaf; /* Muito claro para hover */
+    --neutral-green-accent: #f0f7f3; /* Fundo esverdeado sutil */
+
+    /* Neutros para Fundo Branco */
+    --surface-white: #ffffff;
+    --text-main: #333333; /* Cinza muito escuro para texto */
+    --text-muted: #6c757d;
+    --border-color: #e9ecef; /* Borda leve para fundo branco */
+}
+
+/* --- FUNDO TOTALMENTE BRANCO --- */
+body {
+    background-color: var(--surface-white);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* --- NAVBAR BRANCA COM DETALHES NEUTROS --- */
+.navbar-custom {
+    background-color: var(--surface-white);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); /* Borda inferior sutil */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-title {
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+.page-title i {
+    color: var(--neutral-green-dark); /* Ícone no tom verde sóbrio */
+}
+
+/* --- ÁREA DE CONTEÚDO (Visual Integrado ao Fundo) --- */
+.content-area {
+    background-color: var(--surface-white);
+    border-radius: 1rem;
+    /* Sombra muito leve apenas para dar volume em fundo branco */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); 
+    border: 1px solid var(--border-color);
+    min-height: 500px;
+}
+
+/* --- BOTÃO CUSTOMIZADO (Novo Verde Neutro) --- */
+.btn-primary-neutral {
+    background-color: var(--neutral-green-main);
+    border-color: var(--neutral-green-main);
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-neutral:hover {
+    background-color: var(--neutral-green-hover);
+    border-color: var(--neutral-green-hover);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* --- ESTILIZAÇÃO DA TABELA (DATA GRID CLEAN) --- */
+#lista {
+    background-color: transparent;
+    min-height: 250px;
+}
+
+#lista table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 0.5rem;
+}
+
+/* Cabeçalho mais sóbrio e neutro */
+#lista th {
+    text-align: left;
+    padding: 1rem 1.2rem;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-bottom: 2px solid var(--border-color);
+    background-color: #fafbfc; /* Cinza muito leve apenas no header */
+}
+
+#lista th:first-child { border-top-left-radius: 0.5rem; }
+#lista th:last-child { border-top-right-radius: 0.5rem; }
+
+#lista td {
+    padding: 1rem 1.2rem;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+/* Efeito Hover sutil com o novo verde sotaque */
+#lista tr {
+    transition: background-color 0.15s ease;
+}
+
+#lista tbody tr:hover td {
+    background-color: var(--neutral-green-accent);
+}
+
+/* --- BOTÕES DE AÇÃO NA TABELA (ALTERAR / EXCLUIR NEUTROS) --- */
+#lista a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.8rem;
+    margin-right: 0.4rem;
+    border-radius: 0.4rem;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Botão Alterar discreto e neutro */
+#lista a[href^="cliente_alterar"] {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+#lista a[href^="cliente_alterar"]:hover {
+    background-color: #ffc107; /* Mantemos o amarelo no hover por usabilidade */
+    color: #000;
+    border-color: #ffc107;
+}
+
+/* Botão Excluir discreto e neutro */
+#lista a[onclick^="excluir"] {
+    background-color: #f8f9fa;
+    color: #dc3545;
+    border: 1px solid #f8caca;
+}
+
+#lista a[onclick^="excluir"]:hover {
+    background-color: #dc3545; /* Mantemos o vermelho no hover por usabilidade */
+    color: white;
+    border-color: #dc3545;
+}

@@ -1,0 +1,80 @@
+/* --- VARIÁVEIS DO SISTEMA (Consistentes com a Home) --- */
+:root {
+    --neutral-green-main: #8abf9a; 
+    --neutral-green-hover: #a1cfaf; 
+    --surface-white: #ffffff;
+    --text-main: #333333; 
+    --text-muted: #6c757d;
+    --border-color: #e9ecef; 
+}
+
+body {
+    background-color: #f8f9fa; /* Fundo levemente cinza para destacar o card branco */
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+}
+
+/* --- CARD DO FORMULÁRIO --- */
+.form-card {
+    background-color: var(--surface-white);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+    max-width: 550px;
+}
+
+/* --- INPUTS CUSTOMIZADOS (Floating Labels) --- */
+.custom-input {
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa !important;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.01);
+    transition: all 0.2s ease;
+}
+
+.custom-input:focus {
+    border-color: var(--neutral-green-main);
+    background-color: #fff !important;
+    box-shadow: 0 0 0 4px rgba(138, 191, 154, 0.15);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--neutral-green-main);
+    transform: scale(.85) translateY(-1.5rem) translateX(.15rem);
+    background-color: transparent;
+}
+
+.form-floating > .form-control {
+    padding-top: 1.625rem;
+    padding-bottom: .625rem;
+}
+
+/* --- TOGGLE SWITCH (Interruptor "Ativo") --- */
+.custom-switch:checked {
+    background-color: var(--neutral-green-main);
+    border-color: var(--neutral-green-main);
+}
+.custom-switch:focus {
+    box-shadow: 0 0 0 0.25rem rgba(138, 191, 154, 0.25);
+    border-color: var(--neutral-green-main);
+}
+
+/* --- BOTÃO CUSTOMIZADO --- */
+.btn-primary-neutral {
+    background-color: var(--neutral-green-main);
+    border-color: var(--neutral-green-main);
+    color: white;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-neutral:hover {
+    background-color: var(--neutral-green-hover);
+    border-color: var(--neutral-green-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(138, 191, 154, 0.3);
+}

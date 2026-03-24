@@ -1,0 +1,108 @@
+:root {
+    --primary-green: #79c941;
+    --dark-green: #1a531f;
+    --hover-green: #68b037;
+    --bg-overlay: rgba(255, 255, 255, 0.25);
+    --text-main: #2d3436;
+    --modal-shadow: 0 20px 40px rgba(26, 83, 31, 0.15);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), 
+                      url('https://images.unsplash.com/photo-1583244685026-d8519b5e3d21?fm=jpg&q=60&w=3000&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text-main);
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.login-modal {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 3.5rem 3rem;
+    border-radius: 2rem;
+    box-shadow: var(--modal-shadow);
+    max-width: 460px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-title {
+    color: var(--dark-green);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+}
+
+.login-input {
+    border: 1px solid #e0e0e0;
+    background-color: #f8f9fa !important;
+    font-size: 1rem;
+    color: var(--text-main);
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
+}
+
+.login-input:focus {
+    border-color: var(--primary-green);
+    background-color: #fff !important;
+    box-shadow: 0 0 0 4px rgba(121, 201, 65, 0.15);
+}
+
+/* Ajustes do Floating Label para o design */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--primary-green);
+    transform: scale(.85) translateY(-1.5rem) translateX(.15rem);
+    background-color: transparent;
+}
+
+.form-floating > .form-control {
+    padding-top: 1.625rem;
+    padding-bottom: .625rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 5;
+}
+
+.cursor-pointer:hover {
+    color: var(--primary-green) !important;
+}
+
+.btn-login {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--hover-green);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(104, 176, 55, 0.3);
+}
+
+.btn-login:disabled {
+    background-color: #95d46a;
+    border-color: #95d46a;
+    transform: none;
+    cursor: not-allowed;
+}

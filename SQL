@@ -1,0 +1,14 @@
+CREATE DATABASE projeto;
+USE projeto;
+CREATE TABLE cliente (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	nome VARCHAR(100),
+	email VARCHAR(100),
+	usuario VARCHAR(50),
+	senha VARCHAR(50),
+	instagram VARCHAR(100),
+	ativo TINYINT(1) DEFAULT 1
+);
+
+INSERT INTO cliente (nome, email, usuario, senha, instagram, ativo)
+VALUES ('heitor', 'heitor@gmail.com', 'heitor', 'heitor', 'heitor', 1);

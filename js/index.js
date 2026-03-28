@@ -7,6 +7,10 @@ document.getElementById("novo").addEventListener("click", () => {
     window.location.href = 'cliente_novo.html';
 });
 
+document.getElementById("novo_profissional").addEventListener("click", () => {
+    window.location.href = 'novo_profissional.html';
+});
+
 document.getElementById("logoff").addEventListener("click", () => {
     logoff();
 });

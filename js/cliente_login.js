@@ -55,9 +55,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const resposta = await retorno.json();
 
             if (resposta.status === "ok") {
-                window.location.href = "../home/";
+                // Redireciona conforme o nível do usuário
+                const nivel = resposta.data.nivel;
+                
+                switch(nivel){
+                    case 'adm':
+                        window.location.href = "../home/dashboard-administrador.html";
+                        break;
+                    case 'profissional':
+                    case 'responsavel':
+                        window.location.href = "../home/dashboard-profissional.html";
+                        break;
+                    case 'pessoa_tea':
+                        window.location.href = "../home/index.html";
+                        break;
+                    default:
+                        window.location.href = "../home/";
+                }
             } else {
-                mostrarErro("Credenciais inválidas. Verifique seu usuário e senha.");
+                mostrarErro(resposta.mensagem || "Credenciais inválidas. Verifique seu usuário e senha.");
             }
         } catch (error) {
             console.error("Erro na requisição:", error);

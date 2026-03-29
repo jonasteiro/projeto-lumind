@@ -3,57 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumind | Gestão</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/listar_exemplo.css">
+    <title>Gerenciar Perfis - Lumind</title>
+    <link rel="stylesheet" href="../css/perfis.css">
 </head>
-<body class="bg-white">
-
-    <nav class="navbar navbar-custom py-3 px-4 mb-5">
-        <div class="container-xl d-flex justify-content-between align-items-center">
-            
-            <div>
-                <h1 class="page-title fs-4 mb-0"><i class="bi bi-box-seam me-2"></i>Dashboard</h1>
-            </div>
-
-            <div>
-                <button id="logoff" class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold px-4 d-flex align-items-center gap-2">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </button>
-            </div>
-
+<body>
+    <header class="header">
+        <div class="header-logo">Dashboard</div>
+        <div class="header-actions">
+            <button class="btn-voltar" onclick="voltarDashboard()">Voltar</button>
+            <button class="btn-logout" onclick="logout()">Sair</button>
         </div>
-    </nav>
+    </header>
 
-    <main class="container-xl mb-5">
-        
-        <div class="content-area p-4 p-md-5 w-100">
-            
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle">
-                <div>
-                    <h2 class="h4 mb-1 fw-bold text-dark">Registros do Sistema</h2>
-                    <p class="text-muted small mb-0">Gerencie seus dados e listagens abaixo.</p>
-                </div>
-                
-                <button id="novo" class="btn btn-primary-neutral rounded-pill fw-semibold shadow-sm px-4 d-flex align-items-center gap-2">
-                    <i class="bi bi-plus-lg"></i> Novo Registro
-                </button>
-            </div>
-
-            <div id="lista" class="w-100 pt-2 table-responsive">
-                </div>
-
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Gerenciar Perfis</h1>
+            <p class="page-subtitle">Crie novos usuários e gerencie os perfis do sistema.</p>
         </div>
 
-    </main>
+        <!-- Seção de Criação de Usuários -->
+        <div class="novo-usuario-section">
+            <h2 class="section-title">Criar Novo Usuário</h2>
+            <p class="section-subtitle">Selecione o tipo de perfil para criar um novo usuário</p>
+
+            <div class="opcoes-grid">
+                <!-- Opção: Pessoa com TEA -->
+                <div class="opcao-card opcao-tea" onclick="abrirFormulario('pessoa_tea')">
+                    <div class="opcao-icon">🧠</div>
+                    <h3 class="opcao-title">Pessoa com TEA</h3>
+                    <p class="opcao-description">Criar perfil para pessoa com Transtorno do Espectro Autista</p>
+                    <div class="opcao-action">
+                        <span>+</span>
+                    </div>
+                </div>
+
+                <!-- Opção: Responsável -->
+                <div class="opcao-card opcao-responsavel" onclick="abrirFormulario('responsavel')">
+                    <div class="opcao-icon">👨‍👩‍👧‍👦</div>
+                    <h3 class="opcao-title">Responsável</h3>
+                    <p class="opcao-description">Criar perfil para responsável ou cuidador</p>
+                    <div class="opcao-action">
+                        <span>+</span>
+                    </div>
+                </div>
+
+                <!-- Opção: Profissional -->
+                <div class="opcao-card opcao-profissional" onclick="abrirFormulario('profissional')">
+                    <div class="opcao-icon">👨‍⚕️</div>
+                    <h3 class="opcao-title">Profissional</h3>
+                    <p class="opcao-description">Criar perfil para profissional (psicólogo, terapeuta, etc)</p>
+                    <div class="opcao-action">
+                        <span>+</span>
+                    </div>
+                </div>
+
+                <!-- Opção: Administrador -->
+                <div class="opcao-card opcao-adm" onclick="abrirFormulario('adm')">
+                    <div class="opcao-icon">⚙️</div>
+                    <h3 class="opcao-title">Administrador</h3>
+                    <p class="opcao-description">Criar perfil para administrador do sistema</p>
+                    <div class="opcao-action">
+                        <span>+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Lista de Usuários -->
+        <div class="usuarios-section">
+            <h2 class="section-title">Usuários Cadastrados</h2>
+            
+            <div class="tabela-wrapper">
+                <table class="usuarios-table">
+                    <thead>
+                        <tr>
+                            <th>NOME</th>
+                            <th>USUÁRIO</th>
+                            <th>EMAIL</th>
+                            <th>PERFIL</th>
+                            <th>STATUS</th>
+                            <th>AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Yasmin Silva</td>
+                            <td>yasmin_luz</td>
+                            <td>yasmin@gmail.com</td>
+                            <td><span class="badge badge-tea">Pessoa TEA</span></td>
+                            <td><span class="status-ativo">Ativo</span></td>
+                            <td>
+                                <button class="btn-acao btn-editar">Editar</button>
+                                <button class="btn-acao btn-deletar">Excluir</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Heitor Silva</td>
+                            <td>heitor_dev</td>
+                            <td>heitor@gmail.com</td>
+                            <td><span class="badge badge-responsavel">Responsável</span></td>
+                            <td><span class="status-ativo">Ativo</span></td>
+                            <td>
+                                <button class="btn-acao btn-editar">Editar</button>
+                                <button class="btn-acao btn-deletar">Excluir</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Gabriela Santos</td>
+                            <td>gabi_tea</td>
+                            <td>gabi@gmail.com</td>
+                            <td><span class="badge badge-profissional">Profissional</span></td>
+                            <td><span class="status-ativo">Ativo</span></td>
+                            <td>
+                                <button class="btn-acao btn-editar">Editar</button>
+                                <button class="btn-acao btn-deletar">Excluir</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>João Admin</td>
+                            <td>joao_oficial</td>
+                            <td>joao@gmail.com</td>
+                            <td><span class="badge badge-adm">Administrador</span></td>
+                            <td><span class="status-ativo">Ativo</span></td>
+                            <td>
+                                <button class="btn-acao btn-editar">Editar</button>
+                                <button class="btn-acao btn-deletar">Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script src="../js/index.js"></script>
-    <script src="../js/valida_sessao.js"></script>
 </body>
 </html>

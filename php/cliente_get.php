@@ -1,51 +1,67 @@
 <?php
     include_once('conexao.php');
-    // Configurando o padrão de retorno em todas
-    // as situações
     $retorno = [
-        'status'    => '', // ok - nok
-        'mensagem'  => '', // mensagem que envio para o front
+        'status'    => '',
+        'mensagem'  => '',
         'data'      => []
     ];
 
+    $sql = "
+    SELECT 
+        c.id,
+        c.nome,
+        c.email,
+        c.usuario,
+        c.nivel,
+        c.ativo,
+        c.instagram,
+        p.especialidade,
+        p.registro_profissional,
+        p.telefone as telefone_profissional,
+        p.data_nascimento,
+        r.telefone as telefone_responsavel,
+        t.data_diagnostico,
+        t.nivel_autismo
+    FROM cliente c
+    LEFT JOIN profissional p ON c.id = p.cliente_id
+    LEFT JOIN responsavel r ON c.id = r.cliente_id
+    LEFT JOIN pessoa_tea t ON c.id = t.cliente_id
+    ";
+
     if(isset($_GET['id'])){
-        // Segunda situação - RECEBENDO O ID por GET
-        $stmt = $conexao->prepare("SELECT * FROM cliente WHERE id = ?");
-        $stmt->bind_param("i",$_GET['id']);
-    }else{
-        // Primeira situação - SEM RECEBER O ID por GET
-        $stmt = $conexao->prepare("SELECT * FROM cliente");
+        // Buscar um cliente específico
+        $sql .= " WHERE c.id = ?";
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param("i", $_GET['id']);
+    } else {
+        // Buscar todos os clientes
+        $stmt = $conexao->prepare($sql);
     }
     
-    // Recuperando informações do banco de dados
-    // Vou executar a query
     $stmt->execute();
     $resultado = $stmt->get_result();
-    // Criando um array vazio para receber o resultado
-    // do banco de Dados
     $tabela = [];
+
     if($resultado->num_rows > 0){
         while($linha = $resultado->fetch_assoc()){
             $tabela[] = $linha;
         }
 
         $retorno = [
-            'status'    => 'ok', // ok - nok
-            'mensagem'  => 'Sucesso, consulta efetuada.', // mensagem que envio para o front
+            'status'    => 'ok',
+            'mensagem'  => 'Sucesso, consulta efetuada.',
             'data'      => $tabela
         ];
     }else{
         $retorno = [
-            'status'    => 'nok', // ok - nok
-            'mensagem'  => 'Não há registros', // mensagem que envio para o front
+            'status'    => 'nok',
+            'mensagem'  => 'Não há registros',
             'data'      => []
         ];
     }
-    // Fechamento do estado e conexão.
+
     $stmt->close();
     $conexao->close();
 
-    // Estou enviando para o FRONT o array RETORNO
-    // mas no formato JSON
     header("Content-type:application/json;charset:utf-8");
     echo json_encode($retorno);

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Administrador - Lumind</title>
+    <link rel="stylesheet" href="../css/cadastro_adm.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Cadastro de Administrador</h1>
+                <p class="subtitle">Criar novo perfil de administrador do sistema</p>
+            </div>
+            <button class="btn-voltar" onclick="voltarPerfis()">← Voltar</button>
+        </header>
+
+        <main class="form-container">
+            <form id="formCadastroAdm" class="formulario-adm">
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input 
+                        type="text" 
+                        id="nome" 
+                        name="nome" 
+                        placeholder="Digite o nome completo" 
+                        required
+                        maxlength="100"
+                    >
+                    <span class="form-error" id="erroNome"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="exemplo@email.com" 
+                            required
+                            maxlength="100"
+                        >
+                        <span class="form-error" id="erroEmail"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usuario">Nome de Usuário *</label>
+                        <input 
+                            type="text" 
+                            id="usuario" 
+                            name="usuario" 
+                            placeholder="usuario_admin" 
+                            required
+                            maxlength="50"
+                        >
+                        <span class="form-error" id="erroUsuario"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="senha">Senha *</label>
+                        <input 
+                            type="password" 
+                            id="senha" 
+                            name="senha" 
+                            placeholder="Digite uma senha segura" 
+                            required
+                            minlength="6"
+                        >
+                        <span class="form-error" id="erroSenha"></span>
+                        <small class="form-hint">Mínimo 6 caracteres</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="instagram">Instagram (Opcional)</label>
+                        <input 
+                            type="text" 
+                            id="instagram" 
+                            name="instagram" 
+                            placeholder="@usuario_instagram" 
+                            maxlength="100"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="ativo" 
+                            name="ativo" 
+                            checked
+                        >
+                        <span>Ativar administrador imediatamente</span>
+                    </label>
+                </div>
+
+                <div id="divErro" class="alert alert-error" style="display: none;"></div>
+                <div id="divSucesso" class="alert alert-success" style="display: none;"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span> Criar Administrador
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
+                        <span>🔄</span> Limpar
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script src="../js/cadastro_adm.js"></script>
+</body>
+</html>

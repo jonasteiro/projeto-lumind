@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Administrador - Lumind</title>
+    <link rel="stylesheet" href="../css/dashboard-adm.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">Dashboard</div>
+        <div class="header-actions">
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Painel Administrativo</h1>
+            <p class="page-subtitle">Gerencie todas as funcionalidades da plataforma Lumind.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Card Perfis -->
+            <div class="card card-perfis" onclick="irParaPerfis()">
+                <div class="card-icon">👥</div>
+                <h2 class="card-title">Perfis</h2>
+                <p class="card-description">Gerencie perfis de usuários e defina permissões de acesso.</p>
+                <div class="card-footer">
+                    <span class="card-count">24</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+
+            <!-- Card Atividades -->
+            <div class="card card-atividades">
+                <div class="card-icon">📋</div>
+                <h2 class="card-title">Atividades</h2>
+                <p class="card-description">Acompanhe e gerencie todas as atividades do sistema.</p>
+                <div class="card-footer">
+                    <span class="card-count">156</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+
+            <!-- Card Diário -->
+            <div class="card card-diario">
+                <div class="card-icon">📓</div>
+                <h2 class="card-title">Diário</h2>
+                <p class="card-description">Visualize registros diários de atividades e eventos.</p>
+                <div class="card-footer">
+                    <span class="card-count">89</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+
+            <!-- Card Eventos -->
+            <div class="card card-eventos">
+                <div class="card-icon">📅</div>
+                <h2 class="card-title">Eventos</h2>
+                <p class="card-description">Organize e acompanhe eventos agendados na plataforma.</p>
+                <div class="card-footer">
+                    <span class="card-count">42</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+
+            <!-- Card Relatórios -->
+            <div class="card card-relatorios">
+                <div class="card-icon">📊</div>
+                <h2 class="card-title">Relatórios</h2>
+                <p class="card-description">Gere e analise relatórios detalhados do sistema.</p>
+                <div class="card-footer">
+                    <span class="card-count">18</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+
+            <!-- Card Denúncias -->
+            <div class="card card-denuncias">
+                <div class="card-icon">⚠️</div>
+                <h2 class="card-title">Denúncias</h2>
+                <p class="card-description">Monitore e gerencie denúncias reportadas no sistema.</p>
+                <div class="card-footer">
+                    <span class="card-count">7</span>
+                    <a href="#" class="card-link">Ver</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Estatísticas -->
+        <div class="stats-section">
+            <h2 class="stats-title">Estatísticas Gerais</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Usuários Ativos</div>
+                    <div class="stat-value">324</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sessões Hoje</div>
+                    <div class="stat-value">89</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Pendências</div>
+                    <div class="stat-value">12</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Taxa de Sucesso</div>
+                    <div class="stat-value">98.5%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Valida a sessão ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('../php/verificar_sessao_adm.php')
+                .catch(() => {
+                    // Se houver erro (redirecionamento ou acesso negado)
+                    window.location.href = '../login/index.html';
+                });
+        });
+
+        function logout(){
+            fetch('../php/cliente_logoff.php')
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'ok'){
+                        window.location.href = '../login/index.html';
+                    }
+                });
+        }
+
+        function irParaPerfis(){
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

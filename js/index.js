@@ -102,6 +102,7 @@ function preencherTabela(usuarios) {
         const status = obterStatus(usuario.ativo);
 
         const tr = document.createElement('tr');
+        tr.setAttribute('data-id', usuario.id); // <-- Adiciona o ID no <tr>
         tr.innerHTML = `
             <td>${usuario.nome}</td>
             <td>${usuario.usuario}</td>
@@ -109,18 +110,102 @@ function preencherTabela(usuarios) {
             <td><span class="badge ${badge.classe}">${badge.label}</span></td>
             <td>${status}</td>
             <td>
-                <button class="btn-acao btn-editar" onclick="editarUsuario(${usuario.id})">Editar</button>
-                <button class="btn-acao btn-deletar" onclick="deletarUsuario(${usuario.id})">Excluir</button>
+                <button class="btn-acao btn-editar">Editar</button>
+                <button class="btn-acao btn-deletar">Excluir</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
+
+    // Adiciona eventos aos botões após preencher a tabela
+    document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.onclick = function() {
+            editarUsuarioInline(this.closest('tr'));
+        };
+    });
+    document.querySelectorAll('.btn-deletar').forEach(btn => {
+        btn.onclick = function() {
+            deletarUsuario(this.closest('tr').getAttribute('data-id'));
+        };
+    });
 }
 
-// Editar usuário
-function editarUsuario(id) {
-    alert('Função de edição em desenvolvimento. ID: ' + id);
-    // window.location.href = 'cliente_alterar.html?id=' + id;
+// Edição inline do usuário
+function editarUsuarioInline(tr) {
+    if (tr.classList.contains('editando')) return;
+
+    tr.classList.add('editando');
+    const tds = tr.querySelectorAll('td');
+    const nome = tds[0].innerText;
+    const usuario = tds[1].innerText;
+    const email = tds[2].innerText;
+    const perfil = tds[3].innerText.trim();
+    const status = tds[4].innerText.trim();
+
+    // Campos editáveis
+    tds[0].innerHTML = `<input type="text" value="${nome}" style="width:90%;">`;
+    tds[1].innerHTML = `<input type="text" value="${usuario}" style="width:90%;">`;
+    tds[2].innerHTML = `<input type="email" value="${email}" style="width:90%;">`;
+    tds[3].innerHTML = `
+        <select>
+            <option value="pessoa_tea" ${perfil === 'Pessoa TEA' ? 'selected' : ''}>Pessoa TEA</option>
+            <option value="responsavel" ${perfil === 'Responsável' ? 'selected' : ''}>Responsável</option>
+            <option value="profissional" ${perfil === 'Profissional' ? 'selected' : ''}>Profissional</option>
+            <option value="adm" ${perfil === 'Administrador' ? 'selected' : ''}>Administrador</option>
+        </select>
+    `;
+    tds[4].innerHTML = `
+        <select>
+            <option value="1" ${status === 'Ativo' ? 'selected' : ''}>Ativo</option>
+            <option value="0" ${status === 'Inativo' ? 'selected' : ''}>Inativo</option>
+        </select>
+    `;
+    tds[5].innerHTML = `
+        <button class="btn-acao btn-salvar">Salvar</button>
+        <button class="btn-acao btn-cancelar">Cancelar</button>
+    `;
+
+    // Salvar
+    tds[5].querySelector('.btn-salvar').onclick = async function() {
+        const novoNome = tds[0].querySelector('input').value;
+        const novoUsuario = tds[1].querySelector('input').value;
+        const novoEmail = tds[2].querySelector('input').value;
+        const novoNivel = tds[3].querySelector('select').value;
+        const novoAtivo = tds[4].querySelector('select').value;
+        const id = tr.getAttribute('data-id'); // <-- Pega o ID do <tr>
+
+        // Envia para o backend (AJAX)
+        try {
+            const fd = new FormData();
+            fd.append('id', id);
+            fd.append('nome', novoNome);
+            fd.append('usuario', novoUsuario);
+            fd.append('email', novoEmail);
+            fd.append('nivel', novoNivel);
+            fd.append('ativo', novoAtivo);
+
+            const resposta = await fetch('../php/cliente_alterar.php', {
+                method: 'POST',
+                body: fd
+            });
+            const dados = await resposta.json();
+
+            if (dados.status === 'ok' || dados.status === 'sucesso') {
+                alert('Usuário atualizado com sucesso!');
+                buscarUsuarios();
+            } else {
+                alert('Erro ao atualizar: ' + (dados.mensagem || 'Tente novamente.'));
+            }
+        } catch (erro) {
+            alert('Erro ao atualizar usuário.');
+            console.error(erro);
+        }
+    };
+
+    // Cancelar
+    tds[5].querySelector('.btn-cancelar').onclick = function() {
+        buscarUsuarios();
+    };
 }
 
 // Deletar usuário

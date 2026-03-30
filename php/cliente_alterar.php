@@ -7,17 +7,34 @@
         'data'      => []
     ];
 
-    if(isset($_GET['id'])){
-        // Simulando as informações que vem do front
-        $nome       = $_POST['nome']; // $_POST['nome'];
+    if(isset($_POST['id'])){
+        $id         = $_POST['id'];
+        $nome       = $_POST['nome'];
         $email      = $_POST['email'];
         $usuario    = $_POST['usuario'];
-        $senha      = $_POST['senha'];
+        // $senha      = $_POST['senha']; // Só altere senha se for necessário!
         $ativo      = (int) $_POST['ativo'];
-    
-        // Preparando para inserção no banco de dados
-        $stmt = $conexao->prepare("UPDATE cliente SET nome = ?, email = ?, usuario = ?, senha = ?, ativo = ? WHERE id = ?");
-        $stmt->bind_param("ssssii",$nome, $email, $usuario, $senha, $ativo, $_GET['id']);
+
+        // Atualiza também o nível, se vier do front
+        $nivel      = isset($_POST['nivel']) ? $_POST['nivel'] : null;
+
+        // Monta a query dinamicamente para incluir o campo nivel se enviado
+        $sql = "UPDATE cliente SET nome = ?, email = ?, usuario = ?, ativo = ?";
+        $params = [$nome, $email, $usuario, $ativo];
+        $types = "sssi";
+
+        if ($nivel !== null) {
+            $sql .= ", nivel = ?";
+            $params[] = $nivel;
+            $types .= "s";
+        }
+
+        $sql .= " WHERE id = ?";
+        $params[] = $id;
+        $types .= "i";
+
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param($types, ...$params);
         $stmt->execute();
 
         if($stmt->affected_rows > 0){
@@ -29,7 +46,7 @@
         }else{
             $retorno = [
                 'status'    => 'nok',
-                'mensagem'  => 'Não posso alterar um registro.'.json_encode($_GET),
+                'mensagem'  => 'Não foi possível alterar o registro (ID: '.$id.').',
                 'data'      => []
             ];
         }
@@ -44,5 +61,5 @@
        
     $conexao->close();
 
-    header("Content-type:application/json;charset:utf-8");
+    header("Content-type:application/json;charset=utf-8");
     echo json_encode($retorno);

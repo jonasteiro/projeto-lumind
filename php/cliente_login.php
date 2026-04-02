@@ -8,8 +8,8 @@
         'data'      => []
     ];
 
-    $stmt = $conexao->prepare("SELECT * FROM cliente WHERE usuario = ? AND senha = ?");
-    $stmt->bind_param("ss",$_POST['usuario'],$_POST['senha']);
+    $stmt = $conexao->prepare("SELECT * FROM Usuario WHERE email = ? AND senha = ?");
+    $stmt->bind_param("ss",$_POST['email'],$_POST['senha']);
     
     // Recuperando informações do banco de dados
     // Vou executar a query

@@ -34,11 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnSpinner.classList.remove("d-none");
         btnEnviar.disabled = true;
 
-        const usuario = document.getElementById("usuario").value;
+        const email = document.getElementById("email").value;
         const senha = passwordInput.value;
         
         const fd = new FormData();
-        fd.append("usuario", usuario);
+        fd.append("email", email);
         fd.append("senha", senha);
 
         try {

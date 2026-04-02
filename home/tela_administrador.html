@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumind | Painel Administrativo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/tela_administrador.css">
+</head>
+<body>
+    <div class="tela-administrador">
+        <aside class="sidebar">
+            <div class="sidebar-top p-4">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo" onerror="this.style.display='none'">
+                <div class="admin-data d-flex align-items-center mt-3">
+                    <div class="admin-avatar">JS</div>
+                    <div>
+                        <strong>Julián Soria</strong>
+                        <small>Administrador</small>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav flex-column p-3">
+                <a href="#" class="nav-link active"><i class="bi bi-house-door-fill"></i> INICIO</a>
+                <a href="#" class="nav-link"><i class="bi bi-envelope"></i> VALIDAÇÃO PROFISSIONAL</a>
+                <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES DO SISTEMA</a>
+                <a href="#" class="nav-link"><i class="bi bi-person-check"></i> MODERAÇÃO</a>
+                <a href="#" class="nav-link"><i class="bi bi-clock-history"></i> LOGS DE ATIVIDADE</a>
+                <a href="#" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+            </nav>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar d-flex justify-content-between align-items-center p-4">
+                <h2>PAINEL ADMINISTRATIVO</h2>
+                <div class="search-box d-flex align-items-center">
+                    <i class="bi bi-search"></i>
+                    <input type="search" class="form-control form-control-sm ms-2" placeholder="Buscar">
+                </div>
+            </header>
+
+            <section class="cards-grid p-4">
+                <div class="row g-4">
+                    <div class="col-sm-4">
+                        <article class="card-option p-4 text-center">
+                            <i class="bi bi-people-fill icon"></i>
+                            <h4>FALE CONOSCO</h4>
+                        </article>
+                    </div>
+                    <div class="col-sm-4">
+                        <article class="card-option p-4 text-center">
+                            <i class="bi bi-person-plus icon"></i>
+                            <h4>REGISTRAR ADMIN</h4>
+                        </article>
+                    </div>
+                    <div class="col-sm-4">
+                        <article class="card-option p-4 text-center">
+                            <i class="bi bi-file-earmark-text icon"></i>
+                            <h4>RELATÓRIOS SISTEMA</h4>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="usuarios-table-section p-4">
+                <div class="table-card p-3">
+                    <h3>Usuários Cadastrados</h3>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Usuário</th>
+                                    <th>Email</th>
+                                    <th>Perfil</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Marcela Lagos</td>
+                                    <td>Marcela Lagos</td>
+                                    <td>marcela@gmail.com</td>
+                                    <td><span class="badge profile-prof">Profissional</span></td>
+                                    <td><span class="badge status-active">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Thiago Fontes</td>
+                                    <td>Thiago Fontes</td>
+                                    <td>thiago@gmail.com</td>
+                                    <td><span class="badge profile-tea">Pessoa TEA</span></td>
+                                    <td><span class="badge status-inactive">Inativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Valeria Fontes</td>
+                                    <td>Valeria Fontes</td>
+                                    <td>valeria@gmail.com</td>
+                                    <td><span class="badge profile-responsavel">Responsavel</span></td>
+                                    <td><span class="badge status-inactive">Inativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Mateo Silveira</td>
+                                    <td>Mateo Silveira</td>
+                                    <td>mateo@gmail.com</td>
+                                    <td><span class="badge profile-tea">Pessoa TEA</span></td>
+                                    <td><span class="badge status-active">Ativo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Antonella Rios</td>
+                                    <td>Antonella Rios</td>
+                                    <td>antonella@gmail.com</td>
+                                    <td><span class="badge profile-prof">Profissional</span></td>
+                                    <td><span class="badge status-active">Ativo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

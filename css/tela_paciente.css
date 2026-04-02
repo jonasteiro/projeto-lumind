@@ -1,0 +1,104 @@
+:root {
+    --bg: #f2fbff;
+    --panel: #def4ff;
+    --card-bg: #d7f2ff;
+    --card-border: #b8e4ff;
+    --text: #1a7091;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.tela-paciente {
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.top-header {
+    background: linear-gradient(90deg, #c4ebff 0%, #dff8ff 100%);
+    border-bottom: 1px solid #b5e5f5;
+    padding: 1rem 1.25rem;
+}
+
+.brand { display: flex; align-items: center; gap: 0.75rem; }
+
+.brand .logo {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1c86c1;
+}
+
+.user-profile {
+    gap: 0.7rem;
+}
+
+.user-name { font-weight: 700; }
+
+.user-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #90cef6;
+}
+
+.content {
+    max-width: 1180px;
+    margin: auto;
+    padding: 1.5rem 0;
+}
+
+.card-option {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 1.2rem;
+    min-height: 168px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-option:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 22px rgba(0, 0, 0, 0.1);
+}
+
+.card-option .icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #e8f8ff;
+    color: #1f8fc4;
+    font-size: 1.9rem;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 0.8rem;
+}
+
+.card-option h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #1b85b5;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.card-option p {
+    margin: 0.35rem 0 0;
+    color: #1d6791;
+    font-size: 0.94rem;
+}
+
+@media (max-width: 992px) {
+    .content { padding: 1rem 0; }
+}

@@ -9,6 +9,12 @@ function validarEmail(email) {
     return regex.test(email);
 }
 
+// Validar Telefone
+function validarTelefone(telefone) {
+    const apenasNumeros = telefone.replace(/\D/g, '');
+    return apenasNumeros.length === 10 || apenasNumeros.length === 11;
+}
+
 // Validar idade mínima (18 anos)
 function validarIdadeMinima(dataNascimento) {
     const hoje = new Date();
@@ -77,9 +83,9 @@ function validarCampos() {
         temErro = true;
     }
 
-    // Validar telefone
-    if (telefone.length < 10) {
-        document.getElementById('erroTelefone').textContent = 'Telefone inválido';
+    // Validar telefone (Nova validação)
+    if (!validarTelefone(telefone)) {
+        document.getElementById('erroTelefone').textContent = 'Digite um telefone válido com DDD (10 ou 11 números)';
         document.getElementById('erroTelefone').classList.add('show');
         temErro = true;
     }
@@ -138,7 +144,8 @@ formulario.addEventListener('submit', async function(e) {
         formData.append('usuario', document.getElementById('email').value.split('@')[0]); // Usar primeira parte do email como usuário
         formData.append('ativo', document.getElementById('ativo').checked ? 1 : 0);
         formData.append('data_nascimento', document.getElementById('data_nascimento').value);
-        formData.append('telefone', document.getElementById('telefone').value);
+        // Na hora de enviar pro banco, mandamos só os números limpinhos do telefone!
+        formData.append('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
         formData.append('especialidade', document.getElementById('especialidade').value);
         formData.append('registro_profissional', document.getElementById('registro_profissional').value);
         formData.append('instagram', ''); // Deixar vazio
@@ -195,8 +202,12 @@ document.getElementById('email').addEventListener('input', function() {
     }
 });
 
+// Bloqueia letras no telefone e limpa o erro se a quantidade estiver certa
 document.getElementById('telefone').addEventListener('input', function() {
-    if (this.value.length >= 10) {
+    // Apaga na hora qualquer coisa que não seja número
+    this.value = this.value.replace(/\D/g, '');
+    
+    if (validarTelefone(this.value)) {
         document.getElementById('erroTelefone').classList.remove('show');
     }
 });

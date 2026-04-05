@@ -40,7 +40,7 @@ function preencherTabela(tabela) {
                 <td>${tabela[i].cpf}</td>
                 <td class="text-end">
                     <div class="btn-group">
-                        <a href='cadastro_pessoa_tea.html?id=${tabela[i].id_usuario}' class="btn btn-sm btn-outline-primary border-0">
+                        <a href='alterar_pessoa_tea.html?id=${tabela[i].id_usuario}' class="btn btn-sm btn-outline-primary border-0">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                         <button onclick='excluir(${tabela[i].id_usuario})' class="btn btn-sm btn-outline-danger border-0">

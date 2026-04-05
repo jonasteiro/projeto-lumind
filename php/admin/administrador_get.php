@@ -13,7 +13,8 @@
                 U.id_usuario, 
                 U.nome, 
                 U.email, 
-                U.cpf, 
+                U.cpf,
+                U.data_nascimento, 
                 A.status_adm
             FROM Usuario U
             INNER JOIN Administrador A ON U.id_usuario = A.id_usuario

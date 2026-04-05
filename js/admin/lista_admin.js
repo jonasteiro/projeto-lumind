@@ -51,7 +51,7 @@ function preencherTabela(dados) {
                 <td><span class="badge ${statusClass}">${statusTexto}</span></td>
                 <td class="text-end">
                     <div class="btn-group">
-                        <a href='cadastro_admin.html?id=${adm.id_usuario}' class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                        <a href='alterar_admin.html?id=${adm.id_usuario}' class="btn btn-sm btn-outline-primary border-0" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                         <button onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger border-0">

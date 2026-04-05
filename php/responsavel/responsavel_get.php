@@ -14,7 +14,8 @@
                 U.id_usuario, 
                 U.nome, 
                 U.email, 
-                U.cpf, 
+                U.cpf,
+                U.data_nascimento, 
                 T.telefone
             FROM Usuario U
             INNER JOIN ResponsavelLegal R ON U.id_usuario = R.id_usuario

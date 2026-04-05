@@ -145,7 +145,7 @@ function limparFormulario() {
 
 function voltarPerfis() {
     // Redireciona para a sua tela de listagem
-    window.location.href = 'lista_responsaveis.html';
+    window.location.href = 'lista_responsavel.html';
 }
 
 // Máscaras em tempo real

@@ -1,0 +1,157 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 20% 20%, #0f172a, #020617 80%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
+    top: -100px;
+    left: -100px;
+    z-index: 0;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(6,182,212,0.2), transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    z-index: 0;
+}
+
+.navbar-custom {
+    z-index: 2;
+    padding: 20px 40px;
+}
+
+.page-title {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.btn-link i {
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.08);
+    padding: 8px;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.btn-link:hover i {
+    background: rgba(59,130,246,0.3);
+    color: #38bdf8;
+    transform: translateX(-4px);
+}
+
+#logoff {
+    border-radius: 999px;
+    padding: 6px 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #e2e8f0;
+    background: rgba(255,255,255,0.05);
+    transition: 0.25s;
+}
+
+#logoff:hover {
+    background: rgba(59,130,246,0.2);
+    border-color: #3b82f6;
+    color: #38bdf8;
+}
+
+main.container-xl {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    padding: 40px;
+}
+
+.content-area {
+    width: 100%;
+    max-width: 1100px;
+    background: rgba(255,255,255,0.97);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1;
+}
+
+.border { border: none !important; }
+
+.content-area h2 {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.content-area p { color: #64748b; }
+
+#btnNovoProfissional {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 22px;
+    color: white;
+    font-weight: 600;
+    transition: 0.25s;
+    box-shadow: 0 5px 20px rgba(59,130,246,0.4);
+}
+
+#btnNovoProfissional:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(59,130,246,0.6);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+tr:hover { background: #f8fafc; }
+
+td a, td button {
+    margin-right: 8px;
+    transition: 0.2s;
+}
+
+td a:hover, td button:hover {
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    main.container-xl {
+        padding: 20px;
+        align-items: flex-start;
+    }
+    .content-area { padding: 20px; }
+}

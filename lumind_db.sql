@@ -39,6 +39,26 @@ CREATE TABLE ProfissionalSaude (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+CREATE TABLE Documentacao (
+    id_documentacao INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL, 
+    
+    -- Arquivos
+    certificacao_profissional MEDIUMBLOB NOT NULL,
+    carteira_identidade_nacional MEDIUMBLOB NOT NULL,
+    
+    -- Aprovação
+    status_aprovacao ENUM('Aguardando', 'Aprovado', 'Reprovado') DEFAULT 'Aguardando',
+    motivo_reprovacao TEXT,
+    id_admin_revisor INT, 
+    data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_revisao DATETIME,
+
+
+    CONSTRAINT fk_doc_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
+    CONSTRAINT fk_doc_admin FOREIGN KEY (id_admin_revisor) REFERENCES Usuario(id_usuario)
+);
+
 CREATE TABLE Administrador (
     id_usuario INT NOT NULL,
     status_adm BOOLEAN NOT NULL DEFAULT TRUE,

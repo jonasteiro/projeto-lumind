@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     if (typeof valida_sessao === "function") {
         valida_sessao();

@@ -130,3 +130,6 @@ document.getElementById('cpf').addEventListener('input', function (e) {
     if (value.length > 11) value = value.slice(0, 11);
     e.target.value = value;
 });
+
+// Só entra se for Administrador
+validarAcesso('Administrador');

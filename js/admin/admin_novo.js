@@ -145,7 +145,7 @@ function limparFormulario() {
 
 // Voltar para perfis (Adapte para a URL correta do seu painel)
 function voltarPerfis() {
-    window.location.href = 'painel_admin.html';
+    window.location.href = 'lista_administrador.html';
 }
 
 // ================= MÁSCARAS E EVENTOS EM TEMPO REAL =================
@@ -184,3 +184,6 @@ document.getElementById('senha').addEventListener('input', function() {
         document.getElementById('erroSenha').classList.remove('show');
     }
 });
+
+// Só entra se for Administrador
+validarAcesso('Administrador');

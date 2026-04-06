@@ -1,5 +1,5 @@
 <?php
-    include_once('../conexao.php'); // Sobe um nível para achar a conexão
+    include_once('../conexao.php'); 
 
     $retorno = ['status' => 'nok', 'mensagem' => 'Nenhum administrador encontrado', 'data' => []];
 
@@ -8,20 +8,39 @@
         exit;
     }
 
-    // Query para buscar TODOS os administradores
-    $sql = "SELECT 
-                U.id_usuario, 
-                U.nome, 
-                U.email, 
-                U.cpf,
-                U.data_nascimento, 
-                A.status_adm
-            FROM Usuario U
-            INNER JOIN Administrador A ON U.id_usuario = A.id_usuario
-            WHERE U.tipo_usuario = 'Administrador'
-            ORDER BY U.nome ASC";
-
-    $stmt = $conexao->prepare($sql);
+    // --- AQUI ESTÁ A MUDANÇA: LÓGICA DE FILTRO ---
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        // Situação para EDITAR: Busca apenas um pelo ID
+        $id = intval($_GET['id']);
+        $sql = "SELECT 
+                    U.id_usuario, 
+                    U.nome, 
+                    U.email, 
+                    U.cpf,
+                    U.data_nascimento, 
+                    A.status_adm
+                FROM Usuario U
+                INNER JOIN Administrador A ON U.id_usuario = A.id_usuario
+                WHERE U.id_usuario = ?"; // Filtro por ID
+        
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param("i", $id);
+    } else {
+        // Situação para LISTAR: Busca todos os administradores
+        $sql = "SELECT 
+                    U.id_usuario, 
+                    U.nome, 
+                    U.email, 
+                    U.cpf,
+                    U.data_nascimento, 
+                    A.status_adm
+                FROM Usuario U
+                INNER JOIN Administrador A ON U.id_usuario = A.id_usuario
+                WHERE U.tipo_usuario = 'Administrador'
+                ORDER BY U.nome ASC";
+        
+        $stmt = $conexao->prepare($sql);
+    }
 
     if($stmt->execute()){
         $resultado = $stmt->get_result();

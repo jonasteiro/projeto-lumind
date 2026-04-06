@@ -1,17 +1,15 @@
 <?php
     session_start();
-    if(isset($_SESSION['usuario'])){
+
+    $retorno = ['status' => 'nok', 'usuario' => null];
+
+    if (isset($_SESSION['usuario'])) {
         $retorno = [
-            'status'    => 'ok', // ok - nok
-            'mensagem'  => '', // mensagem que envio para o front
-            'data'      => []
-        ];
-    }else{
-        $retorno = [
-            'status'    => 'nok', // ok - nok
-            'mensagem'  => '', // mensagem que envio para o front
-            'data'      => []
+            'status' => 'ok',
+            'usuario' => $_SESSION['usuario'] // Aqui vai o ID, Nome e o TIPO_USUARIO
         ];
     }
-    header("Content-type:application/json;charset:utf-8;");
+
+    header("Content-type:application/json;charset:utf-8");
     echo json_encode($retorno);
+?>

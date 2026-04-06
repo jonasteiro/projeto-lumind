@@ -74,3 +74,6 @@ async function excluir(id) {
         if (resposta.status === "ok") window.location.reload();
     }
 }
+
+// Só entra se for Administrador
+validarAcesso('Administrador');

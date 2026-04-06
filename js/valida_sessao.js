@@ -1,30 +1,34 @@
-
 async function validarAcesso(tipoPermitido) {
     try {
         const retorno = await fetch("../php/valida_sessao.php");
         const resposta = await retorno.json();
 
-        // 1. Não está logado? Expulsa.
+        
+
         if (resposta.status === "nok") {
-            window.location.href = "../login/index.html";
+            console.error("Sessão não encontrada no PHP.");
+            window.location.href = "../login/index.html?erro=sem_sessao";
             return;
         }
 
-        // 2. Está logado, mas é o tipo errado? Expulsa.
         const usuarioLogado = resposta.usuario;
         
+        
+
         if (tipoPermitido && usuarioLogado.tipo_usuario !== tipoPermitido) {
-            // Se um Profissional tentar entrar no Admin, cai aqui
+            // Se cair aqui, o console vai te mostrar a diferença (espaços, letras maiúsculas, etc)
+            alert("CONFLITO!\nBanco: " + usuarioLogado.tipo_usuario + "\nExigido: " + tipoPermitido);
             window.location.href = "../login/index.html?erro=acesso_negado";
+            return;
         }
 
-        // 3. Se quiser exibir o nome do usuário na tela (opcional)
+
         const nomeExibicao = document.getElementById("nome-usuario");
         if (nomeExibicao) {
             nomeExibicao.textContent = usuarioLogado.nome;
         }
 
     } catch (e) {
-        window.location.href = "../login/index.html";
+        console.error("Erro ao processar JSON:", e);
     }
 }

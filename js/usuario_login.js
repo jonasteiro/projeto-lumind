@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     'Administrador': '../home/tela_administrador.html',
                     'ProfissionalSaude': '../home/tela_profissional.html',
                     'ResponsavelLegal': '../home/tela_responsavel.html',
-                    'PessoaTea': '../home/tela_paciente.html' // Ajuste conforme sua pasta
+                    'PessoaTea': '../home/tela_pessoa_tea.html' // Ajuste conforme sua pasta
                 };
 
                 window.location.href = rotas[tipo] || '../index.html';

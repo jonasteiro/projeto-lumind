@@ -29,7 +29,7 @@
             <nav class="nav flex-column p-3">
                 <a href="#" class="nav-link active"><i class="bi bi-house-door-fill"></i> INICIAL</a>
                 <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES</a>
-                <a href="#" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
             </nav>
             <div class="sidebar-footer text-center p-3">
                 <small>Versão 1.0</small>
@@ -97,5 +97,14 @@
             </section>
         </main>
     </div>
+
+    <script src="../js/valida_sessao.js"></script>
+    <script src="../js/index.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            // Defini a role como 'Profissional', ajuste caso use outro nome no seu banco
+            validarAcesso('Profissional');
+        }
+    </script>
 </body>
 </html>

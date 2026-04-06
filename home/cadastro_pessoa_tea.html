@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumind | Cadastro de Paciente TEA</title>
+    
+    <link rel="stylesheet" href="../css/administrador/cadastro_admin.css">
 </head>
 <body>
     <div class="container">
@@ -81,6 +83,14 @@
             </form>
         </main>
     </div>
+    
     <script src="../js/pessoa_tea.js/pessoa_tea_novo.js"></script>
+    <script src="../js/valida_sessao.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            // Apenas Profissionais (ou Administradores) devem poder cadastrar um paciente novo
+            validarAcesso(['Profissional', 'Administrador']); 
+        }
+    </script>
 </body>
 </html>

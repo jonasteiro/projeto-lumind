@@ -1,0 +1,219 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 20% 20%, #0f172a, #020617 80%);
+    min-height: 100vh;
+    color: #0f172a;
+}
+
+/* ===== GLOW FUNDO ===== */
+body::before {
+    content: "";
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
+    top: -100px;
+    left: -100px;
+    z-index: 0;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(6,182,212,0.2), transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    z-index: 0;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: #e2e8f0;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.btn-voltar:hover {
+    background: rgba(59,130,246,0.2);
+    border-color: #3b82f6;
+    color: #38bdf8;
+    transform: translateX(-3px);
+}
+
+/* ===== CARD ===== */
+.form-container {
+    background: rgba(255,255,255,0.97);
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+
+/* ===== FORM ===== */
+.formulario-adm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* GRUPOS */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ROW */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* LABEL */
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #334155;
+}
+
+/* INPUT */
+input {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    transition: 0.2s;
+    font-size: 0.95rem;
+}
+
+/* FOCUS */
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+/* ERROS */
+.form-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    margin-top: 4px;
+}
+
+/* HINT */
+.form-hint {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* ===== ALERTAS ===== */
+.alert {
+    display: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* ===== BOTÕES ===== */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn {
+    flex: 1;
+    border-radius: 999px;
+    padding: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.25s;
+}
+
+/* PRIMÁRIO */
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    box-shadow: 0 5px 20px rgba(59,130,246,0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(59,130,246,0.6);
+}
+
+/* SECUNDÁRIO */
+.btn-secondary {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-container {
+        padding: 20px;
+    }
+}

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumind | Cadastro de Responsável Legal</title>
+    
+    <link rel="stylesheet" href="../css/administrador/cadastro_admin.css">
 </head>
 <body>
     <div class="container">
@@ -73,5 +75,13 @@
     </div>
 
     <script src="../js/responsavel/responsavel_novo.js"></script>
+    <script src="../js/valida_sessao.js"></script>
+    <script>
+        // Trava de segurança: Defina quem pode acessar esta tela.
+        // Se for uma tela que só administradores podem usar para cadastrar pais:
+        if (typeof validarAcesso === "function") {
+            validarAcesso('Administrador');
+        }
+    </script>
 </body>
 </html>

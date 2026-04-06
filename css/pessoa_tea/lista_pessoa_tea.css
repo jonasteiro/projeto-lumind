@@ -1,0 +1,138 @@
+/* ===== RESET BASE ===== */
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #f4f9ff 0%, #ffffff 100%);
+    color: #1f2d3d;
+}
+
+/* ===== NAVBAR ===== */
+.navbar-custom {
+    background: linear-gradient(90deg, #4facfe, #00c6ff);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.navbar-custom .page-title {
+    color: white;
+    font-weight: 600;
+}
+
+.navbar-custom i {
+    color: white;
+}
+
+/* Botão voltar */
+.navbar-custom .btn-link i {
+    color: white;
+    transition: transform 0.2s ease;
+}
+
+.navbar-custom .btn-link:hover i {
+    transform: translateX(-3px);
+}
+
+/* Botão sair */
+#logoff {
+    background: white;
+    color: #007bff;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+#logoff:hover {
+    background: #e6f2ff;
+    transform: scale(1.05);
+}
+
+/* ===== CONTAINER PRINCIPAL ===== */
+.content-area {
+    background: #ffffff;
+    border: 1px solid #e3f0ff;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.content-area:hover {
+    box-shadow: 0 10px 30px rgba(0, 123, 255, 0.08);
+}
+
+/* ===== TÍTULOS ===== */
+h2 {
+    color: #2a4d8f;
+}
+
+p.text-muted {
+    color: #6c8ebf !important;
+}
+
+/* ===== BOTÃO NOVO PACIENTE ===== */
+#novoPaciente {
+    background: linear-gradient(90deg, #4facfe, #00c6ff);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+#novoPaciente:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* ===== TABELA ===== */
+#lista table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#lista th {
+    background: #e6f2ff;
+    color: #2a4d8f;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+#lista td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f6ff;
+}
+
+/* Linhas alternadas */
+#lista tr:nth-child(even) {
+    background: #f9fcff;
+}
+
+/* Hover suave */
+#lista tr:hover {
+    background: #eef6ff;
+    transition: 0.2s;
+}
+
+/* ===== LINKS DA TABELA ===== */
+#lista a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+#lista a:hover {
+    text-decoration: underline;
+}
+
+/* ===== LOADING ===== */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    .content-area {
+        padding: 20px !important;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+}

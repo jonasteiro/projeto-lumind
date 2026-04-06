@@ -33,7 +33,7 @@
                 <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES DO SISTEMA</a>
                 <a href="#" class="nav-link"><i class="bi bi-person-check"></i> MODERAÇÃO</a>
                 <a href="#" class="nav-link"><i class="bi bi-clock-history"></i> LOGS DE ATIVIDADE</a>
-                <a href="#" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
             </nav>
         </aside>
 
@@ -74,8 +74,11 @@
     </div>
     
     <script src="../js/valida_sessao.js"></script>
+    <script src="../js/index.js"></script>
     <script>
-        validarAcesso('Administrador');
+        if (typeof validarAcesso === "function") {
+            validarAcesso('Administrador');
+        }
     </script>
 </body>
 </html>

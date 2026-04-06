@@ -1,15 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
-    valida_sessao();
-    buscar();
+    if (typeof valida_sessao === "function") {
+        valida_sessao();
+    }
+    
+    // SÓ BUSCA SE A TABELA EXISTIR NA TELA
+    if (document.getElementById("lista")) {
+        buscar();
+    }
 });
 
-document.getElementById("novo").addEventListener("click", () => {
-    window.location.href = 'cliente_novo.html';
-});
+// SÓ ADICIONA EVENTO SE O BOTÃO NOVO EXISTIR NA TELA
+const btnNovo = document.getElementById("novo");
+if (btnNovo) {
+    btnNovo.addEventListener("click", () => {
+        window.location.href = 'cliente_novo.html';
+    });
+}
 
-document.getElementById("logoff").addEventListener("click", () => {
-    logoff();
-});
+// SÓ ADICIONA EVENTO SE O BOTÃO LOGOFF EXISTIR NA TELA
+const btnLogoff = document.getElementById("logoff");
+if (btnLogoff) {
+    btnLogoff.addEventListener("click", (event) => {
+        event.preventDefault(); // Impede o recarregamento na tag <a>
+        logoff();
+    });
+}
 
 async function logoff(){
     const retorno = await fetch("../php/cliente_logoff.php");
@@ -18,6 +33,7 @@ async function logoff(){
         window.location.href = '../login/';   
     }
 }
+
 async function buscar(){
     const retorno = await fetch("../php/cliente_get.php");
     const resposta = await retorno.json();
@@ -38,8 +54,7 @@ async function excluir(id){
 }
 
 function preencherTabela(tabela){
-    var html = `
-        <table>
+    var html = `<table>
             <tr>
                 <th> Nome </th>
                 <th> Usuario </th>
@@ -48,10 +63,10 @@ function preencherTabela(tabela){
                 <th> Instagram </th>
                 <th> Ativo </th>
                 <th> # </th>
-            </tr>`;
-    for(var i=0;i<tabela.length;i++){
-        html += `
-            <tr>
+            </tr>`;    
+            
+    for(var i=0; i<tabela.length; i++){
+        html += `<tr>
                 <td>${tabela[i].nome}</td>
                 <td>${tabela[i].usuario}</td>
                 <td>${tabela[i].email}</td>
@@ -62,8 +77,7 @@ function preencherTabela(tabela){
                     <a href='cliente_alterar.html?id=${tabela[i].id}'>Alterar</a>
                     <a href='#' onclick='excluir(${tabela[i].id})'>Excluir</a>
                 </td>
-            </tr>
-        `;
+            </tr>`;    
     }
     html += '</table>';
     document.getElementById("lista").innerHTML = html;

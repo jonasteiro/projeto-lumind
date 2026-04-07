@@ -1,9 +1,7 @@
-// Elementos do formulário
 const formulario = document.getElementById('formCadastroPessoaTea');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
 
-// ================= VALIDAÇÕES =================
 
 function validarEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -14,7 +12,6 @@ function validarCPF(cpf) {
     return apenasNumeros.length === 11;
 }
 
-// ================= FEEDBACK VISUAL =================
 
 function mostrarErro(mensagem) {
     divErro.textContent = mensagem;
@@ -31,7 +28,6 @@ function mostrarSucesso(mensagem) {
     setTimeout(() => { voltarPerfis(); }, 2000);
 }
 
-// ================= LÓGICA DE CAMPOS =================
 
 function validarCampos() {
     const nome = document.getElementById('nome').value.trim();
@@ -78,7 +74,6 @@ function validarCampos() {
     return !temErro;
 }
 
-// ================= ENVIO (POST) =================
 
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -92,10 +87,8 @@ formulario.addEventListener('submit', async function(e) {
     try {
         const formData = new FormData(formulario);
         
-        // CARIMBO PARA O PHP
         formData.append('tipo_usuario', 'PessoaTea'); 
         
-        // Limpeza de CPF e Telefone
         formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
         const tel = document.getElementById('telefone').value.replace(/\D/g, '');
         if(tel) formData.set('telefone', tel);
@@ -120,7 +113,6 @@ formulario.addEventListener('submit', async function(e) {
     }
 });
 
-// ================= AUXILIARES =================
 
 function limparFormulario() {
     formulario.reset();

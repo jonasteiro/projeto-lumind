@@ -66,7 +66,6 @@ async function carregarPendentes() {
     }
 }
 
-// NOVA FUNÇÃO: Abre o preview dentro do modal usando iframe
 window.abrirPreview = function(id, tipo, titulo) {
     const conteudo = document.getElementById('conteudo-preview');
     document.getElementById('titulo-preview').textContent = titulo;
@@ -74,10 +73,8 @@ window.abrirPreview = function(id, tipo, titulo) {
     conteudo.innerHTML = '<div class="p-5"><div class="spinner-border text-success" role="status"></div></div>';
     modalPreviewBS.show();
 
-    // URL do motor de visualização
     const url = `../php/admin/visualizar_documentacao.php?id=${id}&tipo=${tipo}`;
 
-    // Injeta o iframe após um pequeno delay para suavizar a transição
     setTimeout(() => {
         conteudo.innerHTML = `<iframe src="${url}"></iframe>`;
     }, 300);

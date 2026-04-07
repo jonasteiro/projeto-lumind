@@ -7,7 +7,7 @@
         'data'      => []
     ];
 
-    // --- (Usuario) ---
+    // Usuario
     $nome            = htmlspecialchars($_POST['nome'] ?? '', ENT_QUOTES, 'UTF-8');
     $email           = htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8');
     $cpf             = htmlspecialchars($_POST['cpf'] ?? '', ENT_QUOTES, 'UTF-8'); 
@@ -26,7 +26,7 @@
 
     // VALIDAÇÃO ARQUIVOS
     if ($tipo_usuario === 'ProfissionalSaude') {
-        // Verifica se os arquivos foram enviados e se não há erro neles
+        // Verifica se enviou o arquivo
         if (!isset($_FILES['certificacao_profissional']) || $_FILES['certificacao_profissional']['error'] !== 0 ||
             !isset($_FILES['carteira_identidade_nacional']) || $_FILES['carteira_identidade_nacional']['error'] !== 0) {
             
@@ -35,13 +35,13 @@
         }
     }
 
-    // VALIDAÇÃO BÁSICA
+
     if (empty($nome) || strlen($nome) < 3) {
         $retorno = ['status' => 'erro', 'mensagem' => 'Nome muito curto', 'data' => []];
         header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
     }
 
-    // VERIFICAÇÃO EMAIL E CPF
+    // verifica email e cpf
     $stmt_check = $conexao->prepare("SELECT id_usuario FROM Usuario WHERE email = ? OR cpf = ? LIMIT 1");
     $stmt_check->bind_param("ss", $email, $cpf);
     $stmt_check->execute();
@@ -52,7 +52,6 @@
     }
     $stmt_check->close();
 
-    //INSERIR NA TABELA MÃE (Usuario)
     $stmt = $conexao->prepare("INSERT INTO Usuario (nome, email, senha, cpf, data_nascimento, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssss", $nome, $email, $senha, $cpf, $data_nascimento, $tipo_usuario);
     $stmt->execute();
@@ -66,27 +65,22 @@
     $id_usuario = $conexao->insert_id; 
     $stmt->close();
 
-    //TELEFONE
     if (!empty($telefone)) {
         $stmt_tel = $conexao->prepare("INSERT INTO Telefone (id_usuario, telefone) VALUES (?, ?)");
         $stmt_tel->bind_param("is", $id_usuario, $telefone);
         $stmt_tel->execute(); $stmt_tel->close();
     }
 
-    // INSERIR NAS TABELAS FILHAS
     if ($tipo_usuario === 'ProfissionalSaude') {
-        //Tabela ProfissionalSaude
+        // Profissional
         $stmt_prof = $conexao->prepare("INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) VALUES (?, ?, ?)");
         $stmt_prof->bind_param("iss", $id_usuario, $registro_profissional, $especialidade);
         $stmt_prof->execute(); $stmt_prof->close();
 
-        // 2. Transforma arquivos em Binário (BLOB)
+        // tipo BLOB
         $bin_certificacao = file_get_contents($_FILES['certificacao_profissional']['tmp_name']);
         $bin_identidade   = file_get_contents($_FILES['carteira_identidade_nacional']['tmp_name']);
 
-        // 3. Insere na tabela Documentacao
-        // Usamos o tipo "b" para blob no bind_param. 
-        // Nota: Enviamos 'null' no bind e usamos send_long_data para segurança com arquivos grandes.
         $stmt_doc = $conexao->prepare("INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional) VALUES (?, ?, ?)");
         $null = NULL;
         $stmt_doc->bind_param("ibb", $id_usuario, $null, $null);

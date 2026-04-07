@@ -84,9 +84,7 @@ async function excluir(id) {
     }
 }
 
-// ==========================================
-// LÓGICA DE LOGOFF (Sair)
-// ==========================================
+
 const btnLogoff = document.getElementById("logoff");
 
 if (btnLogoff) {
@@ -94,14 +92,10 @@ if (btnLogoff) {
         event.preventDefault();
         
         try {
-            // Caminho ABSOLUTO a partir da raiz do servidor. 
-            // O navegador sempre vai achar o arquivo na pasta correta.
             const retorno = await fetch("/projeto-lumind/php/cliente_logoff.php");
             const resposta = await retorno.json();
             
             if (resposta.status === "ok") {
-                // Caminho absoluto para a tela de login. 
-                // Assumindo que a pasta login fica na raiz do projeto.
                 window.location.href = '/projeto-lumind/login/'; 
             } else {
                 alert("Erro ao tentar sair do sistema.");

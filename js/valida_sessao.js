@@ -16,7 +16,6 @@ async function validarAcesso(tipoPermitido) {
         
 
         if (tipoPermitido && usuarioLogado.tipo_usuario !== tipoPermitido) {
-            // Se cair aqui, o console vai te mostrar a diferença (espaços, letras maiúsculas, etc)
             alert("CONFLITO!\nBanco: " + usuarioLogado.tipo_usuario + "\nExigido: " + tipoPermitido);
             window.location.href = "../login/index.html?erro=acesso_negado";
             return;

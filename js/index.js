@@ -4,13 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
         valida_sessao();
     }
     
-    // SÓ BUSCA SE A TABELA EXISTIR NA TELA
     if (document.getElementById("lista")) {
         buscar();
     }
 });
 
-// SÓ ADICIONA EVENTO SE O BOTÃO NOVO EXISTIR NA TELA
 const btnNovo = document.getElementById("novo");
 if (btnNovo) {
     btnNovo.addEventListener("click", () => {
@@ -18,11 +16,10 @@ if (btnNovo) {
     });
 }
 
-// SÓ ADICIONA EVENTO SE O BOTÃO LOGOFF EXISTIR NA TELA
 const btnLogoff = document.getElementById("logoff");
 if (btnLogoff) {
     btnLogoff.addEventListener("click", (event) => {
-        event.preventDefault(); // Impede o recarregamento na tag <a>
+        event.preventDefault();
         logoff();
     });
 }

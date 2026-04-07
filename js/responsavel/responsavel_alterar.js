@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// ================= UTILITÁRIOS DE VALIDAÇÃO =================
 function validarEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -40,7 +39,6 @@ function mostrarMensagem(tipo, msg) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ================= FASE 1: BUSCA DOS DADOS =================
 async function buscar(id) {
     try {
         const retorno = await fetch("../php/responsavel/responsavel_get.php?id=" + id);
@@ -64,11 +62,9 @@ async function buscar(id) {
     }
 }
 
-// ================= FASE 2: TRATAMENTO DE EXCEÇÕES E UPDATE =================
 formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Limpar todos os erros visuais antes de validar
     document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
     divErro.style.display = 'none';
     divSucesso.style.display = 'none';
@@ -81,7 +77,6 @@ formulario.addEventListener("submit", async (e) => {
     const senha = document.getElementById("senha").value;
     let temErro = false;
 
-    // --- Tratamento de Exceções por Campo ---
     if (nome.length < 3) {
         document.getElementById("erroNome").textContent = "O nome deve ter pelo menos 3 caracteres.";
         document.getElementById("erroNome").classList.add("show");
@@ -117,16 +112,13 @@ formulario.addEventListener("submit", async (e) => {
         temErro = true;
     }
 
-    // Se houver qualquer exceção, para o envio
     if (temErro) return;
 
-    // Estado de carregamento do botão
     const btn = document.getElementById("btnEnviar");
     const textoOriginal = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = "⏳ Salvando Alterações...";
 
-    // Preparação dos dados (Limpeza de máscaras)
     const fd = new FormData();
     fd.append("nome", nome);
     fd.append("email", email);
@@ -142,7 +134,6 @@ formulario.addEventListener("submit", async (e) => {
             body: fd  
         });
 
-        // Tratamento de exceção para resposta não-JSON
         const textoResposta = await retorno.text();
         let resposta;
         try {
@@ -152,14 +143,14 @@ formulario.addEventListener("submit", async (e) => {
         }
 
         if (resposta.status == "ok") {
-            mostrarMensagem('sucesso', "✅ " + resposta.mensagem);
+            mostrarMensagem('sucesso', " " + resposta.mensagem);
             setTimeout(() => { window.location.href = 'lista_responsavel.html'; }, 2000);
         } else {
-            mostrarMensagem('erro', "❌ " + resposta.mensagem);
+            mostrarMensagem('erro', " " + resposta.mensagem);
         }
 
     } catch (erro) {
-        mostrarMensagem('erro', "❌ Erro: " + erro.message);
+        mostrarMensagem('erro', " Erro: " + erro.message);
     } finally {
         btn.disabled = false;
         btn.innerHTML = textoOriginal;

@@ -5,7 +5,6 @@ const statusTexto = document.getElementById('status-texto');
 const motivoTexto = document.getElementById('motivo-texto');
 const btnLogin = document.getElementById('btn-login-container');
 
-// Validadores
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
 
@@ -16,7 +15,6 @@ form.addEventListener('submit', async (e) => {
     const cpf = document.getElementById('cpf').value.trim();
     let temErro = false;
 
-    // Validação visual
     if (!validarEmail(email)) {
         document.getElementById('erroEmail').classList.add('show');
         temErro = true;
@@ -44,7 +42,6 @@ form.addEventListener('submit', async (e) => {
             resDiv.classList.remove('d-none');
             statusTexto.textContent = `Status: ${dados.situacao}`;
             
-            // Estilização dinâmica baseada no status
             if (dados.situacao === 'Aprovado') {
                 cardStatus.className = "p-3 rounded-4 border border-success bg-success-subtle text-success";
                 motivoTexto.textContent = "Sua conta está ativa! Você já pode acessar a plataforma.";

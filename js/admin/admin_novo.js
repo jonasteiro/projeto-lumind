@@ -1,4 +1,4 @@
-// Elementos do formulário
+// formulário
 const formulario = document.getElementById('formCadastroAdm');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
@@ -9,7 +9,7 @@ function validarEmail(email) {
     return regex.test(email);
 }
 
-// Validação de CPF (Exatamente 11 números)
+// Validação de CPF
 function validarCPF(cpf) {
     const apenasNumeros = cpf.replace(/\D/g, '');
     return apenasNumeros.length === 11;
@@ -34,7 +34,7 @@ function mostrarSucesso(mensagem) {
     }, 2000);
 }
 
-// Validar campos individuais
+// Validar campos individualmente
 function validarCampos() {
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -108,7 +108,7 @@ formulario.addEventListener('submit', async function(e) {
         // Define o tipo de usuário para o PHP
         formData.append('tipo_usuario', 'Administrador'); 
         
-        // Limpa o CPF para enviar apenas os números para o banco
+        //formata o cpf para apenas números
         formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
 
         const resposta = await fetch('../php/usuario_novo.php', {
@@ -119,12 +119,12 @@ formulario.addEventListener('submit', async function(e) {
         const dados = await resposta.json();
 
         if (dados.status === 'sucesso') {
-            mostrarSucesso('✅ Administrador cadastrado com sucesso! Redirecionando...');
+            mostrarSucesso(' Administrador cadastrado com sucesso! Redirecionando...');
         } else {
-            mostrarErro('❌ Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
+            mostrarErro(' Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
         }
     } catch (erro) {
-        mostrarErro('❌ Erro de conexão: ' + erro.message);
+        mostrarErro(' Erro de conexão: ' + erro.message);
     } finally {
         botao.disabled = false;
         botao.textContent = '💾 Criar Administrador';

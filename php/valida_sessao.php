@@ -6,7 +6,7 @@
     if (isset($_SESSION['usuario'])) {
         $retorno = [
             'status' => 'ok',
-            'usuario' => $_SESSION['usuario'] // Aqui vai o ID, Nome e o TIPO_USUARIO
+            'usuario' => $_SESSION['usuario']
         ];
     }
 

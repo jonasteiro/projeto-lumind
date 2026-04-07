@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     buscarAdmins();
 
-    // Redireciona para a tela de cadastro que já criamos
+    // Redireciona para a tela de cadastro
     document.getElementById("btnNovoAdmin").addEventListener("click", () => {
         window.location.href = 'cadastro_admin.html';
     });
@@ -10,17 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (btnLogoff) {
         btnLogoff.addEventListener("click", async (event) => {
-            event.preventDefault(); // Impede comportamentos padrão do navegador
+            event.preventDefault();
             
             try {
-                // 1. Chama o PHP para destruir a sessão
                 const retorno = await fetch("../php/cliente_logoff.php");
                 const resposta = await retorno.json();
                 
-                // 2. Verifica se o servidor confirmou a destruição
                 if (resposta.status === "ok") {
-                    // 3. Redireciona para a página de login. 
-                    // Ajuste o caminho abaixo se o seu login não estiver na raiz do localhost
                     window.location.href = '/projeto-lumind/login/index.html'; 
                 } else {
                     console.error("Falha ao destruir a sessão no servidor.");
@@ -64,10 +60,8 @@ function preencherTabela(dados) {
             <tbody>`;
 
     dados.forEach(adm => {
-        // Validação blindada: garante que "0" ou 0 ou false sejam tratados como Inativo
         const isAtivo = (adm.status_adm == 1 || adm.status_adm === "1" || adm.status_adm === true);
         
-        // Usamos as cores nativas do Bootstrap: bg-success (Verde) e bg-danger (Vermelho)
         const statusClass = isAtivo ? "bg-success" : "bg-danger";
         const statusTexto = isAtivo ? "Ativo" : "Inativo";
 

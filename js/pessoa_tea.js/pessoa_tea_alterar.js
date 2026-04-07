@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (id) buscar(id);
 });
 
-// ================= VALIDAÇÕES =================
 function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 function validarCPF(cpf) { return cpf.replace(/\D/g, '').length === 11; }
 
@@ -23,7 +22,6 @@ function mostrarMensagem(tipo, msg) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ================= FASE 1: BUSCA =================
 async function buscar(id) {
     try {
         const retorno = await fetch("../php/pessoa_tea/pessoa_tea_get.php?id=" + id);
@@ -50,7 +48,6 @@ async function buscar(id) {
     }
 }
 
-// ================= FASE 2: UPDATE COM EXCEÇÕES =================
 formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
@@ -114,13 +111,13 @@ formulario.addEventListener("submit", async (e) => {
         const resposta = await retorno.json();
 
         if (resposta.status == "ok") {
-            mostrarMensagem('sucesso', "✅ " + resposta.mensagem);
+            mostrarMensagem('sucesso', " " + resposta.mensagem);
             setTimeout(() => { window.location.href = 'lista_pessoa_tea.html'; }, 2000);
         } else {
-            mostrarMensagem('erro', "❌ " + resposta.mensagem);
+            mostrarMensagem('erro', " " + resposta.mensagem);
         }
     } catch (e) {
-        mostrarMensagem('erro', "❌ Erro de comunicação com o servidor.");
+        mostrarMensagem('erro', " Erro de comunicação com o servidor.");
     } finally {
         btn.disabled = false;
         btn.innerHTML = "<i class='bi bi-save me-2'></i> Salvar Alterações";

@@ -10,7 +10,6 @@ async function buscarProfissionais() {
     const listaDiv = document.getElementById("lista");
     
     try {
-        // Altere o endpoint de acordo com sua API PHP
         const retorno = await fetch("../php/profissional/get-profissional.php");
         const resposta = await retorno.json();
         
@@ -40,7 +39,6 @@ function preencherTabela(dados) {
             <tbody>`;
 
     dados.forEach(prof => {
-        // Lógica de cores baseada no ENUM do banco (Documentacao -> status_aprovacao)
         let statusClass = "bg-secondary";
         let statusTexto = prof.status_aprovacao || "Sem envio";
 
@@ -79,7 +77,6 @@ function preencherTabela(dados) {
 
 async function excluir(id) {
     if (confirm("ATENÇÃO: Deseja realmente remover este profissional de saúde do Lumind? Isso pode impactar relatórios existentes.")) {
-        // Usando a mesma rota de exclusão de usuário (já que exclui em cascata se configurado no banco)
         const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
         const resposta = await retorno.json();
         

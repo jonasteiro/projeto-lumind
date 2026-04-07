@@ -5,7 +5,7 @@
     $email = $_POST['email'] ?? '';
     $senha = $_POST['senha'] ?? '';
 
-    // Adicionamos o LEFT JOIN para trazer o status_aprovacao se ele existir
+    // LEFT JOIN para verificar status profissional
     $sql = "SELECT U.id_usuario, U.nome, U.email, U.tipo_usuario, D.status_aprovacao 
             FROM Usuario U 
             LEFT JOIN Documentacao D ON U.id_usuario = D.id_usuario 
@@ -19,13 +19,10 @@
     if($resultado->num_rows > 0){
         $usuario = $resultado->fetch_assoc();
 
-        // --- VERIFICAÇÃO EXCLUSIVA PARA PROFISSIONAIS ---
         if ($usuario['tipo_usuario'] === 'ProfissionalSaude') {
             
-            // Se o status for diferente de 'Aprovado', barramos o login
             if ($usuario['status_aprovacao'] !== 'Aprovado') {
                 
-                // Personaliza a mensagem baseada no status atual
                 $mensagemStatus = "Seu cadastro ainda está em análise. Por favor, aguarde.";
                 
                 if ($usuario['status_aprovacao'] === 'Reprovado') {
@@ -37,14 +34,12 @@
                     'mensagem' => $mensagemStatus
                 ]);
                 
-                // Importante: encerra o script aqui para não logar
                 $stmt->close();
                 $conexao->close();
                 exit;
             }
         }
 
-        // --- LOGIN PARA ADMINS E PROFISSIONAIS APROVADOS ---
         $_SESSION['usuario'] = $usuario;
 
         echo json_encode([

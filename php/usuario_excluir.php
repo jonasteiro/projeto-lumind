@@ -7,8 +7,6 @@
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = intval($_GET['id']);
 
-        // 1. Limpamos as tabelas filhas primeiro (Caso o banco não tenha CASCADE)
-        // Isso garante que não dê erro de chave estrangeira
         $tabelas_filhas = ['Administrador', 'ResponsavelLegal', 'PessoaTea', 'Telefone', 'ProfissionalSaude'];
         
         foreach ($tabelas_filhas as $tabela) {
@@ -18,7 +16,6 @@
             $stmt_filha->execute();
         }
 
-        // 2. Agora excluímos o usuário da tabela principal
         $stmt = $conexao->prepare("DELETE FROM Usuario WHERE id_usuario = ?");
         $stmt->bind_param("i", $id);
 

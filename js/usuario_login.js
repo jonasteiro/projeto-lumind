@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper de erro
     const mostrarErro = (mensagem) => {
         divErro.textContent = mensagem;
         divErro.classList.remove("d-none");
@@ -26,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     formLogin.addEventListener("submit", async (event) => {
         event.preventDefault(); 
         
-        // UI Feedback: Trava botão e mostra spinner
         divErro.classList.add("d-none");
         btnText.classList.add("d-none");
         btnSpinner.classList.remove("d-none");
@@ -35,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const fd = new FormData(formLogin);
 
         try {
-            // Ajuste o caminho para o seu PHP centralizado
             const retorno = await fetch("../php/usuario_login.php", {
                 method: "POST",
                 body: fd
@@ -46,15 +43,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const resposta = await retorno.json();
 
             if (resposta.status === "ok") {
-                // REDIRECIONAMENTO INTELIGENTE
                 const tipo = resposta.data.tipo_usuario;
                 
-                // Mapeamento de rotas
                 const rotas = {
                     'Administrador': '../home/tela_administrador.html',
                     'ProfissionalSaude': '../home/tela_profissional.html',
                     'ResponsavelLegal': '../home/tela_responsavel.html',
-                    'PessoaTea': '../home/tela_pessoa_tea.html' // Ajuste conforme sua pasta
+                    'PessoaTea': '../home/tela_pessoa_tea.html'
                 };
 
                 window.location.href = rotas[tipo] || '../index.html';
@@ -66,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Erro:", error);
             mostrarErro("Erro de conexão ou erro interno no servidor.");
         } finally {
-            // Restaura o botão
             btnText.classList.remove("d-none");
             btnSpinner.classList.add("d-none");
             btnEnviar.disabled = false;

@@ -24,7 +24,6 @@
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("i", $id);
     } else {
-        // Usando subquery para buscar o último status sem causar erro de GROUP BY no MySQL
         $sql = "SELECT 
                     U.id_usuario, U.nome, U.email, U.cpf, 
                     P.especialidade, P.registro_profissional,

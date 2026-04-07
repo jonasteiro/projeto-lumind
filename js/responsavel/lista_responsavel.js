@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Busca todos os responsáveis ao carregar
     buscarResponsaveis();
 
-    // 2. Configura o botão para ir para a tela de cadastro
     document.getElementById("btnNovoResponsavel").addEventListener("click", () => {
         window.location.href = 'cadastro_responsavel.html';
     });

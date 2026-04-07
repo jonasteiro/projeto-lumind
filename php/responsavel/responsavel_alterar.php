@@ -12,7 +12,7 @@
         $data_nascimento = $_POST['data_nascimento'];
         $senha = $_POST['senha'];
 
-        // 1. UPDATE TABELA USUARIO
+        // update usuario
         if(!empty($senha)){
             $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, cpf = ?, data_nascimento = ?, senha = ? WHERE id_usuario = ?");
             $stmt->bind_param("sssssi", $nome, $email, $cpf, $data_nascimento, $senha, $id);
@@ -22,8 +22,7 @@
         }
         $stmt->execute();
 
-        // 2. UPDATE TABELA TELEFONE
-        // Primeiro verificamos se já existe um telefone para este ID para decidir entre UPDATE ou INSERT
+        // verifica se já existe o telefone
         $checkTel = $conexao->prepare("SELECT id_usuario FROM Telefone WHERE id_usuario = ?");
         $checkTel->bind_param("i", $id);
         $checkTel->execute();

@@ -1,9 +1,7 @@
-// Elementos do formulário (Seguindo seu padrão de nomes)
 const formulario = document.getElementById('form-cadastro-prof');
 const divErro = document.getElementById('mensagem-retorno'); // Sua div de erro global
 const divSucesso = document.getElementById('mensagem-retorno'); // No seu HTML é a mesma div
 
-// Validação de email
 function validarEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -34,7 +32,7 @@ function mostrarSucesso(mensagem) {
     }, 3000);
 }
 
-// Validar campos individuais (Padronizado com seus IDs)
+// Validar campos individuais
 function validarCampos() {
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -103,7 +101,7 @@ function validarCampos() {
         temErro = true;
     }
 
-    // Validação dos arquivos (A única exceção necessária)
+    // Validação dos arquivos
     if (cert.files.length === 0) {
         document.getElementById('erroCertificacao').classList.add('show');
         temErro = true;
@@ -116,7 +114,7 @@ function validarCampos() {
     return !temErro;
 }
 
-// Enviar formulário (Lógica fiel ao do Admin)
+// Enviar formulário
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -135,7 +133,6 @@ formulario.addEventListener('submit', async function(e) {
     try {
         const formData = new FormData(formulario);
         
-        // Mantendo a padronização de tipos e limpeza de strings
         formData.append('tipo_usuario', 'ProfissionalSaude'); 
         formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
         
@@ -164,7 +161,7 @@ formulario.addEventListener('submit', async function(e) {
     }
 });
 
-// EVENTOS EM TEMPO REAL
+// tempo real (digitação)
 
 document.getElementById('nome').addEventListener('input', function() {
     if (this.value.length >= 3) {
@@ -179,7 +176,6 @@ document.getElementById('email').addEventListener('input', function() {
 });
 
 document.getElementById('cpf').addEventListener('input', function() {
-    // Apaga instantaneamente letras e espaços
     this.value = this.value.replace(/\D/g, '');
     
     if (validarCPF(this.value)) {
@@ -211,7 +207,6 @@ document.getElementById('senha').addEventListener('input', function() {
     }
 });
 
-// Arquivos (Mantendo o padrão de chaves do projeto)
 document.getElementsByName('certificacao_profissional')[0].addEventListener('change', function() {
     if (this.files.length > 0) {
         document.getElementById('erroCertificacao').classList.remove('show');

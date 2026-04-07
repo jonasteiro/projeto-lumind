@@ -1,9 +1,7 @@
-// Elementos do formulário
 const formulario = document.getElementById('formCadastroResponsavel');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
 
-// ================= VALIDAÇÕES =================
 
 function validarEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,7 +18,6 @@ function validarTelefone(telefone) {
     return apenasNumeros.length === 10 || apenasNumeros.length === 11;
 }
 
-// ================= FEEDBACK VISUAL =================
 
 function mostrarErro(mensagem) {
     divErro.textContent = mensagem;
@@ -39,7 +36,6 @@ function mostrarSucesso(mensagem) {
     }, 2000);
 }
 
-// ================= LÓGICA DE CAMPOS =================
 
 function validarCampos() {
     const nome = document.getElementById('nome').value.trim();
@@ -51,7 +47,6 @@ function validarCampos() {
 
     let temErro = false;
 
-    // Limpar erros individuais
     document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
 
     if (nome.length < 3) {
@@ -93,7 +88,6 @@ function validarCampos() {
     return !temErro;
 }
 
-// ================= ENVIO (POST) =================
 
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -107,10 +101,8 @@ formulario.addEventListener('submit', async function(e) {
     try {
         const formData = new FormData(formulario);
         
-        // PADRÃO: Envia o tipo correto para o PHP centralizado
         formData.append('tipo_usuario', 'ResponsavelLegal'); 
         
-        // Limpeza de dados para o Banco
         formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
         formData.set('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
 
@@ -122,19 +114,18 @@ formulario.addEventListener('submit', async function(e) {
         const dados = await resposta.json();
 
         if (dados.status === 'sucesso') {
-            mostrarSucesso('✅ Responsável cadastrado com sucesso!');
+            mostrarSucesso(' Responsável cadastrado com sucesso!');
         } else {
-            mostrarErro('❌ Erro: ' + dados.mensagem);
+            mostrarErro(' Erro: ' + dados.mensagem);
         }
     } catch (erro) {
-        mostrarErro('❌ Erro de conexão com o servidor.');
+        mostrarErro(' Erro de conexão com o servidor.');
     } finally {
         botao.disabled = false;
         botao.textContent = '💾 Cadastrar Responsável';
     }
 });
 
-// ================= AUXILIARES =================
 
 function limparFormulario() {
     formulario.reset();
@@ -144,11 +135,9 @@ function limparFormulario() {
 }
 
 function voltarPerfis() {
-    // Redireciona para a sua tela de listagem
     window.location.href = 'lista_responsavel.html';
 }
 
-// Máscaras em tempo real
 document.getElementById('cpf').addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '');
 });

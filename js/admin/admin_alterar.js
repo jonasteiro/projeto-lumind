@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (id) buscar(id);
 });
 
-// ================= VALIDAÇÕES =================
 function validarEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -28,7 +27,6 @@ function mostrarMensagem(tipo, msg) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ================= FASE 1: BUSCA =================
 async function buscar(id) {
     const retorno = await fetch("../php/admin/administrador_get.php?id=" + id);
     const resposta = await retorno.json();
@@ -47,11 +45,9 @@ async function buscar(id) {
     }
 }
 
-// ================= FASE 2: ALTERAÇÃO =================
 formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    // Limpar erros visuais
     document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
     
     const nome = document.getElementById("nome").value.trim();
@@ -61,7 +57,6 @@ formulario.addEventListener("submit", async (e) => {
     const senha = document.getElementById("senha").value;
     let temErro = false;
 
-    // Gatilhos de Erro
     if (nome.length < 3) {
         document.getElementById("erroNome").textContent = "Nome muito curto.";
         document.getElementById("erroNome").classList.add("show");

@@ -13,7 +13,6 @@
         $data_nascimento = $_POST['data_nascimento'];
         $senha = $_POST['senha'];
 
-        // 1. UPDATE USUARIO
         if(!empty($senha)){
             $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, cpf = ?, data_nascimento = ?, senha = ? WHERE id_usuario = ?");
             $stmt->bind_param("sssssi", $nome, $email, $cpf, $data_nascimento, $senha, $id);
@@ -23,7 +22,6 @@
         }
         $stmt->execute();
 
-        // 2. UPDATE PESSOA TEA
         $stmt_tea = $conexao->prepare("UPDATE PessoaTea SET nivel_tea = ?, observacao = ? WHERE id_usuario = ?");
         $stmt_tea->bind_param("ssi", $nivel_tea, $observacao, $id);
         $stmt_tea->execute();

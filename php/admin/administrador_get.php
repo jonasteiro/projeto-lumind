@@ -8,9 +8,7 @@
         exit;
     }
 
-    // --- AQUI ESTÁ A MUDANÇA: LÓGICA DE FILTRO ---
     if (isset($_GET['id']) && !empty($_GET['id'])) {
-        // Situação para EDITAR: Busca apenas um pelo ID
         $id = intval($_GET['id']);
         $sql = "SELECT 
                     U.id_usuario, 
@@ -26,7 +24,6 @@
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("i", $id);
     } else {
-        // Situação para LISTAR: Busca todos os administradores
         $sql = "SELECT 
                     U.id_usuario, 
                     U.nome, 

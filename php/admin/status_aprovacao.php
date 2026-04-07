@@ -4,7 +4,6 @@ include_once('../conexao.php');
 
 $retorno = ['status' => 'erro', 'mensagem' => 'Erro interno.'];
 
-// Pegamos o ID do Admin que está logado (pela sessão)
 $id_admin = $_SESSION['usuario']['id_usuario'] ?? null;
 
 if (!$id_admin) {

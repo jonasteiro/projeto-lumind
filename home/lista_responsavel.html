@@ -39,6 +39,12 @@
         </div>
     </main>
 
+    <script src="../js/index.js"></script>
     <script src="../js/responsavel/lista_responsavel.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            validarAcesso(['ProfissionalSaude', 'Administrador']); 
+        }
+    </script>
 </body>
 </html>

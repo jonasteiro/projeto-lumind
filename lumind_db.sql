@@ -28,8 +28,6 @@ CREATE TABLE ResponsavelLegal (
 
 CREATE TABLE ProfissionalSaude (
     id_usuario INT NOT NULL,
-    carteira_identidade_nacional VARCHAR(255) NOT NULL,
-    certificado_profissional VARCHAR(255) NOT NULL,
     registro_profissional VARCHAR(30) NOT NULL,
     especialidade VARCHAR(100) NOT NULL,
     PRIMARY KEY (id_usuario),
@@ -143,7 +141,3 @@ VALUES (4, 'Lucas Oliveira', 'lucas.filho@email.com', 'senha_hasheada_000', '444
 
 INSERT INTO PessoaTea (id_usuario, observacao, nivel_tea) 
 VALUES (4, 'Apresenta forte sensibilidade a ruídos agudos. Responde bem a estímulos visuais.', 'Nível 2 - Suporte Substancial');
-
-ALTER TABLE ProfissionalSaude 
-DROP COLUMN carteira_identidade_nacional,
-DROP COLUMN certificado_profissional;

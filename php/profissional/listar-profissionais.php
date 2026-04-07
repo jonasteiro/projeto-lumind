@@ -24,15 +24,14 @@
         $stmt = $conexao->prepare($sql);
         $stmt->bind_param("i", $id);
     } else {
+        // Usando subquery para buscar o último status sem causar erro de GROUP BY no MySQL
         $sql = "SELECT 
                     U.id_usuario, U.nome, U.email, U.cpf, 
                     P.especialidade, P.registro_profissional,
-                    D.status_aprovacao
+                    (SELECT D.status_aprovacao FROM Documentacao D WHERE D.id_usuario = U.id_usuario ORDER BY D.data_envio DESC LIMIT 1) as status_aprovacao
                 FROM Usuario U
                 INNER JOIN ProfissionalSaude P ON U.id_usuario = P.id_usuario
-                LEFT JOIN Documentacao D ON U.id_usuario = D.id_usuario
                 WHERE U.tipo_usuario = 'ProfissionalSaude'
-                GROUP BY U.id_usuario
                 ORDER BY U.nome ASC";
         
         $stmt = $conexao->prepare($sql);

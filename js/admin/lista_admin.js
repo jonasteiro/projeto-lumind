@@ -5,6 +5,31 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnNovoAdmin").addEventListener("click", () => {
         window.location.href = 'cadastro_admin.html';
     });
+
+    const btnLogoff = document.getElementById("logoff");
+    
+    if (btnLogoff) {
+        btnLogoff.addEventListener("click", async (event) => {
+            event.preventDefault(); // Impede comportamentos padrão do navegador
+            
+            try {
+                // 1. Chama o PHP para destruir a sessão
+                const retorno = await fetch("../php/cliente_logoff.php");
+                const resposta = await retorno.json();
+                
+                // 2. Verifica se o servidor confirmou a destruição
+                if (resposta.status === "ok") {
+                    // 3. Redireciona para a página de login. 
+                    // Ajuste o caminho abaixo se o seu login não estiver na raiz do localhost
+                    window.location.href = '/projeto-lumind/login/index.html'; 
+                } else {
+                    console.error("Falha ao destruir a sessão no servidor.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição de logoff:", error);
+            }
+        });
+    }
 });
 
 async function buscarAdmins() {
@@ -39,9 +64,12 @@ function preencherTabela(dados) {
             <tbody>`;
 
     dados.forEach(adm => {
-        // Usa as classes que você já tem no CSS original para status
-        const statusClass = adm.status_adm ? "status-active" : "status-inactive";
-        const statusTexto = adm.status_adm ? "Ativo" : "Inativo";
+        // Validação blindada: garante que "0" ou 0 ou false sejam tratados como Inativo
+        const isAtivo = (adm.status_adm == 1 || adm.status_adm === "1" || adm.status_adm === true);
+        
+        // Usamos as cores nativas do Bootstrap: bg-success (Verde) e bg-danger (Vermelho)
+        const statusClass = isAtivo ? "bg-success" : "bg-danger";
+        const statusTexto = isAtivo ? "Ativo" : "Inativo";
 
         html += `
             <tr>

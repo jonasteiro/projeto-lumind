@@ -88,8 +88,7 @@
     <script src="../js/valida_sessao.js"></script>
     <script>
         if (typeof validarAcesso === "function") {
-            // Apenas Profissionais (ou Administradores) devem poder cadastrar um paciente novo
-            validarAcesso(['Profissional', 'Administrador']); 
+            validarAcesso(['ProfissionalSaude', 'Administrador']); 
         }
     </script>
 </body>

@@ -59,6 +59,12 @@
 
     </main>
 
+    <script src="../js/index.js"></script>
     <script src="../js/pessoa_tea.js/lista_pessoa_tea.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            validarAcesso(['ProfissionalSaude', 'Administrador']); 
+        }
+    </script>
     </body>
 </html>

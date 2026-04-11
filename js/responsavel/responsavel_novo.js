@@ -95,12 +95,18 @@ formulario.addEventListener('submit', async function(e) {
     botao.innerHTML = '<span>⏳</span> Cadastrando...';
 
     try {
-        const formData = new FormData(formulario);
+        const formData = new FormData(); 
         
+        formData.append('nome', document.getElementById('nome').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
+        formData.append('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
+        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+        formData.append('senha', document.getElementById('senha').value);
+        
+        // Define o tipo de usuário para o PHP
         formData.append('tipo_usuario', 'ResponsavelLegal'); 
-        
-        formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
-        formData.set('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
+        // --- FIM DA PADRONIZAÇÃO ---
 
         const resposta = await fetch('../php/usuario_novo.php', {
             method: 'POST',

@@ -1,6 +1,6 @@
 async function validarAcesso(tipoPermitido) {
     try {
-        const retorno = await fetch("/projeto-lumind/php/valida_sessao.php");
+        const retorno = await fetch("../php/valida_sessao.php");
         const resposta = await retorno.json();
 
         if (resposta.status === "nok") {

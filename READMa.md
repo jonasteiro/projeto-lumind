@@ -108,10 +108,13 @@ formulario.addEventListener('submit', async function (e) {
 
 function limparFormulario() {
     formulario.reset();
-    ['erroNome', 'erroEmail', 'erroCpf', 'erroData', 'erroCidade', 'erroSenha'].forEach(id => {
-        document.getElementById(id).classList.remove('show');
-    });
-}
+    document.getElementById('erroNome').classList.remove('show');
+    document.getElementById('erroEmail').classList.remove('show');
+    document.getElementById('erroCpf').classList.remove('show');
+    document.getElementById('erroData').classList.remove('show');
+    document.getElementById('erroSenha').classList.remove('show');
+    divErro.classList.remove('show');
+    divSucesso.classList.remove('show');
 
 // Limpeza dinâmica do alerta ao digitar
 document.getElementById('cidade').addEventListener('input', function () {

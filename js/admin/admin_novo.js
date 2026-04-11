@@ -103,13 +103,15 @@ formulario.addEventListener('submit', async function(e) {
     botao.textContent = '⏳ Cadastrando...';
 
     try {
-        const formData = new FormData(formulario);
+        const formData = new FormData(); 
         
-        // Define o tipo de usuário para o PHP
+        formData.append('nome', document.getElementById('nome').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cpf', document.getElementById('cpf').value);
+        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+        formData.append('senha', document.getElementById('senha').value);
+        
         formData.append('tipo_usuario', 'Administrador'); 
-        
-        //formata o cpf para apenas números
-        formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
 
         const resposta = await fetch('../php/usuario_novo.php', {
             method: 'POST',
@@ -143,12 +145,10 @@ function limparFormulario() {
     divSucesso.classList.remove('show');
 }
 
-// Voltar para perfis (Adapte para a URL correta do seu painel)
 function voltarPerfis() {
-    window.location.href = 'lista_administrador.html';
+    window.location.href = '../home/lista_administrador.html';
 }
 
-// ================= MÁSCARAS E EVENTOS EM TEMPO REAL =================
 
 // Limpar mensagens de erro ao digitar
 document.getElementById('nome').addEventListener('input', function() {
@@ -185,5 +185,3 @@ document.getElementById('senha').addEventListener('input', function() {
     }
 });
 
-// Só entra se for Administrador
-validarAcesso('Administrador');

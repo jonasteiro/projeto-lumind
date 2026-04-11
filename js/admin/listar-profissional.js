@@ -85,4 +85,3 @@ async function excluir(id) {
     }
 }
 
-validarAcesso('Administrador');

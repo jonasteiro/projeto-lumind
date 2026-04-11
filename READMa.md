@@ -1,9 +1,9 @@
 # Implementação e Validação do Campo "Cidade"
 
-Esta documentação detalha a implementação completa (Full-Stack) do campo **Cidade** no formulário de cadastro de usuários, cobrindo desde o esquema do banco de dados até o processamento no backend.
+Esta documentação compila a implementação Full-Stack do campo **Cidade** para o cadastro de usuários. O código cobre desde a modelagem estrutural no banco até a higienização de dados no servidor.
 
 ## 1. Banco de Dados (SQL)
-O campo `cidade` deve ser adicionado à tabela `Usuario` com limite de 100 caracteres e bloqueio para valores nulos.
+Criação da tabela bloqueando valores nulos para manter a integridade dos dados.
 
 ```sql
 CREATE TABLE Usuario (
@@ -18,9 +18,8 @@ CREATE TABLE Usuario (
     PRIMARY KEY (id_usuario)
 );
 
-
-2. Interface do Usuário (HTML)
-O campo de entrada deve ser alocado dentro de uma classe form-group, possuir validação nativa do navegador (required, maxlength) e conter um contêiner span para o retorno de erros assíncronos.
+## 2. Frontend (HTML)
+Estrutura semântica do formulário já com travas nativas do navegador.
 
 HTML
 <div class="form-group">
@@ -36,12 +35,11 @@ HTML
     <span class="form-error" id="erroCidade"></span>
 </div>
 
-
-3. Validação no Cliente (JavaScript)
-A lógica no frontend impede submissões com dados inválidos (menos de 3 caracteres) e manipula o DOM para exibir mensagens dinâmicas.
+## 3. Motor de Validação (JavaScript)
+Bloqueia o envio e alerta o usuário sobre regras de preenchimento em tempo de execução.
 
 JavaScript
-// Captura dos dados do formulário
+// Captura dos dados
 const nome = document.getElementById('nome').value.trim();
 const email = document.getElementById('email').value.trim();
 const cpf = document.getElementById('cpf').value.trim();
@@ -52,7 +50,7 @@ const senha = document.getElementById('senha').value;
 function validarCampos() {
     let temErro = false;
 
-    // Limpar mensagens de erro anteriores
+    // Reseta o estado visual dos erros
     document.getElementById('erroNome').classList.remove('show');
     document.getElementById('erroEmail').classList.remove('show');
     document.getElementById('erroCpf').classList.remove('show');
@@ -60,7 +58,7 @@ function validarCampos() {
     document.getElementById('erroCidade').classList.remove('show');
     document.getElementById('erroSenha').classList.remove('show');
 
-    // Validar regras da cidade
+    // Regra de negócio: mínimo de 3 caracteres
     if (cidade.length < 3) {
         document.getElementById('erroCidade').textContent = 'Cidade deve ter pelo menos 3 caracteres';
         document.getElementById('erroCidade').classList.add('show');
@@ -70,7 +68,31 @@ function validarCampos() {
     return !temErro;
 }
 
-// Limpar formulário globalmente
+// Enviar formulário
+formulario.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Validar campos
+    if (!validarCampos()) {
+        return;
+    }
+
+    const botao = document.querySelector('button[type="submit"]');
+    botao.disabled = true;
+    botao.textContent = '⏳ Cadastrando...';
+
+    try {
+        const formData = new FormData(); 
+        
+        formData.append('nome', document.getElementById('nome').value.trim());
+        formData.append('cidade', document.getElementById('cidade').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cpf', document.getElementById('cpf').value);
+        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+        formData.append('senha', document.getElementById('senha').value);
+        
+        formData.append('tipo_usuario', 'Administrador'); 
+
 function limparFormulario() {
     formulario.reset();
     document.getElementById('erroNome').classList.remove('show');
@@ -81,7 +103,7 @@ function limparFormulario() {
     document.getElementById('erroSenha').classList.remove('show');
 }
 
-// Listener para limpar o erro em tempo real durante a correção da digitação
+// Limpeza dinâmica do alerta ao digitar
 document.getElementById('cidade').addEventListener('input', function() {
     if (this.value.length >= 3) {
         document.getElementById('erroCidade').classList.remove('show');
@@ -89,12 +111,12 @@ document.getElementById('cidade').addEventListener('input', function() {
 });
 
 
-4. Processamento no Servidor (PHP)
-O backend recebe a requisição, sanitiza contra ataques XSS e executa a inserção com Prepared Statements para evitar SQL Injection.
+## 4. Processamento Seguro (PHP)
+Sanitização de ponta a ponta e preparação da query no motor de banco.
 
 PHP
 <?php
-// Sanitização de segurança das entradas
+// Higienização contra XSS
 $nome            = htmlspecialchars($_POST['nome'] ?? '', ENT_QUOTES, 'UTF-8');
 $email           = htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8');
 $cpf             = htmlspecialchars($_POST['cpf'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -103,12 +125,12 @@ $data_nascimento = $_POST['data_nascimento'] ?? '';
 $cidade          = htmlspecialchars($_POST['cidade'] ?? '', ENT_QUOTES, 'UTF-8');
 $tipo_usuario    = $_POST['tipo_usuario'] ?? '';
 
-// Preparação e execução da Query
+// Construção da Query Parametrizada
 $stmt = $conexao->prepare("INSERT INTO Usuario (nome, email, senha, cpf, data_nascimento, cidade, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
-// Vinculação de parâmetros (7 strings)
+// Preenchimento de Parâmetros
 $stmt->bind_param("sssssss", $nome, $email, $senha, $cpf, $data_nascimento, $cidade, $tipo_usuario);
 
-// Execução segura
+// Execução
 $stmt->execute();
 ?>

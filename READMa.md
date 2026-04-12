@@ -30,16 +30,16 @@ Estrutura semântica do formulário já com travas nativas do navegador.
 
 ```html
 <div class="form-group">
-    <label for="cidade">Cidade *</label>
-    <input
-        type="text"
-        id="cidade"
-        name="cidade"
-        placeholder="Digite o nome da cidade"
+    <label for="email">Email *</label>
+    <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        placeholder="exemplo@email.com" 
         required
         maxlength="100"
     >
-    <span class="form-error" id="erroCidade"></span>
+    <p id="erro" class="form-error"></p>
 </div>
 ```
 
@@ -50,78 +50,94 @@ Estrutura semântica do formulário já com travas nativas do navegador.
 Bloqueia o envio e alerta o usuário sobre regras de preenchimento em tempo de execução.
 
 ```javascript
-// Captura dos dados
-const nome           = document.getElementById('nome').value.trim();
-const email          = document.getElementById('email').value.trim();
-const cpf            = document.getElementById('cpf').value.trim();
-const dataNascimento = document.getElementById('data_nascimento').value;
-const cidade         = document.getElementById('cidade').value.trim();
-const senha          = document.getElementById('senha').value;
+// Validação de email (Estritamente sem Regex, conforme exigido)
+function validarEmail(email) {
+    // Verifica se existe o caractere "@" na string
+    const temArroba = email.includes('@');
+    
+    // Dispara a validação no Console do DevTools
+    if (!temArroba) {
+        console.error("Validação falhou: O e-mail não contém o caractere '@'.");
+        return false;
+    }
+    
+    console.log("Validação aprovada: O e-mail possui '@'.");
+    return true;
+}
 
-function validarCampos() {
-    let temErro = false;
-
-    // Reseta o estado visual dos erros
+// Limpar mensagens de erro anteriores
     document.getElementById('erroNome').classList.remove('show');
-    document.getElementById('erroEmail').classList.remove('show');
+    document.getElementById('erro').classList.remove('show'); // ID corrigido
     document.getElementById('erroCpf').classList.remove('show');
-    document.getElementById('erroData').classList.remove('show');
-    document.getElementById('erroCidade').classList.remove('show');
-    document.getElementById('erroSenha').classList.remove('show');
 
-    // Regra de negócio: mínimo de 3 caracteres
-    if (cidade.length < 3) {
-        document.getElementById('erroCidade').textContent = 'Cidade deve ter pelo menos 3 caracteres';
-        document.getElementById('erroCidade').classList.add('show');
+    // Validar email
+    if (!validarEmail(email)) {
+        // Usa o parágrafo exato exigido e o texto exato
+        document.getElementById('erro').textContent = 'Erro na validação do E-Mail';
+        document.getElementById('erro').classList.add('show');
         temErro = true;
     }
 
-    return !temErro;
+    document.getElementById('email').addEventListener('input', function() {
+    if (validarEmail(this.value)) {
+        document.getElementById('erro').classList.remove('show'); // ID corrigido
+    }
+    });
+
+
+
+
+
+function validarEmailLogico(email) {
+    // 1. O e-mail não pode estar vazio
+    if (!email || email.trim() === '') {
+        console.error("Erro: E-mail em branco.");
+        return false;
+    }
+
+    // 2. Divide a string usando o '@' como faca
+    const partes = email.split('@');
+
+    // Se o array resultante não tiver exatamente 2 posições, 
+    // significa que não tem '@' ou tem mais de um (ex: a@b@c.com)
+    if (partes.length !== 2) {
+        console.error("Erro: Formato inválido. O e-mail deve conter exatamente um '@'.");
+        return false;
+    }
+
+    const usuario = partes[0];
+    const dominio = partes[1];
+
+    // 3. Verifica se tem algo escrito ANTES do '@'
+    if (usuario.length === 0) {
+        console.error("Erro: Nome de usuário ausente antes do '@'.");
+        return false;
+    }
+
+    // 4. Verifica se tem algo DEPOIS do '@' e se possui um ponto ('.')
+    if (dominio.length < 3 || !dominio.includes('.')) {
+        console.error("Erro: Domínio inválido. Deve conter pelo menos um ponto (ex: .com).");
+        return false;
+    }
+
+    // 5. Verifica se o ponto não é o primeiro nem o último caractere do domínio
+    if (dominio.startsWith('.') || dominio.endsWith('.')) {
+        console.error("Erro: O domínio não pode começar ou terminar com um ponto.");
+        return false;
+    }
+
+    /* ========================================================
+    A SUA PERGUNTA SOBRE VERIFICAR "TIPO GMAIL" ENTRA AQUI:
+    ========================================================
+    */
+    // if (!dominio.toLowerCase().includes('gmail.com')) {
+    //     console.error("Erro: Apenas e-mails do Gmail são aceitos neste sistema.");
+    //     return false;
+    // }
+
+    console.log("Sucesso: E-mail estruturalmente válido.");
+    return true;
 }
-
-// Enviar formulário
-formulario.addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    if (!validarCampos()) return;
-
-    const botao = document.querySelector('button[type="submit"]');
-    botao.disabled = true;
-    botao.textContent = '⏳ Cadastrando...';
-
-    try {
-        const formData = new FormData();
-
-        formData.append('nome',            document.getElementById('nome').value.trim());
-        formData.append('cidade',          document.getElementById('cidade').value.trim());
-        formData.append('email',           document.getElementById('email').value.trim());
-        formData.append('cpf',             document.getElementById('cpf').value);
-        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
-        formData.append('senha',           document.getElementById('senha').value);
-        formData.append('tipo_usuario',    'Administrador');
-
-        // ... restante do envio
-    } catch (err) {
-        console.error(err);
-    }
-});
-
-function limparFormulario() {
-    formulario.reset();
-    document.getElementById('erroNome').classList.remove('show');
-    document.getElementById('erroEmail').classList.remove('show');
-    document.getElementById('erroCpf').classList.remove('show');
-    document.getElementById('erroData').classList.remove('show');
-    document.getElementById('erroSenha').classList.remove('show');
-    divErro.classList.remove('show');
-    divSucesso.classList.remove('show');
-
-// Limpeza dinâmica do alerta ao digitar
-document.getElementById('cidade').addEventListener('input', function () {
-    if (this.value.length >= 3) {
-        document.getElementById('erroCidade').classList.remove('show');
-    }
-});
 ```
 
 ---

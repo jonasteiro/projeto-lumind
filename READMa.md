@@ -29,6 +29,10 @@ CREATE TABLE Usuario (
 Estrutura semântica do formulário já com travas nativas do navegador.
 
 ```html
+
+<p id="erroHeitor"></p>
+
+
 <div class="form-group">
     <label for="email">Email *</label>
     <input 
@@ -50,6 +54,24 @@ Estrutura semântica do formulário já com travas nativas do navegador.
 Bloqueia o envio e alerta o usuário sobre regras de preenchimento em tempo de execução.
 
 ```javascript
+const nomeDigitado = document.getElementById('nome').value.trim();
+document.getElementById('erroNome').textContent = nomeDigitado;
+document.getElementById('erroNome').classList.add('show');
+
+
+const nome = document.getElementById('nome').value.trim();
+
+        if (dados.status === 'sucesso') {
+            alert(nome + " cadastrado/a com sucesso!!");
+            mostrarSucesso(' Administrador cadastrado com sucesso! Redirecionando...');
+        } else {
+            mostrarErro(' Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
+        }
+
+
+        
+
+
 // Validação de email (Estritamente sem Regex, conforme exigido)
 function validarEmail(email) {
     // Verifica se existe o caractere "@" na string

@@ -107,7 +107,7 @@ formulario.addEventListener("submit", async (e) => {
 
         if (resposta.status == "ok") {
             mostrarMensagem('sucesso', "✅ " + resposta.mensagem);
-            setTimeout(() => { window.location.href = 'lista_admin.html'; }, 2000);
+            setTimeout(() => { window.location.href = '../home/lista_administrador.html'; }, 2000);
         } else {
             mostrarMensagem('erro', "❌ " + resposta.mensagem);
         }
@@ -126,5 +126,3 @@ document.getElementById('cpf').addEventListener('input', function (e) {
     e.target.value = value;
 });
 
-// Só entra se for Administrador
-validarAcesso('Administrador');

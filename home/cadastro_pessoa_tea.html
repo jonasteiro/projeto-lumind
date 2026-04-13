@@ -73,6 +73,17 @@
                     </div>
                 </div>
 
+                <!-- 
+                COLOCAR AQUI TRATAMENTO DE EXCEÇÃO 
+                <div class="form-group">
+                    <label for="email_exercicio">E-mail do Exercício *</label>
+                    <input type="text" id="email_exercicio" placeholder="Digite para testar o @">
+                    
+                    COLOCAR AQUI ERRO E ID
+                    <p id="erro_exercicio"></p>
+                </div>
+                -->
+
                 <div id="divErro" class="alert alert-error"></div>
                 <div id="divSucesso" class="alert alert-success"></div>
 
@@ -88,8 +99,7 @@
     <script src="../js/valida_sessao.js"></script>
     <script>
         if (typeof validarAcesso === "function") {
-            // Apenas Profissionais (ou Administradores) devem poder cadastrar um paciente novo
-            validarAcesso(['Profissional', 'Administrador']); 
+            validarAcesso(['ProfissionalSaude']); 
         }
     </script>
 </body>

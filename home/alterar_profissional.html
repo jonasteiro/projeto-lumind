@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumind | Reenviar Cadastro</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="../css/login.css">
+    <style>
+        .msg-erro {
+            color: #dc3545;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: none;
+            margin-top: 5px;
+        }
+        .msg-erro.show {
+            display: block;
+        }
+        .login-modal {
+            max-width: 700px;
+        }
+        /* Destaque para a área de reenvio */
+        .area-arquivos {
+            border: 2px dashed #198754;
+            background-color: #f8fff9;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <div class="login-container px-3 my-5">
+        <div class="login-modal shadow-lg p-4 p-md-5 bg-white rounded-4 mx-auto">
+            
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h1 class="login-title h3 fw-bold mb-1">Corrigir Cadastro</h1>
+                    <p class="text-muted small mb-0">Atualize seus dados e reenvie a documentação.</p>
+                </div>
+                <a href="status_profissional.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+
+            <div id="mensagem-retorno" class="alert d-none" role="alert"></div>
+
+            <form id="form-reenvio-prof" enctype="multipart/form-data">
+                <input type="hidden" id="id_usuario" name="id_usuario">
+
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label small fw-bold text-muted">Nome Completo *</label>
+                        <input type="text" name="nome" id="nome" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroNome"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">E-mail *</label>
+                        <input type="email" name="email" id="email" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroEmail"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">CPF *</label>
+                        <input type="text" name="cpf" id="cpf" maxlength="14" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroCpf"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Registro Profissional *</label>
+                        <input type="text" name="registro_profissional" id="registro_profissional" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroRegistro"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Especialidade *</label>
+                        <input type="text" name="especialidade" id="especialidade" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroEspecialidade"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Data de Nascimento *</label>
+                        <input type="date" name="data_nascimento" id="data_nascimento" class="form-control rounded-3" required>
+                        <span class="msg-erro" id="erroData"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-muted">Nova Senha (opcional)</label>
+                        <input type="password" name="senha" id="senha" class="form-control rounded-3" placeholder="Deixe em branco para manter">
+                        <span class="msg-erro" id="erroSenha"></span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-4 mt-4 mb-4 area-arquivos">
+                    <h6 class="fw-bold mb-3 text-success"><i class="bi bi-file-earmark-arrow-up me-2"></i>Reenvio de Documentação Obrigatória</h6>
+                    <p class="small text-muted mb-3">Para prosseguirmos com sua análise, faça o upload das versões corrigidas dos seus documentos.</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-dark">Novo Diploma ou Certificado *</label>
+                        <input type="file" name="certificacao_profissional" id="certificacao" class="form-control" accept=".pdf,image/*" required>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-dark">Novo Documento de Identidade *</label>
+                        <input type="file" name="carteira_identidade_nacional" id="identidade" class="form-control" accept=".pdf,image/*" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-enviar" class="btn btn-success w-100 rounded-pill fw-bold py-3 shadow-sm">
+                    Reenviar Solicitação
+                </button>
+            </form>
+            
+        </div>
+    </div>
+
+    <script src="../js/profissional/profissional_alterar.js"></script>
+</body>
+</html>

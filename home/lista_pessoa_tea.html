@@ -22,12 +22,6 @@
                 </button>
                 <h1 class="page-title fs-4 mb-0"><i class="bi bi-person-heart me-2"></i>Gestão de Pacientes</h1>
             </div>
-
-            <div>
-                <button id="logoff" class="btn btn-outline-secondary btn-sm rounded-pill fw-semibold px-4 d-flex align-items-center gap-2">
-                    <i class="bi bi-box-arrow-right"></i> Sair
-                </button>
-            </div>
         </div>
     </nav>
 
@@ -59,11 +53,10 @@
 
     </main>
 
-    <script src="../js/index.js"></script>
     <script src="../js/pessoa_tea.js/lista_pessoa_tea.js"></script>
     <script>
         if (typeof validarAcesso === "function") {
-            validarAcesso(['ProfissionalSaude', 'Administrador']); 
+            validarAcesso(['ProfissionalSaude']); 
         }
     </script>
     </body>

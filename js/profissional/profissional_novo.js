@@ -1,6 +1,6 @@
 const formulario = document.getElementById('form-cadastro-prof');
-const divErro = document.getElementById('mensagem-retorno'); // Sua div de erro global
-const divSucesso = document.getElementById('mensagem-retorno'); // No seu HTML é a mesma div
+const divErro = document.getElementById('mensagem-retorno'); 
+const divSucesso = document.getElementById('mensagem-retorno'); 
 
 function validarEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -102,11 +102,11 @@ function validarCampos() {
     }
 
     // Validação dos arquivos
-    if (cert.files.length === 0) {
+    if (cert.files.length === 0) { //Se lenght for 0 então não subiu nada para a página
         document.getElementById('erroCertificacao').classList.add('show');
         temErro = true;
     }
-    if (iden.files.length === 0) {
+    if (iden.files.length === 0) { //Se lenght for 0 então não subiu nada para a página
         document.getElementById('erroIdentidade').classList.add('show');
         temErro = true;
     }
@@ -122,22 +122,38 @@ formulario.addEventListener('submit', async function(e) {
         return;
     }
 
+    // Botão desativado para impedir multiplas tentativas de clique
     const botao = document.getElementById('btn-cadastrar');
     botao.disabled = true;
-    const btnText = document.getElementById('btn-text');
-    const btnSpinner = document.getElementById('btn-spinner');
-    
-    btnText.textContent = ' Processando...';
-    btnSpinner.classList.remove('d-none');
+    botao.innerHTML = '<span></span> Processando...';
 
     try {
-        const formData = new FormData(formulario);
+        const formData = new FormData(); 
         
+        formData.append('nome', document.getElementById('nome').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cpf', document.getElementById('cpf').value);
+        formData.append('registro_profissional', document.getElementById('registro_profissional').value.trim());
+        formData.append('especialidade', document.getElementById('especialidade').value.trim());
+        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+        formData.append('senha', document.getElementById('senha').value);
+        
+        const telInput = document.getElementById('telefone');
+        if (telInput && telInput.value) {
+            formData.append('telefone', telInput.value.replace(/\D/g, ''));
+        }
+
         formData.append('tipo_usuario', 'ProfissionalSaude'); 
-        formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
-        
-        const telefoneVal = document.getElementById('telefone').value.replace(/\D/g, '');
-        formData.set('telefone', telefoneVal);
+
+        const inputCert = document.getElementsByName('certificacao_profissional')[0];
+        if (inputCert.files.length > 0) {
+            formData.append('certificacao_profissional', inputCert.files[0]);
+        }
+
+        const inputIden = document.getElementsByName('carteira_identidade_nacional')[0];
+        if (inputIden.files.length > 0) {
+            formData.append('carteira_identidade_nacional', inputIden.files[0]);
+        }
 
         const resposta = await fetch('../php/usuario_novo.php', {
             method: 'POST',
@@ -156,65 +172,21 @@ formulario.addEventListener('submit', async function(e) {
         mostrarErro('Erro de conexão: ' + erro.message);
     } finally {
         botao.disabled = false;
-        btnText.textContent = 'Enviar Solicitação';
-        btnSpinner.classList.add('d-none');
+        botao.innerHTML = '<span>💾</span> Enviar Solicitação';
     }
 });
 
 // tempo real (digitação)
 
-document.getElementById('nome').addEventListener('input', function() {
-    if (this.value.length >= 3) {
-        document.getElementById('erroNome').classList.remove('show');
-    }
-});
-
-document.getElementById('email').addEventListener('input', function() {
-    if (validarEmail(this.value)) {
-        document.getElementById('erroEmail').classList.remove('show');
-    }
-});
-
+// Apaga instantaneamente letras e espaços, deixando só números
 document.getElementById('cpf').addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '');
-    
-    if (validarCPF(this.value)) {
-        document.getElementById('erroCpf').classList.remove('show');
-    }
 });
 
-document.getElementById('registro_profissional').addEventListener('input', function() {
-    if (this.value.trim() !== '') {
-        document.getElementById('erroRegistro').classList.remove('show');
-    }
-});
-
-document.getElementById('especialidade').addEventListener('input', function() {
-    if (this.value.trim() !== '') {
-        document.getElementById('erroEspecialidade').classList.remove('show');
-    }
-});
-
-document.getElementById('data_nascimento').addEventListener('change', function() {
-    if (this.value) {
-        document.getElementById('erroData').classList.remove('show');
-    }
-});
-
-document.getElementById('senha').addEventListener('input', function() {
-    if (this.value.length >= 6) {
-        document.getElementById('erroSenha').classList.remove('show');
-    }
-});
-
-document.getElementsByName('certificacao_profissional')[0].addEventListener('change', function() {
-    if (this.files.length > 0) {
-        document.getElementById('erroCertificacao').classList.remove('show');
-    }
-});
-
-document.getElementsByName('carteira_identidade_nacional')[0].addEventListener('change', function() {
-    if (this.files.length > 0) {
-        document.getElementById('erroIdentidade').classList.remove('show');
-    }
-});
+// Se o campo telefone existir na tela, aplica a mesma máscara
+const campoTelefone = document.getElementById('telefone');
+if (campoTelefone) {
+    campoTelefone.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+}

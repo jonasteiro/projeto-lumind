@@ -2,7 +2,6 @@ const formulario = document.getElementById('formCadastroResponsavel');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
 
-
 function validarEmail(email) {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -17,7 +16,6 @@ function validarTelefone(telefone) {
     const apenasNumeros = telefone.replace(/\D/g, '');
     return apenasNumeros.length === 10 || apenasNumeros.length === 11;
 }
-
 
 function mostrarErro(mensagem) {
     divErro.textContent = mensagem;
@@ -35,7 +33,6 @@ function mostrarSucesso(mensagem) {
         voltarPerfis();
     }, 2000);
 }
-
 
 function validarCampos() {
     const nome = document.getElementById('nome').value.trim();
@@ -88,7 +85,6 @@ function validarCampos() {
     return !temErro;
 }
 
-
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -96,15 +92,21 @@ formulario.addEventListener('submit', async function(e) {
 
     const botao = document.querySelector('button[type="submit"]');
     botao.disabled = true;
-    botao.textContent = '⏳ Cadastrando...';
+    botao.innerHTML = '<span>⏳</span> Cadastrando...';
 
     try {
-        const formData = new FormData(formulario);
+        const formData = new FormData(); 
         
+        formData.append('nome', document.getElementById('nome').value.trim());
+        formData.append('email', document.getElementById('email').value.trim());
+        formData.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
+        formData.append('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
+        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+        formData.append('senha', document.getElementById('senha').value);
+        
+        // Define o tipo de usuário para o PHP
         formData.append('tipo_usuario', 'ResponsavelLegal'); 
-        
-        formData.set('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
-        formData.set('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
+        // --- FIM DA PADRONIZAÇÃO ---
 
         const resposta = await fetch('../php/usuario_novo.php', {
             method: 'POST',
@@ -114,18 +116,17 @@ formulario.addEventListener('submit', async function(e) {
         const dados = await resposta.json();
 
         if (dados.status === 'sucesso') {
-            mostrarSucesso(' Responsável cadastrado com sucesso!');
+            mostrarSucesso('Responsável cadastrado com sucesso!');
         } else {
-            mostrarErro(' Erro: ' + dados.mensagem);
+            mostrarErro('Erro: ' + dados.mensagem);
         }
     } catch (erro) {
-        mostrarErro(' Erro de conexão com o servidor.');
+        mostrarErro('Erro de conexão com o servidor.');
     } finally {
         botao.disabled = false;
-        botao.textContent = '💾 Cadastrar Responsável';
+        botao.innerHTML = '<span>💾</span> Cadastrar Responsável';
     }
 });
-
 
 function limparFormulario() {
     formulario.reset();

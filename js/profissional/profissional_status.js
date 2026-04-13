@@ -4,6 +4,7 @@ const cardStatus = document.getElementById('card-status');
 const statusTexto = document.getElementById('status-texto');
 const motivoTexto = document.getElementById('motivo-texto');
 const btnLogin = document.getElementById('btn-login-container');
+const btnReenviar = document.getElementById('btn-reenviar-container'); // <-- NOVO
 
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
@@ -46,10 +47,20 @@ form.addEventListener('submit', async (e) => {
                 cardStatus.className = "p-3 rounded-4 border border-success bg-success-subtle text-success";
                 motivoTexto.textContent = "Sua conta está ativa! Você já pode acessar a plataforma.";
                 btnLogin.classList.remove('d-none');
+                btnReenviar.classList.add('d-none');
+
             } else if (dados.situacao === 'Reprovado') {
                 cardStatus.className = "p-3 rounded-4 border border-danger bg-danger-subtle text-danger";
                 motivoTexto.innerHTML = `<strong>Motivo:</strong> ${dados.motivo}`;
                 btnLogin.classList.add('d-none');
+                btnReenviar.classList.remove('d-none');
+                const linkReenviar = btnReenviar.querySelector('a');
+                if (dados.id_usuario) {
+                    linkReenviar.href = `alterar_profissional.html?id=${dados.id_usuario}`;
+                } else {
+                    console.error("Alerta: O PHP não enviou o id_usuario!");
+                }
+
             } else {
                 cardStatus.className = "p-3 rounded-4 border border-warning bg-warning-subtle text-warning-emphasis";
                 motivoTexto.textContent = "Sua documentação ainda está sendo analisada por nossa equipe.";

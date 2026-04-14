@@ -291,6 +291,101 @@ $stmt->execute();
 }
 
 
+
+
+//TESTE GABY
+//*Validaçao Cracha Numero*
+//No Cadastro Admin HTML adicione o campo *Cracha* ele e validaçao de numero menor de 10 da erro
+//Antes das linhas e depois que o </div> que fecha o bloco
+//<div id="divErro" class="alert alert-error"></div>
+//<div id="divSucesso" class="alert alert-success"></div> colocar o html
+
+<!-- Cracha Teste -->
+<!------------------>
+        <div class="form-group">
+            <label for="cracha">Número do Crachá *</label>
+            <input type="text" id="cracha" name="cracha" placeholder="Ex: ADM-2024-001" required maxlength="10">
+            <span class="form-error" id="erroCracha"></span>
+            <small class="form-hint">Mínimo 10 caracteres</small>
+        </div>
+                
+<!------------------>
+<!-- Cracha Teste -->
+
+//Agora no JS 
+// Validar campos individualmente
+//adiciona o seguinte em baixo de as linhas de
+//function validarCampos() {
+//teste cracha
+    const cracha = document.getElementById('cracha').value.trim();
+//teste cracha
+
+//logo depois em 
+// Limpar mensagens de erro anteriores onde ficam os document.getElementById('erroNome').classList.remove('show');
+//adiciona o meu
+    //teste cracha
+    document.getElementById('erroCracha').classList.remove('show');
+    //teste cracha//
+
+//logo depois nos ifs de validaçao se adiciona o nosso if
+//teste cracha
+    // Validar crachá
+    if (cracha.length < 10) {
+        document.getElementById('erroCracha').textContent = 'Crachá inválido, mínimo 10 caracteres';
+        document.getElementById('erroCracha').classList.add('show');
+        temErro = true;
+    } else {
+        alert('Crachá informado: ' + cracha);
+    }
+    //teste cracha
+//so isso para a validaçao de cracha
+
+
+
+//*Validação Site URL*
+//No Cadastro Profissional HTML adicione o campo *Site* ele é validação de URL sem http:// ou https:// da erro
+//Antes das linhas e depois que o </div> que fecha o bloco senha
+//<div class="p-3 bg-light rounded-4 mb-4 border"> colocar o html
+
+<!-- Site Teste -->
+<!------------------>
+        <div class="col-12">
+            <label class="form-label small fw-bold text-muted">Site *</label>
+            <input type="text" id="site" name="site" class="form-control rounded-3" placeholder="Ex: https://www.instituto.com.br" required maxlength="200">
+            <span class="msg-erro" id="erroSite"></span>
+            <small class="form-hint">Deve começar com http:// ou https://</small>
+        </div>
+<!------------------>
+<!-- Site Teste -->
+
+//Agora no JS
+// Validar campos individualmente
+//adiciona o seguinte em baixo das linhas de
+//function validarCampos() {
+//teste site
+    const site = document.getElementById('site').value.trim();
+//teste site
+
+//logo depois em
+// Limpar mensagens de erro anteriores onde ficam os document.getElementById('erroNome').classList.remove('show');
+//adiciona o meu
+    //teste site
+    document.getElementById('erroSite').classList.remove('show');
+    //teste site
+
+//logo depois nos ifs de validação se adiciona o nosso if
+//teste site
+    // Validar site
+    if (!site.startsWith('http://') && !site.startsWith('https://')) {
+        document.getElementById('erroSite').textContent = 'Site inválido, deve começar com http:// ou https://';
+        document.getElementById('erroSite').classList.add('show');
+        temErro = true;
+    } else {
+        alert('Site informado: ' + site);
+    }
+    //teste site
+//so isso para a validação de site
+
 ```
 
 

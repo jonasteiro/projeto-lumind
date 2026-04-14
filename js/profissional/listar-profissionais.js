@@ -57,12 +57,7 @@ function preencherTabela(dados) {
                 <td><span class="badge ${statusColor}">${statusTexto}</span></td>
                 <td class="text-end">
                     <div class="btn-group">
-                        <a href='analisar_documentacao.html?id=${prof.id_usuario}' class="btn btn-sm btn-outline-info border-0" title="Analisar Documentos">
-                            <i class="bi bi-file-earmark-medical"></i>
-                        </a>
-                        <a href='alterar_profissional.html?id=${prof.id_usuario}' class="btn btn-sm btn-outline-primary border-0" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
+                        
                         <button onclick="excluir(${prof.id_usuario})" class="btn btn-sm btn-outline-danger border-0">
                             <i class="bi bi-trash"></i>
                         </button>

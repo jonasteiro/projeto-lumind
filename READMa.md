@@ -386,6 +386,52 @@ $stmt->execute();
     //teste site
 //so isso para a validação de site
 
+
+//Validação RG
+//No Cadastro Responsavel HTML adicione o campo *RG* ele é validação de número menor que 7 dígitos da erro
+//Antes das linhas e depois que o </div> que fecha o bloco senha
+//<div id="divErro" class="alert alert-error"></div>
+//<div id="divSucesso" class="alert alert-success"></div> colocar o html
+
+<!-- RG Teste -->
+<!------------------>
+        <div class="form-group">
+            <label for="rg">RG *</label>
+            <input type="text" id="rg" name="rg" placeholder="Ex: 12.345.678-9" required maxlength="15">
+            <span class="form-error" id="erroRg"></span>
+            <small class="form-hint">Mínimo 7 caracteres</small>
+        </div>
+<!------------------>
+<!-- RG Teste -->
+
+//Agora no JS
+// Validar campos individualmente
+//adiciona o seguinte em baixo das linhas de
+//function validarCampos() {
+//teste rg
+    const rg = document.getElementById('rg').value.trim();
+//teste rg
+
+//logo depois em
+// Limpar mensagens de erro anteriores onde ficam os document.getElementById('erroNome').classList.remove('show');
+//adiciona o meu
+    //teste rg
+    document.getElementById('erroRg').classList.remove('show');
+    //teste rg
+
+//logo depois nos ifs de validação adiciona o nosso if
+//teste rg
+    // Validar RG
+    if (rg.length < 7) {
+        document.getElementById('erroRg').textContent = 'RG inválido, mínimo 7 caracteres';
+        document.getElementById('erroRg').classList.add('show');
+        temErro = true;
+    } else {
+        alert('RG informado: ' + rg);
+    }
+    //teste rg
+//so isso para a validação de RG
+
 ```
 
 

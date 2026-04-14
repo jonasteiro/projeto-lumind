@@ -192,3 +192,105 @@ $stmt->bind_param("sssssss", $nome, $email, $senha, $cpf, $data_nascimento, $cid
 $stmt->execute();
 ?>
 ```
+
+
+##5. TESTE AUTORIA -
+
+```
+  // TESTE (YASMIN)
+    // INSTAGRAM: HTML
+    //ADCIONANDO NOVO CAMPO TEXT NO HTML, QUE IRÁ VALIDAR SE TEM "@" E NO MINÍMO 2 CARACTERES
+  
+                <div class="form-group">
+                    <label for="instagram">Instagram</label>
+                    <input 
+                        type="text" 
+                        id="instagram" 
+                        name="instagram" 
+                        placeholder="@seu_usuario" 
+                        maxlength="30"
+                    >
+                    <span class="form-error" id="erroInstagram"></span>
+                    <small class="form-hint">Mínimo 2 caracteres</small>
+                </div>
+
+
+   // INSTAGRAM: JAVASCRIPT
+   // Em validar campos adione o código para fazer a validação do instagram
+    const instagram = document.getElementById('instagram').value.trim();
+
+   //  EM Limpar mensagens de erro anteriores adcione um para limpar erro do instagram
+     document.getElementById('erroInstagram').classList.remove('show');
+
+   // VALIDAÇÃO INSTAGRAM NO JAVASCRIPT (PLUS: ADCIONEI UM ALERT)
+    if (!instagram.startsWith('@') || instagram.length < 2) {
+        document.getElementById('erroInstagram').textContent = 'Instagram deve começar com @ e ter pelo menos 2 caracteres';
+        document.getElementById('erroInstagram').classList.add('show');
+        temErro = true;
+    }else{ 
+        alert("Instagram válido!");
+    }
+
+
+    // TESTE (YASMIN)
+    // RG: HTML
+    //ADCIONANDO NOVO CAMPO TEXT NO HTML
+   <div class ="form-group">
+                    <label for="rg">RG *</label>
+                    <input type="text" id="rg" placeholder="Digite seu RG">
+                    <p class="form-error" id="erroRg"></p>  
+                </div>
+
+    // RG:JAVASCRIPT  SEM CRIAR FUNÇÃO
+    //INSERINDO AS VARIAVEIS DO CAMPO E DO ERRO NA FUNÇÃO VALIDARCAMPO
+    const rg = document.getElementById('rg').value.trim();
+    const erroRg = document.getElementById('erroRg');
+
+
+        if (typeof rg !== "string") return false;
+
+    // Remove caracteres não numéricos manualmente
+    let somenteNumeros = "";
+    for (let i = 0; i < rg.length; i++) {
+        const char = rg[i];
+        if (char >= "0" && char <= "9") {
+            somenteNumeros += char; // acumula apenas os dígitos
+        }
+    }
+
+    // Agora você pode sobrescrever rg com apenas os números
+    rg = somenteNumeros;
+
+    // validar se contém apenas números:
+     if (!/^\d{7,9}$/.test(rg)) {
+    mostrarErro('erroRg', 'RG deve ter entre 7 e 9 dígitos numéricos');
+    temErro = true;
+    }
+
+
+    // VALIDAR SE RG TEM DE 7 A 9 CARACTERES
+     if (rg.length < 7 || rg.length > 9) {
+        erroRg.textContent = 'RG deve ter entre 7 e 9 dígitos';
+        erroRg.classList.add('show');
+        temErro = true;
+    }else {
+        alert("RG válido!"); 
+    }
+
+    // ALTERNATIVA PARA ELSE exibe mensagem de sucesso sem comando alert
+    else {
+    document.getElementById('erroRg').textContent = 'RG válido!';
+    document.getElementById('erroRg').classList.add('show');
+    }
+
+
+// TESTE YASMIN (PLUS): Validação de senha mais completa  ( letras maiúsculas, minúsculas e números)
+  if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}/.test(senha)) {
+    mostrarErro('erroSenha', 'Senha deve ter ao menos 6 caracteres, incluindo maiúscula, minúscula e número');
+    temErro = true;
+}
+
+
+```
+
+

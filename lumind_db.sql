@@ -1,6 +1,12 @@
+-- =======================================================
+-- 1. CRIAÇÃO E SELEÇÃO DO BANCO DE DADOS
+-- =======================================================
 CREATE DATABASE lumind_db;
 USE lumind_db;
 
+-- =======================================================
+-- 2. TABELAS BASE (Entidades Principais)
+-- =======================================================
 CREATE TABLE Usuario (
     id_usuario INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -20,6 +26,16 @@ CREATE TABLE Telefone (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+-- =======================================================
+-- 3. TABELAS DE PERFIS (Especializações de Usuário)
+-- =======================================================
+CREATE TABLE Administrador (
+    id_usuario INT NOT NULL,
+    status_adm BOOLEAN NOT NULL DEFAULT TRUE,
+    PRIMARY KEY (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
 CREATE TABLE ResponsavelLegal (
     id_usuario INT NOT NULL,
     PRIMARY KEY (id_usuario),
@@ -34,6 +50,17 @@ CREATE TABLE ProfissionalSaude (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+CREATE TABLE PessoaTea (
+    id_usuario INT NOT NULL,
+    observacao TEXT NULL,
+    nivel_tea VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- =======================================================
+-- 4. TABELAS DE FUNCIONALIDADES E REGRAS DE NEGÓCIO
+-- =======================================================
 CREATE TABLE Documentacao (
     id_documentacao INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL, 
@@ -49,24 +76,8 @@ CREATE TABLE Documentacao (
     data_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_revisao DATETIME,
 
-
     CONSTRAINT fk_doc_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
     CONSTRAINT fk_doc_admin FOREIGN KEY (id_admin_revisor) REFERENCES Usuario(id_usuario)
-);
-
-CREATE TABLE Administrador (
-    id_usuario INT NOT NULL,
-    status_adm BOOLEAN NOT NULL DEFAULT TRUE,
-    PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
-);
-
-CREATE TABLE PessoaTea (
-    id_usuario INT NOT NULL,
-    observacao TEXT NULL,
-    nivel_tea VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
 CREATE TABLE Atividade (
@@ -100,6 +111,9 @@ CREATE TABLE Relatorio (
     FOREIGN KEY (id_pessoa_tea) REFERENCES PessoaTea(id_usuario)
 );
 
+-- =======================================================
+-- 5. TABELAS PIVÔ (Relacionamentos N:M)
+-- =======================================================
 CREATE TABLE PessoaTea_Atividade (
     id_pessoa_tea INT NOT NULL,
     id_atividade INT NOT NULL,
@@ -116,28 +130,69 @@ CREATE TABLE PessoaTea_Evento (
     FOREIGN KEY (id_evento) REFERENCES Evento(id_evento)
 );
 
+-- =======================================================
+-- 6. CARGA INICIAL DE DADOS (INSERTS PARA TESTES)
+-- =======================================================
 
+-- -------------------------------------------------------
+-- USUÁRIO 1: Administrador
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (1, 'Carlos Sistema', 'admin@lumind.com.br', 'senha_hasheada_123', '11111111111', '1985-04-12', 'Administrador');
 
 INSERT INTO Administrador (id_usuario, status_adm) 
 VALUES (1, TRUE);
 
-
+-- -------------------------------------------------------
+-- USUÁRIO 2: Responsável Legal
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (2, 'Marta Oliveira', 'marta.mae@email.com', 'senha_hasheada_456', '22222222222', '1980-08-25', 'ResponsavelLegal');
 
 INSERT INTO ResponsavelLegal (id_usuario) 
 VALUES (2);
 
+-- -------------------------------------------------------
+-- USUÁRIO 3: Profissional de Saúde (Cadastro Aprovado)
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (3, 'Dr. Roberto Mendes', 'roberto.neuro@clinica.com', 'senha_hasheada_789', '33333333333', '1975-11-03', 'ProfissionalSaude');
 
-INSERT INTO ProfissionalSaude (id_usuario, carteira_identidade_nacional, certificado_profissional, registro_profissional, especialidade) 
-VALUES (3, 'MG-12.345.678', 'url_ou_hash_certificado.pdf', 'CRM-98765', 'Neurologista Pediátrico');
+INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
+VALUES (3, 'CRM-98765', 'Neurologista Pediátrico');
 
+INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao)
+VALUES (3, 'MG-12.345.678', 'url_ou_hash_certificado.pdf', 'Aprovado');
+
+-- -------------------------------------------------------
+-- USUÁRIO 4: Paciente (Pessoa TEA)
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (4, 'Lucas Oliveira', 'lucas.filho@email.com', 'senha_hasheada_000', '44444444444', '2010-02-15', 'PessoaTea');
 
 INSERT INTO PessoaTea (id_usuario, observacao, nivel_tea) 
 VALUES (4, 'Apresenta forte sensibilidade a ruídos agudos. Responde bem a estímulos visuais.', 'Nível 2 - Suporte Substancial');
+
+-- -------------------------------------------------------
+-- USUÁRIO 5: Profissional de Saúde (Cadastro Pendente)
+-- -------------------------------------------------------
+INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
+VALUES (5, 'Dra. Fernanda Lima', 'fernanda.psico@clinica.com', 'senha_hasheada_111', '55555555555', '1988-06-20', 'ProfissionalSaude');
+
+INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
+VALUES (5, 'CRP-12345', 'Psicóloga Infantil');
+
+INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao)
+VALUES (5, 'SP-98.765.432', 'certificado_fernanda.pdf', 'Aguardando');
+
+-- -------------------------------------------------------
+-- USUÁRIO 6: Profissional de Saúde (Cadastro Reprovado)
+-- -------------------------------------------------------
+INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
+VALUES (6, 'Dr. Paulo Ricardo', 'paulo.fono@clinica.com', 'senha_hasheada_222', '66666666666', '1990-09-10', 'ProfissionalSaude');
+
+INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
+VALUES (6, 'CRFA-54321', 'Fonoaudiólogo');
+
+INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao, motivo_reprovacao)
+VALUES (6, 'RJ-11.222.333', 'certificado_paulo.pdf', 'Reprovado', 'Documento do conselho regional ilegível. Por favor, reenvie uma foto mais nítida.');

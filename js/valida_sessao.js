@@ -25,6 +25,15 @@ async function validarAcesso(tipoPermitido) {
             nomeExibicao.textContent = usuarioLogado.nome;
         }
 
+         //const nomeExibicao = document.getElementById("nome-usuario");
+        //if (nomeExibicao && usuarioLogado.nome) {
+            // Pega o nome, divide pelos espaços e seleciona os dois primeiros
+            //const nomes = usuarioLogado.nome.trim().split(" ");
+            //const nomeCurto = nomes.length > 1 ? `${nomes[0]} ${nomes[1]}` : nomes[0];
+            
+            //nomeExibicao.textContent = nomeCurto;
+        //}
+
     } catch (e) {
         console.error("Erro ao processar JSON:", e);
     }

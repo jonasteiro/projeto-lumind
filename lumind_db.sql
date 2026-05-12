@@ -196,3 +196,25 @@ VALUES (6, 'CRFA-54321', 'Fonoaudiólogo');
 
 INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao, motivo_reprovacao)
 VALUES (6, 'RJ-11.222.333', 'certificado_paulo.pdf', 'Reprovado', 'Documento do conselho regional ilegível. Por favor, reenvie uma foto mais nítida.');
+
+-- /Acessar o painel de atividades Gaby/
+-- 1. Criando uma atividade para o Dr. Roberto (ID 3)
+INSERT INTO Atividade (id_profissional, titulo, descricao, data_publicacao, categoria)
+VALUES (3, 'Exercício de Foco Visual', 'Seguir a bolinha vermelha na tela', '2023-10-25', 'Cognitiva');
+
+-- 2. Vinculando essa atividade ao paciente Lucas (ID 4)
+INSERT INTO PessoaTea_Atividade (id_pessoa_tea, id_atividade)
+VALUES (4, 1);
+
+-- Query A exemplo buscando atividades do Dr. Roberto (ID 3)
+SELECT id_atividade, titulo, categoria, data_publicacao 
+FROM Atividade 
+WHERE id_profissional = 3 
+ORDER BY data_publicacao DESC;
+
+-- Query B exemplo buscando atividades atribuídas ao Lucas (ID 4)
+SELECT a.id_atividade, a.titulo, a.categoria, a.data_publicacao 
+FROM Atividade a 
+INNER JOIN PessoaTea_Atividade pa ON a.id_atividade = pa.id_atividade 
+WHERE pa.id_pessoa_tea = 4 
+ORDER BY a.data_publicacao DESC;

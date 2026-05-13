@@ -1,31 +1,22 @@
 :root {
-    --primary-blue: #4189c9;
-    --dark-blue: #2e4977;
+    --primary-blue: #4d9fe7;
+    --dark-blue: #3763ae;
     --hover-blue: #37a2b0;
     --soft-blue: #b8e4ff;
-
-    --bg-overlay: rgba(255, 255, 255, 0.22);
+        --bg-overlay: rgba(91, 188, 207, 0.296);
 
     --text-main: #2d3436;
     --text-soft: #6b7c93;
 
-    --modal-shadow: 0 20px 40px rgba(65, 137, 201, 0.12);
+    --modal-shadow:
+    0 10px 30px rgba(0,0,0,0.05),
+    0 30px 80px rgba(65,137,201,0.18);
 
     --transition: all 0.3s ease;
 }
 
-/* BODY */
-
 body {
     font-family: 'Inter', sans-serif;
-
-    background-image:
-        linear-gradient(var(--bg-overlay), var(--bg-overlay)),
-        url('https://i.pinimg.com/1200x/50/71/44/50714458b1b2ce62c0d0e2ff592ff524.jpg');
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
 
     min-height: 100vh;
     margin: 0;
@@ -33,8 +24,78 @@ body {
     color: var(--text-main);
 
     overflow-x: hidden;
+
+    position: relative;
+
+    background: #dfeef7;
 }
 
+/***** FUNDO ANIMADO *****/
+
+body::before {
+    content: "";
+
+    position: fixed;
+    inset: -30px;
+
+    background-image:
+        linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+        url('https://i.pinimg.com/1200x/50/71/44/50714458b1b2ce62c0d0e2ff592ff524.jpg');
+
+    background-size: cover;
+    background-position: center;
+
+    z-index: -2;
+
+    animation: bgWave 9s ease-in-out infinite alternate;
+
+    will-change: transform;
+}
+
+
+
+@keyframes bgWave {
+
+    0% {
+        transform:
+            scale(1)
+            translateX(0px)
+            translateY(0px)
+            rotate(0deg);
+    }
+
+    25% {
+        transform:
+            scale(1.04)
+            translateX(-25px)
+            translateY(-8px)
+            rotate(-0.4deg);
+    }
+
+    50% {
+        transform:
+            scale(1.07)
+            translateX(18px)
+            translateY(10px)
+            rotate(0.3deg);
+    }
+
+    75% {
+        transform:
+            scale(1.05)
+            translateX(-19px)
+            translateY(4px)
+            rotate(-0.2deg);
+    }
+
+    100% {
+        transform:
+            scale(1.08)
+            translateX(28px)
+            translateY(-6px)
+            rotate(0.4deg);
+    }
+}
 /* CONTAINER */
 
 .login-container {
@@ -52,27 +113,44 @@ body {
 .login-modal {
     background: rgba(255, 255, 255, 0.82);
 
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(14px);
 
     padding: 3.5rem 3rem;
 
     border-radius: 2rem;
 
-    box-shadow: var(--modal-shadow);
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.05),
+    0 30px 80px rgba(65,137,201,0.18),
+    inset 0 1px 1px rgba(255,255,255,0.6);
 
     max-width: 460px;
     width: 100%;
 
-    border: 1px solid rgba(255, 255, 255, 0.45);
+    background: rgba(255,255,255,0.72);
 
     position: relative;
 
     overflow: hidden;
 
     transition: var(--transition);
+
+    transform-style: preserve-3d;
+
+    animation: floatingCard 5s ease-in-out infinite;
 }
 
+@keyframes floatingCard {
+
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
 /* brilho suave */
 
 .login-modal::before {
@@ -84,25 +162,26 @@ body {
     background:
         linear-gradient(
             140deg,
-            rgba(255,255,255,0.35),
+            rgba(0, 170, 255, 0.289),
             transparent 45%
         );
 
     pointer-events: none;
+    
 }
 
 /* TITULO */
 
 .login-title {
-    color: var(--dark-blue);
+    background: linear-gradient(
+        135deg,
+        #4d9fe7,
+        #6ec6ff,
+        #3763ae
+    );
 
-    font-family: 'Playfair Display', serif;
-
-    font-weight: 700;
-
-    font-size: 2.7rem;
-
-    letter-spacing: -1px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .login-subtitle {
@@ -115,7 +194,7 @@ body {
 .login-input {
     border: 1.5px solid rgba(65, 137, 201, 0.12);
 
-    background-color: rgba(255,255,255,0.72) !important;
+    background-color: rgba(255, 255, 255, 0.685) !important;
 
     font-size: 1rem;
 
@@ -140,6 +219,14 @@ body {
         0 8px 18px rgba(65,137,201,0.08);
 
     transform: translateY(-1px);
+}
+.login-input:hover {
+    border-color: rgba(77,159,231,0.28);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 18px rgba(77,159,231,0.08);
 }
 
 /* FLOATING LABEL */
@@ -193,8 +280,8 @@ body {
     background:
         linear-gradient(
             135deg,
-            #a7e8f0,
-            #6696c0
+            #b4f2fd,
+            #4088b2
         );
 
     color: white;
@@ -310,3 +397,84 @@ body {
     }
 
 }
+
+
+.btn-submit {
+    width: 100%;
+
+    max-width: 320px;
+
+    height: 52px;
+
+    border: none;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b4f2fd,
+            #4088b2
+        );
+
+    color: white;
+
+    font-weight: 700;
+
+    letter-spacing: 0.4px;
+
+    font-size: 0.95rem;
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition: all 0.35s ease;
+
+    box-shadow:
+        0 12px 30px rgba(77,159,231,0.22);
+
+    display: block;
+
+    margin: 1.5rem auto 0;
+
+    animation: buttonFloat 4s ease-in-out infinite;
+}
+
+.btn-submit::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 70%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.45),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    animation: shineMove 4s infinite;
+}
+
+
+
+@keyframes shineMove {
+
+    0% {
+        left: -120%;
+    }
+
+    100% {
+        left: 140%;
+    }
+}
+

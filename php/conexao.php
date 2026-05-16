@@ -2,7 +2,7 @@
 // Variáveis de conexão com o Banco de Dados
 $servidor = "localhost:3306";
 $usuario  = "root";
-$senha    = "";
+$senha    = "PUC@1234";
 $nome_banco = "lumind_db";
 
 $conexao = new mysqli($servidor, $usuario, $senha, $nome_banco);

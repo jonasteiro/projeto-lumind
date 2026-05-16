@@ -1,0 +1,21 @@
+<!-- Copie a estrutura da sidebar da sua tela_profissional -->
+<main class="main-panel">
+    <header class="topbar d-flex justify-content-between align-items-center p-4">
+        <h2>GERENCIAR ATIVIDADES</h2>
+        <div class="search-box d-flex align-items-center">
+            <i class="bi bi-search"></i>
+            <input type="search" class="form-control form-control-sm ms-2" placeholder="Buscar">
+        </div>
+    </header>
+
+    <section class="content p-4">
+        <!-- Container onde os cards dinâmicos serão montados -->
+        <div id="lista-atividades" class="row g-4">
+            <!-- Texto inicial enquanto o JS carrega os dados -->
+            <p class="text-center">Buscando atividades no sistema...</p>
+        </div>
+    </section>
+</main>
+
+<!-- Link para o arquivo JS que fará a mágica -->
+<script src="../js/atividade/painel_atividades.js"></script>

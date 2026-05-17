@@ -1,7 +1,6 @@
 const formulario = document.getElementById('formCadastroPessoaTea');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
-// Acima são variáveis globais
 
 // Função de validar email com regex (texto + @ + texto)
 function validarEmail(email) {
@@ -10,10 +9,9 @@ function validarEmail(email) {
 
 // CPF
 function validarCPF(cpf) {
-    const apenasNumeros = cpf.replace(/\D/g, ''); //Tira qualquer coisa que não é número
-    return apenasNumeros.length === 11; // Só  pode ter 11 dígitos (tamanho padrão do cpf)
+    const apenasNumeros = cpf.replace(/\D/g, ''); 
+    return apenasNumeros.length === 11; 
 }
-
 
 function mostrarErro(mensagem) {
     divErro.textContent = mensagem;
@@ -30,34 +28,26 @@ function mostrarSucesso(mensagem) {
     setTimeout(() => { voltarPerfis(); }, 2000);
 }
 
-
 //Função para validar os campos de acordo com as regras estabelecidas
 function validarCampos() {
-    // .trim retira os espaços em branco no começo e fim do texto
     const nome = document.getElementById('nome').value.trim();
     const email = document.getElementById('email').value.trim();
     const cpf = document.getElementById('cpf').value.trim();
     const dataNascimento = document.getElementById('data_nascimento').value;
     const nivelTea = document.getElementById('nivel_tea').value;
     const senha = document.getElementById('senha').value;
+    
+    // NOVO: Pega o CPF do Responsável
+    const cpfResponsavel = document.getElementById('cpf_responsavel').value.trim(); 
 
-    //INSERIR AS VARIAVEIS DO CAMPO E DO ERRO AQUI
-    /*
-    const email_exercicio = document.getElementById('email_exercicio').value;
-    const erro_exercicio = document.getElementById('erro_exercicio'); // NÃO COLOCAR .VALUE (Não tem valor para pegar)
-    // */
-
-
-    //temErro = false > tudo está certo até que entre no if
     let temErro = false;
     document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
 
     if (nome.length < 3) {
-        document.getElementById('erroNome').textContent = 'Nome muito curto'; //erroNome está como Span no html abaixo da variável
-        document.getElementById('erroNome').classList.add('show'); //classList.add > Mostra o erro na tela
-        temErro = true; // Confirma que há um erro
+        document.getElementById('erroNome').textContent = 'Nome muito curto'; 
+        document.getElementById('erroNome').classList.add('show'); 
+        temErro = true; 
     }
-    // !validarEmail(linha 7) > se a função de validar retornar erro
     if (!validarEmail(email)) {
         document.getElementById('erroEmail').textContent = 'Email inválido';
         document.getElementById('erroEmail').classList.add('show');
@@ -68,6 +58,14 @@ function validarCampos() {
         document.getElementById('erroCpf').classList.add('show');
         temErro = true;
     }
+    
+    // NOVO: Valida o CPF do Responsável
+    if (!validarCPF(cpfResponsavel)) {
+        document.getElementById('erroCpfResponsavel').textContent = 'CPF inválido (11 dígitos)';
+        document.getElementById('erroCpfResponsavel').classList.add('show');
+        temErro = true;
+    }
+
     if (!dataNascimento) {
         document.getElementById('erroData').textContent = 'Data obrigatória';
         document.getElementById('erroData').classList.add('show');
@@ -84,29 +82,14 @@ function validarCampos() {
         temErro = true;
     }
 
-    //Campo para colocar o exercício
-    // --------------------------------
-    /*
-    if(email_exercicio.includes("@")){
-        console.log("ok");
-    }else{
-        //ERRO VAI NESSE ELSE
-        erro_exercicio.textContent = "Email sem @"; //textContent é o método para escrever no erro do html
-        temErro = true;
-    } 
-   // ---------------------------------
-   // */
-
-    // !temErro > Não tem erro nos ifs e pode passar
     return !temErro;
 }
 
-formulario.addEventListener('submit', async function(e) { //submit para enviar clicando Enter também
+formulario.addEventListener('submit', async function(e) { 
     e.preventDefault();
 
     if (!validarCampos()) return;
 
-    //Desativa o botão de cadastro quando clicar para que não haja cliques excessivos
     const botao = document.querySelector('button[type="submit"]');
     botao.disabled = true;
     botao.textContent = ' Cadastrando Paciente...';
@@ -114,28 +97,27 @@ formulario.addEventListener('submit', async function(e) { //submit para enviar c
     try {
         const formData = new FormData(); 
         
-        // 2. Empacotamos manualmente pegando por ID, combinando com as variáveis do PHP
         formData.append('nome', document.getElementById('nome').value.trim());
         formData.append('email', document.getElementById('email').value.trim());
         formData.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
         formData.append('senha', document.getElementById('senha').value);
         formData.append('data_nascimento', document.getElementById('data_nascimento').value);
-        formData.append('tipo_usuario', 'PessoaTea'); // Dado fixo
+        formData.append('tipo_usuario', 'PessoaTea'); 
         formData.append('nivel_tea', document.getElementById('nivel_tea').value);
         
-        // Telefone (só envia se existir e tira a formatação)
+        // NOVO: Envia o CPF do responsável (apenas números)
+        formData.append('cpf_responsavel', document.getElementById('cpf_responsavel').value.replace(/\D/g, ''));
+
         const valTelefone = document.getElementById('telefone');
         if(valTelefone && valTelefone.value) {
             formData.append('telefone', valTelefone.value.replace(/\D/g, ''));
         }
 
-        // Observação
         const valObservacao = document.getElementById('observacao');
         if(valObservacao) {
             formData.append('observacao', valObservacao.value.trim());
         }
 
-        // Requisição pro servidor (await = "não faz nada até ter resposta")
         const resposta = await fetch('../php/usuario_novo.php', {
             method: 'POST',
             body: formData
@@ -146,7 +128,7 @@ formulario.addEventListener('submit', async function(e) { //submit para enviar c
         if (dados.status === 'sucesso') {
             mostrarSucesso('Pessoa Tea cadastrada com sucesso!');
         } else {
-            mostrarErro(' Erro: ' + dados.mensagem); //dados.mensagem é erros que o PHP identificou
+            mostrarErro(' Erro: ' + dados.mensagem); 
         }
     } catch (erro) {
         mostrarErro('Erro de conexão com o servidor.');
@@ -163,12 +145,14 @@ function limparFormulario() {
     divSucesso.classList.remove('show');
 }
 
-//retorna para a tela de listagem
 function voltarPerfis() {
     window.location.href = 'lista_pessoa_tea.html';
 }
 
-//Ele já coloca qualquer coisa que não é número como espaço em branco "ao vivo" no cpf
+// Formatação ao vivo para os dois campos de CPF
 document.getElementById('cpf').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
+});
+document.getElementById('cpf_responsavel').addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '');
 });

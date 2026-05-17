@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumind | Realizar Atividade</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="../../css/atividades/tela_atividade.css">
+</head>
+<body>
+    <div class="d-flex">
+
+        <aside class="sidebar">
+            <div class="brand-container">
+                <img src="../../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
+            </div>
+            <nav class="nav-menu">
+                <a href="../tela_pessoa_tea.html"><i class="bi bi-house-door"></i> Início</a>
+                <a href="../atividades_paciente.html" class="active"><i class="bi bi-clipboard-check"></i> Atividades</a>
+                <a href="#"><i class="bi bi-bar-chart"></i> Progresso</a>
+                <hr>
+                <a href="#" id="logoff" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
+            </nav>
+        </aside>
+
+        <main class="main-panel flex-grow-1">
+
+            <header class="topbar d-flex justify-content-between align-items-center p-4">
+                <div class="d-flex align-items-center">
+                    <a href="../atividades_paciente.html" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2>REALIZAR ATIVIDADE</h2>
+                </div>
+                <div class="user-profile d-flex align-items-center">
+                    <span id="nome-usuario" class="user-name me-3">Carregando...</span>
+                    <img src="https://i.pravatar.cc/45?img=45" alt="Perfil" class="user-img">
+                </div>
+            </header>
+
+            <section class="content p-4">
+
+                <div id="estado-loading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Carregando atividade...</p>
+                </div>
+
+                <div id="estado-erro" class="alert alert-danger d-none" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="mensagem-erro">Erro ao carregar a atividade.</span>
+                </div>
+
+                <!-- Corpo da Atividade (injetado pelo JS) -->
+                <div id="corpo-atividade" class="d-none">
+
+                    <div class="activity-card mb-4">
+                        <div class="activity-header mb-3">
+                            <span id="badge-categoria" class="badge-categoria"></span>
+                            <span id="badge-status" class="badge-status ms-2"></span>
+                        </div>
+                        <h3 id="titulo-atividade" class="activity-title"></h3>
+                        <p id="data-publicacao" class="activity-meta">
+                            <i class="bi bi-calendar-check me-1"></i>
+                        </p>
+
+                        <hr class="divider">
+
+                  
+                        <div class="section-label">
+                            <i class="bi bi-text-paragraph me-2"></i>Descrição da Atividade
+                        </div>
+                        <div id="descricao-atividade" class="activity-description"></div>
+                    </div>
+
+ 
+                    <div id="card-anexo" class="activity-card mb-4 d-none">
+                        <div class="section-label mb-3">
+                            <i class="bi bi-paperclip me-2"></i>Material de Apoio
+                        </div>
+
+                 
+                        <div id="container-imagem" class="d-none text-center">
+                            <img id="imagem-anexo" src="" alt="Material de apoio"
+                                 class="img-fluid rounded-3 shadow-sm imagem-atividade">
+                        </div>
+
+              
+                        <div id="container-pdf" class="d-none">
+                            <a id="link-pdf" href="#" target="_blank" rel="noopener noreferrer"
+                               class="btn-pdf w-100">
+                                <i class="bi bi-file-earmark-pdf-fill me-2"></i>
+                                Abrir / Baixar Material de Apoio (PDF)
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Card: Canvas de Conclusão (PBI 05) -->
+                    <div class="activity-card mb-4">
+                        <div class="section-label mb-3">
+                            <i class="bi bi-pencil-square me-2"></i>Minha Resposta
+                        </div>
+
+                        <label for="comentario-paciente" class="form-label fw-semibold text-muted small">
+                            Comentário sobre a atividade <span class="text-muted fw-normal">(opcional)</span>
+                        </label>
+                        <textarea
+                            id="comentario-paciente"
+                            class="form-control textarea-resposta"
+                            rows="5"
+                            placeholder="Conte como foi realizar essa atividade, se teve alguma dificuldade, o que achou..."></textarea>
+
+                        <div id="feedback-msg" class="feedback-msg d-none mt-3"></div>
+
+                        <button id="btn-concluir" class="btn-concluir mt-3 w-100">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <span id="btn-concluir-texto">Marcar como Concluída</span>
+                        </button>
+                    </div>
+
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="../../js/valida_sessao.js"></script>
+    <script src="../../js/atividade/tela_atividade.js"></script>
+    <script>
+        // Aceita tanto PessoaTea quanto ResponsavelLegal
+        if (typeof validarAcesso === "function") {
+            validarAcesso(['PessoaTea', 'ResponsavelLegal']);
+        }
+    </script>
+</body>
+</html>

@@ -36,8 +36,8 @@ async function carregarAtividadeComSubmissoes() {
         const response = await fetch(`../../php/atividades/atividade_submissoes.php?id=${idAtividade}`);
         const data = await response.json();
 
-        if (data.status === 'erro') {
-            alert('Erro ao carregar atividade: ' + data.mensagem);
+        if (data.status !== 'ok') {
+            alert('Erro ao carregar atividade: ' + (data.mensagem || 'Erro desconhecido'));
             window.history.back();
             return;
         }

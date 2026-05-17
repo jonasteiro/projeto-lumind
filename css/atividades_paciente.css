@@ -1,0 +1,326 @@
+/* ==========================================================================
+   atividades_paciente.css — Lista de atividades do Paciente / Responsável
+   ========================================================================== */
+
+:root {
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --bg-page: #f0f4f8;
+    --bg-card: #ffffff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border-light: #e2e8f0;
+    --success-color: #16a34a;
+    --success-bg: #dcfce7;
+    --warning-color: #92400e;
+    --warning-bg: #fef9c3;
+    --sidebar-width: 220px;
+    --topbar-height: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-page);
+    color: var(--text-dark);
+}
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background: linear-gradient(180deg, #c4ebff 0%, #dff8ff 100%);
+    border-right: 1px solid #b5e5f5;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.brand-container {
+    padding: 1.25rem 1rem 1rem;
+    border-bottom: 1px solid #b5e5f5;
+}
+
+.brand-container .logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0.75rem;
+    gap: 0.25rem;
+}
+
+.nav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-size: 0.93rem;
+    font-weight: 500;
+    color: #1b85b5;
+    transition: background 0.2s ease;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+    background: rgba(2, 132, 199, 0.12);
+    color: var(--primary-color);
+}
+
+.nav-menu hr {
+    border-color: #b5e5f5;
+    margin: 0.5rem 0;
+}
+
+.nav-menu a.text-danger { color: #dc2626 !important; }
+.nav-menu a.text-danger:hover { background: #fee2e2; }
+
+/* ==========================================================================
+   PAINEL PRINCIPAL
+   ========================================================================== */
+.main-panel {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    background: linear-gradient(90deg, #c4ebff 0%, #dff8ff 100%);
+    border-bottom: 1px solid #b5e5f5;
+    min-height: var(--topbar-height);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.topbar h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1c86c1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(2, 132, 199, 0.1);
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    margin-right: 0.85rem;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background: rgba(2, 132, 199, 0.2);
+    color: var(--primary-hover);
+}
+
+.user-name {
+    font-weight: 700;
+    color: #1a7091;
+    font-size: 0.95rem;
+}
+
+.user-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #90cef6;
+}
+
+/* ==========================================================================
+   CONTEÚDO
+   ========================================================================== */
+.content {
+    max-width: 1180px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.75rem 1.5rem 3rem;
+}
+
+/* ==========================================================================
+   BUSCA
+   ========================================================================== */
+.search-container {
+    width: 100%;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    width: 280px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
+.search-box i {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    width: 100%;
+    font-family: inherit;
+}
+
+.search-box input::placeholder { color: var(--text-muted); }
+
+/* ==========================================================================
+   CARDS DE ATIVIDADE
+   ========================================================================== */
+.card-atividade {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 1.2rem;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-atividade:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.card-atividade-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+/* Badge de categoria */
+.badge-cat {
+    display: inline-block;
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.73rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    background: #e0f2fe;
+    color: var(--primary-color);
+    border: 1px solid #bae6fd;
+}
+
+/* Override nos badges de status do Bootstrap para manter consistência */
+.card-atividade .badge.bg-success {
+    background-color: var(--success-bg) !important;
+    color: var(--success-color) !important;
+    border: 1px solid #86efac;
+    font-weight: 600;
+    font-size: 0.73rem;
+}
+
+.card-atividade .badge.bg-warning {
+    background-color: var(--warning-bg) !important;
+    color: var(--warning-color) !important;
+    border: 1px solid #fde68a;
+    font-weight: 600;
+    font-size: 0.73rem;
+}
+
+.card-atividade-titulo {
+    margin: 0.2rem 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.35;
+}
+
+.card-atividade-data {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Botão COMEÇAR — empurrado para o fundo do card */
+.card-atividade .btn-primary {
+    margin-top: auto;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.card-atividade .btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 64px;
+        overflow: hidden;
+    }
+
+    .sidebar .brand-container .logo { width: 36px; height: 36px; }
+
+    .nav-menu a {
+        font-size: 0;
+        justify-content: center;
+        padding: 0.65rem 0;
+    }
+
+    .nav-menu a i { font-size: 1.3rem; margin: 0 auto; }
+
+    .main-panel { margin-left: 64px; }
+
+    .topbar h2 { font-size: 1rem; }
+
+    .content { padding: 1rem 0.75rem 2.5rem; }
+
+    .search-box { width: 100%; }
+
+    .search-container { justify-content: stretch !important; }
+}

@@ -22,14 +22,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btnLogoff) {
         btnLogoff.addEventListener('click', (e) => {
             e.preventDefault();
-            fetch('../../php/cliente_logoff.php').finally(() => {
-                window.location.href = '../../login/index.html';
+            fetch('../php/cliente_logoff.php').finally(() => {
+                window.location.href = '../login/index.html';
             });
         });
     }
 
     try {
-        const response   = await fetch('../../php/atividades/atividades_get.php');
+        const response   = await fetch('../php/atividades/atividades_get.php');
         const atividades = await response.json();
 
         listaContainer.innerHTML = '';

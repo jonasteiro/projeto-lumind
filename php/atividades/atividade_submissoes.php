@@ -5,7 +5,7 @@ session_start();
 
 if (!isset($_SESSION['usuario'])) {
     http_response_code(401);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'Sessão expirada.']);
+    echo json_encode(['status' => 'erro', 'mensagem' => 'Sessão expirada.']);
     exit;
 }
 
@@ -15,13 +15,13 @@ $id_usuario = (int) $usuario['id_usuario'];
 
 if ($tipo !== 'ProfissionalSaude') {
     http_response_code(403);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'Acesso negado.']);
+    echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso negado.']);
     exit;
 }
 
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
     http_response_code(400);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'ID inválido.']);
+    echo json_encode(['status' => 'erro', 'mensagem' => 'ID inválido.']);
     exit;
 }
 
@@ -36,7 +36,7 @@ try {
 
     if ($res->num_rows === 0) {
         http_response_code(403);
-        echo json_encode(['status' => 'nok', 'mensagem' => 'Atividade não encontrada para este profissional.']);
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Atividade não encontrada para este profissional.']);
         exit;
     }
 
@@ -63,7 +63,7 @@ try {
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'Erro no servidor: ' . $e->getMessage()]);
+    echo json_encode(['status' => 'erro', 'mensagem' => 'Erro no servidor: ' . $e->getMessage()]);
 } finally {
     $conexao->close();
 }

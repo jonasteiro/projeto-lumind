@@ -2,8 +2,8 @@
 session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-// Validação de sessão
-if (!isset($_SESSION['id_usuario']) || $_SESSION['tipo_usuario'] !== 'ProfissionalSaude') {
+// Validação de sessão — padrão do projeto: $_SESSION['usuario'][...]
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['tipo_usuario'] !== 'ProfissionalSaude') {
     http_response_code(401);
     echo json_encode(['status' => 'erro', 'mensagem' => 'Acesso não autorizado']);
     exit;
@@ -21,7 +21,7 @@ if (!isset($_POST['id_atividade']) || !isset($_POST['id_pessoa_tea']) || !isset(
 $id_atividade = intval($_POST['id_atividade']);
 $id_pessoa_tea = intval($_POST['id_pessoa_tea']);
 $feedback = trim($_POST['feedback']);
-$id_profissional = $_SESSION['id_usuario'];
+$id_profissional = (int) $_SESSION['usuario']['id_usuario'];
 
 // Validação básica
 if (empty($feedback) || strlen($feedback) < 5) {
@@ -38,14 +38,14 @@ if (strlen($feedback) > 1000) {
 
 try {
     // Verificar se a atividade pertence ao profissional (IDOR check)
-    $stmt = $mysqli->prepare("
+    $stmt = $conexao->prepare("
         SELECT a.id_atividade 
         FROM Atividade a
         WHERE a.id_atividade = ? AND a.id_profissional = ?
     ");
     
     if (!$stmt) {
-        throw new Exception("Erro na query de verificação: " . $mysqli->error);
+        throw new Exception("Erro na query de verificação: " . $conexao->error);
     }
     
     $stmt->bind_param("ii", $id_atividade, $id_profissional);
@@ -59,14 +59,14 @@ try {
     }
     
     // Verificar se existe submissão da pessoa_tea
-    $stmt = $mysqli->prepare("
+    $stmt = $conexao->prepare("
         SELECT id_pessoa_tea 
         FROM PessoaTea_Atividade
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
     
     if (!$stmt) {
-        throw new Exception("Erro na query de verificação de submissão: " . $mysqli->error);
+        throw new Exception("Erro na query de verificação de submissão: " . $conexao->error);
     }
     
     $stmt->bind_param("ii", $id_atividade, $id_pessoa_tea);
@@ -80,14 +80,14 @@ try {
     }
     
     // Atualizar ou inserir feedback
-    $stmt = $mysqli->prepare("
+    $stmt = $conexao->prepare("
         UPDATE PessoaTea_Atividade
         SET feedback_profissional = ?, data_feedback = NOW()
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
     
     if (!$stmt) {
-        throw new Exception("Erro na query de atualização: " . $mysqli->error);
+        throw new Exception("Erro na query de atualização: " . $conexao->error);
     }
     
     $stmt->bind_param("sii", $feedback, $id_atividade, $id_pessoa_tea);
@@ -111,5 +111,5 @@ try {
     ]);
 }
 
-$mysqli->close();
+$conexao->close();
 ?>

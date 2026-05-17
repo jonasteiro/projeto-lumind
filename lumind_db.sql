@@ -122,6 +122,15 @@ CREATE TABLE PessoaTea_Atividade (
     FOREIGN KEY (id_atividade) REFERENCES Atividade(id_atividade)
 );
 
+-- Vínculo entre ResponsavelLegal e PessoaTea (Um responsável pode cuidar de vários pacientes)
+CREATE TABLE ResponsavelLegal_PessoaTea (
+    id_responsavel INT NOT NULL,
+    id_pessoa_tea INT NOT NULL,
+    PRIMARY KEY (id_responsavel, id_pessoa_tea),
+    FOREIGN KEY (id_responsavel) REFERENCES ResponsavelLegal(id_usuario),
+    FOREIGN KEY (id_pessoa_tea) REFERENCES PessoaTea(id_usuario)
+);
+
 CREATE TABLE PessoaTea_Evento (
     id_pessoa_tea INT NOT NULL,
     id_evento INT NOT NULL,
@@ -206,6 +215,20 @@ VALUES (3, 'Exercício de Foco Visual', 'Seguir a bolinha vermelha na tela', '20
 INSERT INTO PessoaTea_Atividade (id_pessoa_tea, id_atividade)
 VALUES (4, 1);
 
+-- 3. Criando mais atividades para teste
+INSERT INTO Atividade (id_profissional, titulo, descricao, data_publicacao, categoria)
+VALUES 
+  (3, 'Exercício de Motricidade Fina', 'Práticas com quebra-cabeças e peças pequenas', '2023-10-26', 'Motricidade'),
+  (3, 'Atividade de Fala e Comunicação', 'Pronunciar as letras do alfabeto com clareza', '2023-10-27', 'Fonoaudiologia'),
+  (5, 'Relaxamento e Mindfulness', 'Técnicas de respiração e relaxamento muscular', '2023-10-28', 'Psicologia');
+
+-- 4. Vinculando todas as atividades ao Lucas (ID 4)
+INSERT INTO PessoaTea_Atividade (id_pessoa_tea, id_atividade)
+VALUES 
+  (4, 2),
+  (4, 3),
+  (4, 4);
+
 -- Query A exemplo buscando atividades do Dr. Roberto (ID 3)
 SELECT id_atividade, titulo, categoria, data_publicacao 
 FROM Atividade 
@@ -218,3 +241,57 @@ FROM Atividade a
 INNER JOIN PessoaTea_Atividade pa ON a.id_atividade = pa.id_atividade 
 WHERE pa.id_pessoa_tea = 4 
 ORDER BY a.data_publicacao DESC;
+
+-- 5. Vincular responsável Marta (id 2) ao paciente Lucas (id 4)
+INSERT INTO ResponsavelLegal_PessoaTea (id_responsavel, id_pessoa_tea)
+VALUES (2, 4);
+
+-- =======================================================
+-- MIGRATIONS — Sprint 2 (PBI 04 + PBI 05)
+-- Executar na ordem abaixo em todos os ambientes
+-- (Local, Homologação, Produção)
+-- =======================================================
+ 
+ 
+-- -------------------------------------------------------
+-- PBI 04 — Adiciona suporte a arquivo anexo na Atividade
+-- -------------------------------------------------------
+ALTER TABLE Atividade
+    ADD COLUMN arquivo_anexo MEDIUMBLOB  NULL AFTER categoria,
+    ADD COLUMN tipo_arquivo  VARCHAR(50) NULL AFTER arquivo_anexo;
+-- Exemplos de valor para tipo_arquivo: 'image/jpeg', 'image/png', 'application/pdf'
+ 
+ 
+-- -------------------------------------------------------
+-- PBI 05 — Adiciona controle de conclusão na tabela pivô
+-- -------------------------------------------------------
+ALTER TABLE PessoaTea_Atividade
+    ADD COLUMN status_conclusao    VARCHAR(20)  NOT NULL DEFAULT 'Pendente'
+                                   COMMENT 'Pendente | Concluída'
+                                   AFTER id_atividade,
+ 
+    ADD COLUMN comentario_paciente TEXT         NULL
+                                   COMMENT 'Comentário opcional do paciente ao concluir'
+                                   AFTER status_conclusao,
+ 
+    ADD COLUMN data_conclusao      DATETIME     NULL
+                                   COMMENT 'Data e hora do último envio/atualização'
+                                   AFTER comentario_paciente;
+ 
+ 
+-- -------------------------------------------------------
+-- VERIFICAÇÃO — confirme que as colunas existem
+-- -------------------------------------------------------
+-- DESCRIBE Atividade;
+-- DESCRIBE PessoaTea_Atividade;
+
+-- -------------------------------------------------------
+-- FEEDBACK DO PROFISSIONAL — Adiciona suporte a feedback
+-- -------------------------------------------------------
+ALTER TABLE PessoaTea_Atividade
+    ADD COLUMN feedback_profissional TEXT         NULL
+                                     COMMENT 'Feedback/avaliação do profissional sobre a atividade'
+                                     AFTER data_conclusao,
+    ADD COLUMN data_feedback         DATETIME     NULL
+                                     COMMENT 'Data e hora quando o profissional enviou o feedback'
+                                     AFTER feedback_profissional;

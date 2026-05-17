@@ -36,12 +36,6 @@ CREATE TABLE Administrador (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
-CREATE TABLE ResponsavelLegal (
-    id_usuario INT NOT NULL,
-    PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
-);
-
 CREATE TABLE ProfissionalSaude (
     id_usuario INT NOT NULL,
     registro_profissional VARCHAR(30) NOT NULL,
@@ -50,12 +44,24 @@ CREATE TABLE ProfissionalSaude (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
+CREATE TABLE ResponsavelLegal (
+    id_usuario INT NOT NULL,
+    id_profissional INT NOT NULL, -- Vínculo com quem cadastrou
+    PRIMARY KEY (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_profissional) REFERENCES ProfissionalSaude(id_usuario)
+);
+
 CREATE TABLE PessoaTea (
     id_usuario INT NOT NULL,
+    id_profissional INT NOT NULL, -- Vínculo com o profissional que atende
+    id_responsavel INT NOT NULL,  -- Vínculo com o responsável legal
     observacao TEXT NULL,
     nivel_tea VARCHAR(50) NOT NULL,
     PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_profissional) REFERENCES ProfissionalSaude(id_usuario),
+    FOREIGN KEY (id_responsavel) REFERENCES ResponsavelLegal(id_usuario)
 );
 
 -- =======================================================
@@ -153,16 +159,8 @@ INSERT INTO Administrador (id_usuario, status_adm)
 VALUES (1, TRUE);
 
 -- -------------------------------------------------------
--- USUÁRIO 2: Responsável Legal
--- -------------------------------------------------------
-INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (2, 'Marta Oliveira', 'marta.mae@email.com', 'senha_hasheada_456', '22222222222', '1980-08-25', 'ResponsavelLegal');
-
-INSERT INTO ResponsavelLegal (id_usuario) 
-VALUES (2);
-
--- -------------------------------------------------------
 -- USUÁRIO 3: Profissional de Saúde (Cadastro Aprovado)
+-- (inserido antes do Responsável Legal pois ResponsavelLegal.id_profissional referencia esta tabela)
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (3, 'Dr. Roberto Mendes', 'roberto.neuro@clinica.com', 'senha_hasheada_789', '33333333333', '1975-11-03', 'ProfissionalSaude');
@@ -171,7 +169,17 @@ INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade)
 VALUES (3, 'CRM-98765', 'Neurologista Pediátrico');
 
 INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao)
-VALUES (3, 'MG-12.345.678', 'url_ou_hash_certificado.pdf', 'Aprovado');
+VALUES (3, 0x504C414345484F4C444552, 0x504C414345484F4C444552, 'Aprovado');
+
+-- -------------------------------------------------------
+-- USUÁRIO 2: Responsável Legal
+-- (inserido depois do Profissional pois depende de ProfissionalSaude via FK id_profissional)
+-- -------------------------------------------------------
+INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
+VALUES (2, 'Marta Oliveira', 'marta.mae@email.com', 'senha_hasheada_456', '22222222222', '1980-08-25', 'ResponsavelLegal');
+
+INSERT INTO ResponsavelLegal (id_usuario, id_profissional) 
+VALUES (2, 3);
 
 -- -------------------------------------------------------
 -- USUÁRIO 4: Paciente (Pessoa TEA)
@@ -179,8 +187,8 @@ VALUES (3, 'MG-12.345.678', 'url_ou_hash_certificado.pdf', 'Aprovado');
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
 VALUES (4, 'Lucas Oliveira', 'lucas.filho@email.com', 'senha_hasheada_000', '44444444444', '2010-02-15', 'PessoaTea');
 
-INSERT INTO PessoaTea (id_usuario, observacao, nivel_tea) 
-VALUES (4, 'Apresenta forte sensibilidade a ruídos agudos. Responde bem a estímulos visuais.', 'Nível 2 - Suporte Substancial');
+INSERT INTO PessoaTea (id_usuario, id_profissional, id_responsavel, observacao, nivel_tea) 
+VALUES (4, 3, 2, 'Apresenta forte sensibilidade a ruídos agudos. Responde bem a estímulos visuais.', 'Nível 2 - Suporte Substancial');
 
 -- -------------------------------------------------------
 -- USUÁRIO 5: Profissional de Saúde (Cadastro Pendente)
@@ -192,7 +200,7 @@ INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade)
 VALUES (5, 'CRP-12345', 'Psicóloga Infantil');
 
 INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao)
-VALUES (5, 'SP-98.765.432', 'certificado_fernanda.pdf', 'Aguardando');
+VALUES (5, 0x504C414345484F4C444552, 0x504C414345484F4C444552, 'Aguardando');
 
 -- -------------------------------------------------------
 -- USUÁRIO 6: Profissional de Saúde (Cadastro Reprovado)
@@ -204,7 +212,7 @@ INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade)
 VALUES (6, 'CRFA-54321', 'Fonoaudiólogo');
 
 INSERT INTO Documentacao (id_usuario, carteira_identidade_nacional, certificacao_profissional, status_aprovacao, motivo_reprovacao)
-VALUES (6, 'RJ-11.222.333', 'certificado_paulo.pdf', 'Reprovado', 'Documento do conselho regional ilegível. Por favor, reenvie uma foto mais nítida.');
+VALUES (6, 0x504C414345484F4C444552, 0x504C414345484F4C444552, 'Reprovado', 'Documento do conselho regional ilegível. Por favor, reenvie uma foto mais nítida.');
 
 -- /Acessar o painel de atividades Gaby/
 -- 1. Criando uma atividade para o Dr. Roberto (ID 3)

@@ -1,0 +1,126 @@
+/* =========================================================
+   VARIÁVEIS
+========================================================= */
+
+:root {
+    --neutral-green-main: #8abf9a;
+    --neutral-green-hover: #a1cfaf;
+
+    --surface-white: #ffffff;
+
+    --text-main: #333333;
+    --text-muted: #6c757d;
+
+    --border-color: #e9ecef;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+    background: #f5f7f9;
+
+    font-family: 'Inter', sans-serif;
+
+    color: var(--text-main);
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.form-card {
+    max-width: 720px;
+
+    background: var(--surface-white);
+
+    border: 1px solid var(--border-color);
+
+    border-radius: 1.5rem;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.custom-input {
+    background-color: #f8f9fa !important;
+
+    border: 1px solid #dee2e6 !important;
+
+    color: var(--text-main);
+
+    font-size: 0.95rem;
+
+    transition: all 0.2s ease;
+}
+
+.custom-input:focus {
+    background-color: #ffffff !important;
+
+    border-color: var(--neutral-green-main) !important;
+
+    box-shadow: 0 0 0 4px rgba(138, 191, 154, 0.15) !important;
+}
+
+/* =========================================================
+   FLOATING LABELS
+========================================================= */
+
+.form-floating > label {
+    color: var(--text-muted);
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+}
+
+/* Corrige label do SELECT também */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    color: var(--neutral-green-main);
+}
+
+/* =========================================================
+   ERROS
+========================================================= */
+
+.form-error {
+    display: block;
+
+    margin-top: 0.35rem;
+
+    font-size: 0.78rem;
+
+    color: #dc3545;
+}
+
+/* =========================================================
+   BOTÃO
+========================================================= */
+
+.btn-primary-neutral {
+    background: var(--neutral-green-main);
+
+    border: none;
+
+    color: white;
+
+    transition: all 0.2s ease;
+}
+
+.btn-primary-neutral:hover {
+    background: var(--neutral-green-hover);
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(138, 191, 154, 0.3);
+}

@@ -18,7 +18,6 @@
 ========================================================= */
 
 * {
-
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -114,42 +113,32 @@ body::before {
 }
 
 /* =========================================================
-   CONTAINER
+   NAVBAR
 ========================================================= */
 
-.container {
+.navbar-custom {
+
+    background: rgba(255,255,255,0.25);
+
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.22);
+
+    box-shadow:
+        0 8px 24px rgba(65,137,201,0.08);
 
     position: relative;
 
-    z-index: 2;
-
-    max-width: 1100px;
-
-    margin: auto;
-
-    padding: 3rem 1.2rem;
+    z-index: 5;
 }
 
 /* =========================================================
-   HEADER
+   TÍTULO
 ========================================================= */
 
-.header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 1rem;
-
-    margin-bottom: 2rem;
-}
-
-.header h1 {
-
-    font-size: 2rem;
+.page-title {
 
     font-weight: 700;
 
@@ -166,24 +155,40 @@ body::before {
     -webkit-text-fill-color: transparent;
 }
 
-.subtitle {
+.page-title i {
 
-    color: var(--text-soft);
+    -webkit-text-fill-color: initial;
 
-    margin-top: 0.4rem;
+    color: var(--dark-blue);
 }
 
 /* =========================================================
    BOTÃO VOLTAR
 ========================================================= */
 
-.btn-voltar {
+.btn-link i {
+
+    color: var(--dark-blue) !important;
+
+    transition: var(--transition);
+}
+
+.btn-link:hover i {
+
+    transform: translateX(-4px);
+
+    color: var(--primary-blue) !important;
+}
+
+/* =========================================================
+   BOTÃO SAIR
+========================================================= */
+
+#logoff {
 
     border: none;
 
-    border-radius: 999px;
-
-    padding: 0.8rem 1.4rem;
+    border-radius: 999px !important;
 
     background:
         linear-gradient(
@@ -196,7 +201,7 @@ body::before {
 
     font-weight: 700;
 
-    cursor: pointer;
+    letter-spacing: 0.3px;
 
     transition: var(--transition);
 
@@ -204,7 +209,7 @@ body::before {
         0 8px 20px rgba(65,137,201,0.18);
 }
 
-.btn-voltar:hover {
+#logoff:hover {
 
     transform: translateY(-2px);
 
@@ -213,10 +218,25 @@ body::before {
 }
 
 /* =========================================================
-   CARD FORM
+   MAIN
 ========================================================= */
 
-.form-container {
+main.container-xl {
+
+    padding-bottom: 3rem;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+/* =========================================================
+   CONTAINER PRINCIPAL
+========================================================= */
+
+.content-area {
+
+    width: 100%;
 
     background: rgba(255,255,255,0.42);
 
@@ -224,16 +244,16 @@ body::before {
 
     -webkit-backdrop-filter: blur(22px);
 
-    border-radius: 2rem;
+    border-radius: 2rem !important;
 
-    border: 1px solid rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.25) !important;
 
     box-shadow:
         0 10px 30px rgba(0,0,0,0.05),
         0 30px 80px rgba(65,137,201,0.18),
         inset 0 1px 1px rgba(255,255,255,0.5);
 
-    padding: 3rem;
+    transition: var(--transition);
 
     position: relative;
 
@@ -242,7 +262,7 @@ body::before {
 
 /* brilho */
 
-.form-container::before {
+.content-area::before {
 
     content: "";
 
@@ -260,209 +280,41 @@ body::before {
     pointer-events: none;
 }
 
-/* =========================================================
-   FORM
-========================================================= */
+.content-area:hover {
 
-.formulario-adm {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 1.5rem;
-
-    position: relative;
-
-    z-index: 2;
+    transform: translateY(-2px);
 }
 
 /* =========================================================
-   ROW
+   HEADER INTERNO
 ========================================================= */
 
-.form-row {
+.border-bottom {
 
-    display: flex;
-
-    gap: 1.5rem;
+    border-color: rgba(65,137,201,0.12) !important;
 }
 
-.form-row .form-group {
-
-    flex: 1;
-}
-
-/* =========================================================
-   GROUP
-========================================================= */
-
-.form-group {
-
-    display: flex;
-
-    flex-direction: column;
-}
-
-/* =========================================================
-   LABEL
-========================================================= */
-
-label {
-
-    font-weight: 600;
-
-    margin-bottom: 0.55rem;
+.content-area h2 {
 
     color: var(--dark-blue);
+
+    font-weight: 700;
+}
+
+.content-area p {
+
+    color: var(--text-soft);
 }
 
 /* =========================================================
-   INPUTS
+   BOTÃO NOVO RESPONSÁVEL
 ========================================================= */
 
-input,
-select,
-textarea {
-
-    border: 1.5px solid rgba(65, 137, 201, 0.12);
-
-    background-color: rgba(255,255,255,0.72);
-
-    border-radius: 1rem;
-
-    padding: 0.95rem 1rem;
-
-    font-size: 0.96rem;
-
-    color: var(--text-main);
-
-    transition: var(--transition);
-
-    box-shadow:
-        inset 0 1px 2px rgba(255,255,255,0.5),
-        0 4px 10px rgba(65,137,201,0.04);
-}
-
-/* =========================================================
-   FOCUS
-========================================================= */
-
-input:focus,
-select:focus,
-textarea:focus {
-
-    outline: none;
-
-    border-color: rgba(65, 137, 201, 0.35);
-
-    background-color: rgba(255,255,255,0.92);
-
-    box-shadow:
-        0 0 0 4px rgba(184, 228, 255, 0.5),
-        0 8px 18px rgba(65,137,201,0.08);
-
-    transform: translateY(-1px);
-}
-
-/* =========================================================
-   TEXTAREA
-========================================================= */
-
-textarea {
-
-    resize: vertical;
-
-    min-height: 110px;
-}
-
-/* =========================================================
-   ERROS
-========================================================= */
-
-.form-error {
-
-    font-size: 0.78rem;
-
-    color: #d64949;
-
-    margin-top: 0.4rem;
-}
-
-/* =========================================================
-   ALERTAS
-========================================================= */
-
-.alert {
-
-    display: none;
-
-    padding: 1rem;
-
-    border-radius: 1rem;
-
-    font-size: 0.92rem;
-}
-
-.alert-error {
-
-    background: rgba(255, 109, 109, 0.12);
-
-    color: #c24d4d;
-}
-
-.alert-success {
-
-    background: rgba(109, 255, 158, 0.12);
-
-    color: #22884c;
-}
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
-.form-actions {
-
-    display: flex;
-
-    gap: 1rem;
-
-    margin-top: 1rem;
-}
-
-/* =========================================================
-   BOTÕES
-========================================================= */
-
-.btn {
-
-    flex: 1;
-
-    height: 56px;
+#btnNovoResponsavel {
 
     border: none;
 
-    border-radius: 999px;
-
-    font-weight: 700;
-
-    font-size: 0.95rem;
-
-    cursor: pointer;
-
-    transition: var(--transition);
-
-    position: relative;
-
-    overflow: hidden;
-}
-
-/* =========================================================
-   BOTÃO PRIMÁRIO
-========================================================= */
-
-.btn-primary {
+    border-radius: 999px !important;
 
     background:
         linear-gradient(
@@ -473,11 +325,15 @@ textarea {
 
     color: white;
 
+    font-weight: 700;
+
+    transition: var(--transition);
+
     box-shadow:
         0 8px 20px rgba(65,137,201,0.18);
 }
 
-.btn-primary:hover {
+#btnNovoResponsavel:hover {
 
     transform: translateY(-2px);
 
@@ -486,23 +342,94 @@ textarea {
 }
 
 /* =========================================================
-   BOTÃO SECUNDÁRIO
+   TABELA
 ========================================================= */
 
-.btn-secondary {
+table {
 
-    background: rgba(255,255,255,0.55);
+    width: 100%;
+
+    border-collapse: separate;
+
+    border-spacing: 0 12px;
+
+    margin-top: 1rem;
+}
+
+th {
 
     color: var(--dark-blue);
 
-    border: 1px solid rgba(65,137,201,0.12);
+    font-weight: 700;
+
+    padding: 1rem;
+
+    background: rgba(184,228,255,0.38);
+
+    border: none;
 }
 
-.btn-secondary:hover {
+td {
 
-    background: rgba(184,228,255,0.4);
+    padding: 1rem;
 
-    transform: translateY(-1px);
+    background: rgba(255,255,255,0.52);
+
+    backdrop-filter: blur(10px);
+
+    border-top: 1px solid rgba(255,255,255,0.25);
+
+    border-bottom: 1px solid rgba(255,255,255,0.25);
+}
+
+/* bordas arredondadas */
+
+tr td:first-child {
+
+    border-top-left-radius: 1rem;
+
+    border-bottom-left-radius: 1rem;
+}
+
+tr td:last-child {
+
+    border-top-right-radius: 1rem;
+
+    border-bottom-right-radius: 1rem;
+}
+
+/* hover */
+
+tbody tr {
+
+    transition: var(--transition);
+}
+
+tbody tr:hover {
+
+    transform: scale(1.01);
+}
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+td a {
+
+    color: var(--primary-blue);
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition: var(--transition);
+
+    margin-right: 10px;
+}
+
+td a:hover {
+
+    color: var(--dark-blue);
 }
 
 /* =========================================================
@@ -511,30 +438,20 @@ textarea {
 
 @media (max-width: 768px) {
 
-    .header {
+    .content-area {
 
-        flex-direction: column;
+        padding: 1.5rem !important;
 
-        align-items: flex-start;
+        border-radius: 1.5rem !important;
     }
 
-    .form-row {
+    .navbar-custom {
 
-        flex-direction: column;
+        padding-inline: 1rem !important;
     }
 
-    .form-container {
+    h2 {
 
-        padding: 2rem;
-    }
-
-    .form-actions {
-
-        flex-direction: column;
-    }
-
-    .header h1 {
-
-        font-size: 1.7rem;
+        font-size: 1.2rem;
     }
 }

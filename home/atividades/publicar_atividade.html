@@ -2,267 +2,157 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Publicar Atividade | Lumind</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    />
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
-        rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
 
     <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
     <!-- Bootstrap Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
-    <!-- CSS ORIGINAL -->
-    <link
-        rel="stylesheet"
-        href="../../css/atividades/publicar_atividade.css"
-    />
+    <!-- CSS BASE (Fonte da Verdade) -->
+    <link rel="stylesheet" href="../../css/atividades/publicar_atividade.css" />
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-
-    <div class="login-container px-3">
-
-        <div class="login-modal">
-
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-
-                <button
-                    class="btn btn-outline-success rounded-pill px-3"
-                    type="button"
-                    onclick="window.location.href='../tela_profissional.html'"
-                >
-                    <i class="bi bi-arrow-left"></i>
-                </button>
-
-                <button
-                    onclick="logoff()"
-                    class="btn btn-outline-success rounded-pill px-4 fw-bold"
-                    type="button"
-                >
-                    Sair
-                </button>
-
+    <div class="d-flex">
+        <!-- SIDEBAR OBRIGATÓRIA PELO CSS -->
+        <aside class="sidebar">
+            <div class="brand-container">
+                <img src="../../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
             </div>
+            <nav class="nav-menu">
+                <a href="../tela_profissional.html"><i class="bi bi-house-door"></i> Início</a>
+                <a href="../atividades_painel.html" class="active"><i class="bi bi-clipboard-check"></i> Atividades</a>
+                <a href="#"><i class="bi bi-bar-chart"></i> Desempenho</a>
+                <hr>
+                <a href="#" onclick="logoff()" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
+            </nav>
+        </aside>
 
-            <!-- TITLE -->
-            <div class="text-center mb-5">
-
-                <h1 class="login-title mb-3">
-                    <i class="bi bi-journal-plus me-2"></i>
-                    Publicar Atividade
-                </h1>
-
-                <p class="login-subtitle">
-                    Preencha as informações para publicar uma nova atividade terapêutica.
-                </p>
-
-            </div>
-
-            <!-- FORM -->
-            <form id="formPublicarAtividade">
-
-                <!-- TÍTULO -->
-                <div class="form-floating mb-4">
-
-                    <input
-                        type="text"
-                        id="titulo"
-                        name="titulo"
-                        class="form-control rounded-4 login-input"
-                        placeholder="Título"
-                        required
-                    />
-
-                    <label for="titulo">
-                        <i class="bi bi-type me-2"></i>
-                        Título da Atividade
-                    </label>
-
+        <!-- PAINEL PRINCIPAL -->
+        <main class="main-panel flex-grow-1">
+            
+            <!-- TOPBAR -->
+            <header class="topbar d-flex justify-content-between align-items-center p-4">
+                <div class="d-flex align-items-center">
+                    <a href="../tela_profissional.html" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2>PUBLICAR ATIVIDADE</h2>
                 </div>
-
-                <!-- DESCRIÇÃO -->
-                <div class="form-floating mb-4">
-
-                    <textarea
-                        id="descricao"
-                        name="descricao"
-                        class="form-control rounded-4 login-input"
-                        placeholder="Descrição"
-                        style="height: 140px;"
-                        required
-                    ></textarea>
-
-                    <label for="descricao">
-                        <i class="bi bi-card-text me-2"></i>
-                        Descrição
-                    </label>
-
+                <div class="user-profile d-flex align-items-center">
+                    <span id="nome-profissional" class="user-name me-3">Profissional</span>
+                    <img src="https://i.pravatar.cc/45?img=45" alt="Perfil" class="user-img">
                 </div>
+            </header>
 
-                <!-- CATEGORIA -->
-                <div class="form-floating mb-4">
-
-                    <select
-                        id="categoria"
-                        name="categoria"
-                        class="form-select rounded-4 login-input"
-                        required
-                    >
-
-                        <option value="">Selecione...</option>
-
-                        <option value="Fonoaudiologia">
-                            Fonoaudiologia
-                        </option>
-
-                        <option value="Psicologia">
-                            Psicologia
-                        </option>
-
-                        <option value="Terapia Ocupacional">
-                            Terapia Ocupacional
-                        </option>
-
-                        <option value="Pedagogia">
-                            Pedagogia
-                        </option>
-
-                    </select>
-
-                    <label for="categoria">
-                        <i class="bi bi-tags me-2"></i>
-                        Categoria
-                    </label>
-
-                </div>
-
-                <!-- DATA -->
-                <div class="form-floating mb-4">
-
-                    <input
-                        type="date"
-                        id="data_publicacao"
-                        name="data_publicacao"
-                        class="form-control rounded-4 login-input"
-                        placeholder="Data"
-                        required
-                    />
-
-                    <label for="data_publicacao">
-                        <i class="bi bi-calendar-event me-2"></i>
-                        Data de Publicação
-                    </label>
-
-                </div>
-
-                <!-- ARQUIVO -->
-                <div class="mb-4">
-
-                    <label
-                        for="arquivo"
-                        class="d-block mb-2 text-muted fw-semibold"
-                    >
-                        <i class="bi bi-paperclip me-2"></i>
-                        Material de Apoio
-                    </label>
-
-                    <input
-                        type="file"
-                        id="arquivo"
-                        name="arquivo"
-                        class="form-control rounded-4 login-input"
-                        accept=".pdf, image/jpeg, image/png"
-                    />
-
-                    <small class="text-muted d-block mt-2">
-                        Formatos aceitos: PDF, JPG e PNG.
-                    </small>
-
-                </div>
-
-                <!-- PACIENTES -->
-                <div class="mb-5">
-
-                    <label class="d-block mb-3 text-muted fw-semibold">
-                        <i class="bi bi-people me-2"></i>
-                        Selecionar Pacientes
-                    </label>
-
-                    <div
-                        id="containerPacientes"
-                        class="p-4 rounded-4 login-input"
-                    >
-                        <span class="text-muted">
-                            Carregando pacientes...
-                        </span>
+            <!-- CONTEÚDO CENTRAL -->
+            <section class="content p-4">
+                
+                <!-- ADAPTAÇÃO: Formulário encapsulado no card de atividade do seu CSS -->
+                <div class="atividade-card">
+                    
+                    <div class="card-header-activity">
+                        <h3><i class="bi bi-journal-plus me-2"></i> Nova Atividade Terapêutica</h3>
+                        <span class="card-category">Criação</span>
                     </div>
 
-                    <div
-                        id="erroPacientes"
-                        class="alert alert-danger mt-3 d-none"
-                        role="alert"
-                    >
-                        Você precisa selecionar pelo menos um paciente.
+                    <div class="card-body-activity">
+                        <p class="text-muted mb-4" style="font-size: 0.9rem;">Preencha as informações abaixo para publicar uma nova atividade para seus pacientes.</p>
+
+                        <form id="formPublicarAtividade">
+                            <!-- TÍTULO -->
+                            <div class="form-floating mb-3">
+                                <input type="text" id="titulo" name="titulo" class="form-control rounded-3" placeholder="Título" required />
+                                <label for="titulo"><i class="bi bi-type me-2"></i> Título da Atividade</label>
+                            </div>
+
+                            <!-- DESCRIÇÃO -->
+                            <div class="form-floating mb-3">
+                                <textarea id="descricao" name="descricao" class="form-control rounded-3" placeholder="Descrição" style="height: 140px;" required></textarea>
+                                <label for="descricao"><i class="bi bi-card-text me-2"></i> Descrição</label>
+                            </div>
+
+                            <div class="row">
+                                <!-- CATEGORIA -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <select id="categoria" name="categoria" class="form-select rounded-3" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="Fonoaudiologia">Fonoaudiologia</option>
+                                            <option value="Psicologia">Psicologia</option>
+                                            <option value="Terapia Ocupacional">Terapia Ocupacional</option>
+                                            <option value="Pedagogia">Pedagogia</option>
+                                        </select>
+                                        <label for="categoria"><i class="bi bi-tags me-2"></i> Categoria</label>
+                                    </div>
+                                </div>
+
+                                <!-- DATA -->
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-floating">
+                                        <input type="date" id="data_publicacao" name="data_publicacao" class="form-control rounded-3" placeholder="Data" required />
+                                        <label for="data_publicacao"><i class="bi bi-calendar-event me-2"></i> Data de Publicação</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ARQUIVO -->
+                            <div class="mb-4 p-3 border rounded-3 bg-light">
+                                <label for="arquivo" class="d-block mb-2 text-dark fw-bold" style="font-size: 0.9rem;">
+                                    <i class="bi bi-paperclip me-2"></i> Material de Apoio
+                                </label>
+                                <input type="file" id="arquivo" name="arquivo" class="form-control" accept=".pdf, image/jpeg, image/png" />
+                                <small class="text-muted d-block mt-2" style="font-size: 0.8rem;">Formatos aceitos: PDF, JPG e PNG.</small>
+                            </div>
+
+                            <!-- PACIENTES -->
+                            <div class="mb-4">
+                                <label class="d-block mb-2 text-dark fw-bold" style="font-size: 0.9rem;">
+                                    <i class="bi bi-people me-2"></i> Selecionar Pacientes
+                                </label>
+                                <div id="containerPacientes" class="p-3 border rounded-3" style="background: #fafcff; min-height: 80px;">
+                                    <span class="text-muted" style="font-size: 0.9rem;">Carregando pacientes...</span>
+                                </div>
+                                <div id="erroPacientes" class="alert alert-danger mt-2 d-none py-2" role="alert" style="font-size: 0.85rem;">
+                                    Você precisa selecionar pelo menos um paciente.
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- FOOTER DO CARD -->
+                    <div class="card-footer-activity">
+                        <div class="btn-group-card d-flex justify-content-end">
+                            <button type="button" class="btn-card secondary" onclick="window.location.href='../tela_profissional.html'">Cancelar</button>
+                            <button type="submit" form="formPublicarAtividade" class="btn-card primary">
+                                <i class="bi bi-send-fill"></i> Publicar Atividade
+                            </button>
+                        </div>
                     </div>
 
                 </div>
-
-                <!-- SUBMIT -->
-                <button
-                    type="submit"
-                    class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm btn-login"
-                >
-
-                    <i class="bi bi-send-fill me-2"></i>
-
-                    Publicar Atividade
-
-                </button>
-
-            </form>
-
-        </div>
-
+            </section>
+        </main>
     </div>
 
     <!-- SCRIPTS -->
     <script src="../../js/index.js"></script>
-
     <script src="../../js/atividades/publicar_atividade.js"></script>
-
     <script>
         if (typeof validarAcesso === "function") {
             validarAcesso(["ProfissionalSaude"]);
         }
     </script>
-
 </body>
 </html>

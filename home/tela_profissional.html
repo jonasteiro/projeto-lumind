@@ -10,99 +10,159 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../css/tela_profissional.css">
+    
+    <!-- CSS BASE (Fonte da Verdade) -->
+    <link rel="stylesheet" href="../css/atividades/publicar_atividade.css">
 </head>
 <body>
-    <div class="tela-admin">
+    <div class="d-flex">
+        <!-- SIDEBAR OBRIGATÓRIA -->
         <aside class="sidebar">
-            <div class="sidebar-brand d-flex align-items-center p-4">
-                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo" onerror="this.style.display='none'">
-                <span class="h4 m-0 ms-2">Lumind</span>
+            <div class="brand-container">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
             </div>
-            <div class="user-card d-flex align-items-center p-4">
-                <img src="https://i.pravatar.cc/80?img=12" alt="Usuário" class="user-photo">
-                <div>
-                    <strong>Marcela Lagos</strong>
-                    <small>Profissional da saúde</small>
-                </div>
-            </div>
-            <nav class="nav flex-column p-3">
-                <a href="#" class="nav-link active"><i class="bi bi-house-door-fill"></i> INICIAL</a>
-                <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES</a>
-                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+            
+            <nav class="nav-menu">
+                <a href="#" class="active"><i class="bi bi-house-door-fill"></i> Início</a>
+                <a href="#"><i class="bi bi-gear-fill"></i> Configurações</a>
+                <hr>
+                <a href="#" id="logoff" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
             </nav>
-            <div class="sidebar-footer text-center p-3">
-                <small>Versão 1.0</small>
-            </div>
         </aside>
 
-        <main class="main-panel">
+        <!-- PAINEL PRINCIPAL -->
+        <main class="main-panel flex-grow-1">
+            
+            <!-- TOPBAR -->
             <header class="topbar d-flex justify-content-between align-items-center p-4">
-                <h2>PAINEL PROFISSIONAL</h2>
-                <div class="search-box d-flex align-items-center">
-                    <i class="bi bi-search"></i>
-                    <input type="search" class="form-control form-control-sm ms-2" placeholder="Buscar">
+                <div class="d-flex align-items-center">
+                    <h2>PAINEL PROFISSIONAL</h2>
+                </div>
+                
+                <div class="d-flex align-items-center gap-4">
+                    <!-- BARRA DE BUSCA DO CSS -->
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="search" placeholder="Buscar no painel...">
+                    </div>
+
+                    <!-- USER PROFILE MOVIDO DA SIDEBAR PARA A TOPBAR -->
+                    <div class="user-profile d-flex align-items-center">
+                        <div class="d-flex flex-column text-end me-3">
+                            <span class="user-name">Marcela Lagos</span>
+                            <small style="font-size: 0.75rem; color: #1a7091;">Profissional da saúde</small>
+                        </div>
+                        <img src="https://i.pravatar.cc/80?img=12" alt="Usuário" class="user-img">
+                    </div>
                 </div>
             </header>
 
-            <!-- Mudei -->
+            <!-- CONTEÚDO CENTRAL: GRID DE ATIVIDADES -->
             <section class="content p-4">
-                <div class="row g-4">
-                    <div class="col-sm-6 col-lg-4">
-                        <a href="../home/atividades/publicar_atividade.html" style="text-decoration: none; color: inherit;">
-                            <article class="card-option p-4 text-center" style="cursor: pointer;">
-                                <i class="bi bi-file-earmark-medical icon"></i>
-                                <h4>ATIVIDADES</h4>
-                                <p>Gerenciar e postar tarefas</p>
-                            </article>
-                        </a>
+                <div id="lista-atividades">
+                    
+                    <!-- CARD 1: ATIVIDADES -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-file-earmark-medical me-2"></i> Atividades</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Gerenciar e postar tarefas terapêuticas.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <a href="../home/atividades/publicar_atividade.html" class="btn-card primary w-100">Acessar Módulo</a>
+                            </div>
+                        </div>
                     </div>
-            <!--------------->
 
-                    <div class="col-sm-6 col-lg-4">
-                        <article class="card-option p-4 text-center">
-                            <i class="bi bi-calendar3 icon"></i>
-                            <h4>EVENTOS</h4>
-                            <p>Acompanhar eventos agendados</p>
-                        </article>
+                    <!-- CARD 2: EVENTOS -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-calendar3 me-2"></i> Eventos</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Acompanhar eventos agendados.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <button class="btn-card primary w-100">Acessar Módulo</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <article class="card-option p-4 text-center">
-                            <i class="bi bi-journal-text icon"></i>
-                            <h4>RELATÓRIOS</h4>
-                            <p>Visualizar relatórios pacientes</p>
-                        </article>
+
+                    <!-- CARD 3: RELATÓRIOS -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-journal-text me-2"></i> Relatórios</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Visualizar relatórios de pacientes.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <button class="btn-card primary w-100">Acessar Módulo</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <a href="lista_pessoa_tea.html" style="text-decoration: none; color: inherit;">
-                            <article class="card-option p-4 text-center" style="cursor: pointer;">
-                                <i class="bi bi-person-circle icon"></i>
-                                <h4>REGISTRO DE PACIENTES</h4>
-                                <p>Registro de pacientes cadastrados</p>
-                            </article>
-                        </a>
+
+                    <!-- CARD 4: REGISTRO DE PACIENTES -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-person-circle me-2"></i> Registro de Pacientes</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Registro de pacientes cadastrados.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <a href="lista_pessoa_tea.html" class="btn-card primary w-100">Acessar Módulo</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <a href="lista_responsavel.html" style="text-decoration: none; color: inherit;">
-                            <article class="card-option p-4 text-center" style="cursor: pointer;">
-                                <i class="bi bi-people icon"></i>
-                                <h4>REGISTRO DE RESPONSÁVEIS</h4>
-                                <p>Registro dos responsáveis legais</p>
-                            </article>
-                        </a>
+
+                    <!-- CARD 5: REGISTRO DE RESPONSÁVEIS -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-people me-2"></i> Responsáveis</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Registro dos responsáveis legais.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <a href="lista_responsavel.html" class="btn-card primary w-100">Acessar Módulo</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <article class="card-option p-4 text-center">
-                            <i class="bi bi-bar-chart-fill icon"></i>
-                            <h4>HISTÓRICO DE PROGRESSO</h4>
-                            <p>Realiza o acompanhamento da evolução do paciente</p>
-                        </article>
+
+                    <!-- CARD 6: HISTÓRICO DE PROGRESSO -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-bar-chart-fill me-2"></i> Progresso</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Realiza o acompanhamento da evolução do paciente.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <button class="btn-card primary w-100">Acessar Módulo</button>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </section>
         </main>
     </div>
 
+    <!-- SCRIPTS -->
     <script src="../js/index.js"></script>
     <script src="../js/valida_sessao.js"></script>
     <script>

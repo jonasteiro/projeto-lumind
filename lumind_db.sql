@@ -38,8 +38,10 @@ CREATE TABLE Administrador (
 
 CREATE TABLE ResponsavelLegal (
     id_usuario INT NOT NULL,
+    id_profissional INT NOT NULL, -- Vínculo com quem cadastrou
     PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_profissional) REFERENCES ProfissionalSaude(id_usuario)
 );
 
 CREATE TABLE ProfissionalSaude (
@@ -52,10 +54,14 @@ CREATE TABLE ProfissionalSaude (
 
 CREATE TABLE PessoaTea (
     id_usuario INT NOT NULL,
+    id_profissional INT NOT NULL, -- Vínculo com o profissional que atende
+    id_responsavel INT NOT NULL,  -- Vínculo com o responsável legal
     observacao TEXT NULL,
     nivel_tea VARCHAR(50) NOT NULL,
     PRIMARY KEY (id_usuario),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_profissional) REFERENCES ProfissionalSaude(id_usuario),
+    FOREIGN KEY (id_responsavel) REFERENCES ResponsavelLegal(id_usuario)
 );
 
 -- =======================================================

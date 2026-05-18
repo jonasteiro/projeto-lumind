@@ -1,209 +1,526 @@
-/* ==========================================================================
-   VARIÁVEIS DE TEMA (HealthTech Premium UI)
-   ========================================================================== */
+/* =========================================================
+   ROOT VARIABLES
+========================================================= */
+
 :root {
-    --primary-color: #0284c7;    /* Azul médico (Confiança e Foco) */
-    --primary-hover: #0369a1;    /* Azul escuro para hover */
-    --bg-page: #f0f4f8;          /* Cinza azulado muito suave para o fundo */
-    --bg-card: #ffffff;          /* Branco puro para o formulário */
-    --text-dark: #1e293b;        /* Texto principal (quase preto) */
-    --text-muted: #64748b;       /* Texto secundário (labels) */
-    --border-light: #e2e8f0;     /* Bordas sutis */
-    --input-bg: #f8fafc;         /* Fundo levemente destacado para inputs */
-    --error-color: #ef4444;      /* Vermelho elegante para erros */
+
+    --color-primary: #0284c7;
+    --color-primary-dark: #0369a1;
+
+    --color-surface: #ffffff;
+    --color-background: #f1f5f9;
+
+    --color-text: #0f172a;
+    --color-text-muted: #64748b;
+
+    --color-border: #e2e8f0;
+
+    --color-success: #10b981;
+    --color-error: #ef4444;
+
+    --shadow-sm:
+        0 4px 10px rgba(0, 0, 0, 0.04);
+
+    --shadow-md:
+        0 10px 30px rgba(15, 23, 42, 0.08);
+
+    --radius-lg: 1.5rem;
+    --radius-md: 0.9rem;
+
+    --transition:
+        all 0.3s ease;
+
+    --font-primary:
+        'Inter', sans-serif;
 }
 
-/* ==========================================================================
-   RESET E BASE
-   ========================================================================== */
-body { 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-    background-color: var(--bg-page); 
-    color: var(--text-dark);
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    font-family: var(--font-primary);
+
+    background: var(--color-background);
+
+    color: var(--color-text);
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1000;
+
+    background: rgba(56, 189, 248, 0.95);
+
+    backdrop-filter: blur(12px);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.topbar-content {
+
+    max-width: 1200px;
+
+    margin: 0 auto;
+
+    padding: 1rem 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topbar-left {
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-title {
+
+    font-size: 1.3rem;
+    font-weight: 700;
+
+    color: white;
+
     margin: 0;
 }
 
-/* ==========================================================================
-   CONTAINER PRINCIPAL (O "Cartão" do Formulário)
-   ========================================================================== */
-.container { 
-    width: 100%;
-    max-width: 650px; 
-    background: var(--bg-card); 
-    padding: 40px; 
-    border-radius: 12px; /* Cantos mais suaves e modernos */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); /* Sombra difusa e elegante */
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.back-button,
+.logout-button {
+
+    border: none;
+
+    cursor: pointer;
+
+    transition: var(--transition);
 }
 
-h2 {
-    margin-top: 0;
-    margin-bottom: 30px;
-    font-size: 24px;
+/* Botão voltar */
+.back-button {
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.15);
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.1rem;
+}
+
+/* Microinteração */
+.back-button:hover {
+
+    background: rgba(255, 255, 255, 0.25);
+
+    transform: translateX(-2px);
+}
+
+.back-button:focus {
+
+    outline: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Logout */
+.logout-button {
+
+    background: white;
+
+    color: var(--color-primary);
+
     font-weight: 700;
-    color: var(--primary-color);
-    border-bottom: 2px solid var(--bg-page);
-    padding-bottom: 15px;
+
+    padding: 0.75rem 1.5rem;
+
+    border-radius: 999px;
+
+    box-shadow: var(--shadow-sm);
 }
 
-/* ==========================================================================
-   INPUTS, SELECTS E TEXTAREA
-   ========================================================================== */
-.form-group { 
-    margin-bottom: 24px; 
+.logout-button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(255, 255, 255, 0.25);
 }
 
-label { 
-    display: block; 
-    font-size: 14px;
-    font-weight: 600; 
-    color: var(--text-muted);
-    margin-bottom: 8px; 
-}
 
-input[type="text"], 
-input[type="date"], 
-select, 
-textarea, 
-input[type="file"] {
-    width: 100%; 
-    padding: 12px 16px; 
-    font-size: 15px;
-    font-family: inherit;
-    color: var(--text-dark);
-    background-color: var(--input-bg);
-    border: 1px solid var(--border-light); 
-    border-radius: 8px; 
-    box-sizing: border-box;
-    transition: all 0.3s ease; /* Animação suave ao clicar */
-}
+/* =========================================================
+   PAGE LAYOUT
+========================================================= */
 
-/* Efeito Glow quando o médico clica no campo */
-input[type="text"]:focus, 
-input[type="date"]:focus, 
-select:focus, 
-textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-}
+.page-layout {
 
-textarea {
-    resize: vertical; /* Permite aumentar apenas para baixo */
-    min-height: 100px;
-}
-
-/* Estilizando o campo de Arquivo para não parecer antigo */
-input[type="file"] {
-    padding: 10px;
-    background-color: #fff;
-    cursor: pointer;
-}
-input[type="file"]::file-selector-button {
-    background-color: var(--bg-page);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    padding: 6px 12px;
-    color: var(--text-dark);
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-right: 15px;
-}
-input[type="file"]::file-selector-button:hover {
-    background-color: var(--border-light);
-}
-
-/* ==========================================================================
-   LISTA DE PACIENTES (Scroll e Checkboxes)
-   ========================================================================== */
-.pacientes-lista { 
-    border: 1px solid var(--border-light); 
-    padding: 10px; 
-    border-radius: 8px; 
-    max-height: 180px; 
-    overflow-y: auto; 
-    background: #fff; 
-}
-
-/* Estilizando a barra de rolagem (Scrollbar) para ficar elegante */
-.pacientes-lista::-webkit-scrollbar {
-    width: 8px;
-}
-.pacientes-lista::-webkit-scrollbar-track {
-    background: var(--input-bg);
-    border-radius: 8px;
-}
-.pacientes-lista::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 8px;
-}
-
-.paciente-item { 
-    display: flex; 
-    align-items: center; 
-    padding: 8px 12px;
-    margin-bottom: 4px; 
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-/* Efeito de hover quando o mouse passa por cima do paciente */
-.paciente-item:hover {
-    background-color: var(--input-bg);
-}
-
-.paciente-item input { 
-    width: 18px; 
-    height: 18px;
-    margin-right: 12px; 
-    cursor: pointer;
-    accent-color: var(--primary-color); /* Pinta a checkbox com a cor principal */
-}
-
-/* ==========================================================================
-   BOTÃO PRINCIPAL E ERROS
-   ========================================================================== */
-.btn-submit { 
-    background-color: var(--primary-color); 
-    color: white; 
-    border: none; 
-    padding: 14px 20px; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    width: 100%; 
-    font-size: 16px; 
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.btn-submit:hover { 
-    background-color: var(--primary-hover); 
-    transform: translateY(-1px); /* Botão "sobe" levemente ao passar o mouse */
-    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-}
-
-.btn-submit:disabled {
-    background-color: var(--text-muted);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.erro-msg { 
-    color: var(--error-color); 
-    font-size: 14px; 
-    font-weight: 500;
-    display: none; 
-    margin-top: 8px; 
-    padding-left: 2px;
-}
-
-.form-wrapper {
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+
+    padding: 3rem 1.5rem;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.activity-card {
+
+    width: 100%;
+    max-width: 760px;
+
+    background: var(--color-surface);
+
+    border-radius: var(--radius-lg);
+
+    padding: 2.5rem;
+
+    box-shadow: var(--shadow-md);
+
+    transition: var(--transition);
+}
+
+/* Hover refinado no card */
+.activity-card:hover {
+
+    transform: translateY(-4px);
+}
+
+.card-header {
+
+    margin-bottom: 2rem;
+}
+
+.card-title {
+
+    font-size: 1.8rem;
+    font-weight: 700;
+
+    margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+
+    color: var(--color-text-muted);
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.activity-form {
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.field-group {
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.field-label {
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    color: var(--color-text);
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.field-input {
+
+    width: 100%;
+
+    border: 1px solid var(--color-border);
+
+    background: #f8fafc;
+
+    padding: 0.95rem 1rem;
+
+    border-radius: var(--radius-md);
+
+    font-size: 1rem;
+
+    color: var(--color-text);
+
+    transition: var(--transition);
+
+    outline: none;
+}
+
+/* Hover suave */
+.field-input:hover {
+
+    border-color: rgba(2, 132, 199, 0.4);
+}
+
+/* Focus acessível */
+.field-input:focus {
+
+    border-color: var(--color-primary);
+
+    background: white;
+
+    box-shadow:
+        0 0 0 4px rgba(2, 132, 199, 0.12);
+}
+
+.field-textarea {
+
+    resize: vertical;
+
+    min-height: 140px;
+}
+
+
+/* =========================================================
+   FILE INPUT
+========================================================= */
+
+input[type="file"] {
+
+    padding: 0.7rem;
+
+    cursor: pointer;
+
+    background: white;
+}
+
+input[type="file"]::file-selector-button {
+
+    border: none;
+
+    background: var(--color-primary);
+
+    color: white;
+
+    padding: 0.7rem 1rem;
+
+    border-radius: 0.7rem;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    margin-right: 1rem;
+
+    transition: var(--transition);
+}
+
+/* Hover elegante */
+input[type="file"]::file-selector-button:hover {
+
+    background: var(--color-primary-dark);
+}
+
+.field-helper {
+
+    font-size: 0.85rem;
+
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   PATIENTS
+========================================================= */
+
+.patients-container {
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    background: #f8fafc;
+
+    padding: 1rem;
+
+    max-height: 220px;
+
+    overflow-y: auto;
+}
+
+/* Scrollbar moderna */
+.patients-container::-webkit-scrollbar {
+
+    width: 8px;
+}
+
+.patients-container::-webkit-scrollbar-thumb {
+
+    background: #cbd5e1;
+
+    border-radius: 999px;
+}
+
+.patients-loading {
+
+    color: var(--color-text-muted);
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+.submit-button {
+
+    margin-top: 0.5rem;
+
+    border: none;
+
+    background: var(--color-primary);
+
+    color: white;
+
+    padding: 1rem;
+
+    border-radius: 999px;
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+
+    transition: var(--transition);
+}
+
+/* Hover refinado */
+.submit-button:hover {
+
+    background: var(--color-primary-dark);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(2, 132, 199, 0.2);
+}
+
+/* Clique */
+.submit-button:active {
+
+    transform: scale(0.98);
+}
+
+/* Focus acessível */
+.submit-button:focus {
+
+    outline: 4px solid rgba(2, 132, 199, 0.15);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.error-message {
+
+    display: none;
+
+    color: var(--color-error);
+
+    font-size: 0.9rem;
+
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .topbar-content {
+
+        padding: 1rem;
+    }
+
+    .activity-card {
+
+        padding: 2rem 1.5rem;
+    }
+
+    .card-title {
+
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .topbar-content {
+
+        flex-direction: column;
+
+        gap: 1rem;
+
+        align-items: flex-start;
+    }
+
+    .topbar-left {
+
+        width: 100%;
+    }
+
+    .logout-button {
+
+        width: 100%;
+    }
+
+    .activity-card {
+
+        border-radius: 1.2rem;
+    }
+
+    .submit-button {
+
+        padding: 0.95rem;
+    }
 }

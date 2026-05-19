@@ -10,16 +10,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('lista-atividades');
 
-    // Logoff
-    const btnLogoff = document.getElementById('logoff');
-    if (btnLogoff) {
-        btnLogoff.addEventListener('click', (e) => {
-            e.preventDefault();
-            fetch('../php/cliente_logoff.php').finally(() => {
-                window.location.href = '../login/index.html';
-            });
-        });
-    }
 
     // Carrega atividades
     try {

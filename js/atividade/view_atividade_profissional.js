@@ -1,6 +1,5 @@
 // Elementos do DOM
 const idAtividade = new URLSearchParams(window.location.search).get('id');
-const nomeContainer = document.getElementById('nome-profissional');
 const tituloElement = document.getElementById('titulo-atividade');
 const descricaoElement = document.getElementById('descricao-atividade');
 const categoriaElement = document.getElementById('categoria-atividade');
@@ -16,13 +15,15 @@ const modalPatientName = document.getElementById('modal-patient-name');
 
 let currentFeedbackData = {};
 
-// Carregar nome do profissional
-function carregarNomeUsuario() {
-    const nome = localStorage.getItem('nome_usuario');
-    if (nome) {
-        nomeContainer.textContent = nome;
-    }
+// FIX: Adicionada função rigorosa de sanitização para bloquear injeção de script por comentários do paciente
+function sanitizarHTML(texto) {
+    if (!texto) return '';
+    const div = document.createElement('div');
+    div.textContent = texto;
+    return div.innerHTML;
 }
+
+// FIX: Removida a função carregarNomeUsuario() baseada em localStorage. Responsabilidade devolvida ao valida_sessao.js.
 
 // Buscar detalhes da atividade e submissões
 async function carregarAtividadeComSubmissoes() {
@@ -54,8 +55,18 @@ async function carregarAtividadeComSubmissoes() {
 // Renderizar detalhes da atividade
 function renderizarAtividade(atividade) {
     tituloElement.textContent = atividade.titulo || 'Sem título';
-    descricaoElement.textContent = atividade.descricao || 'Sem descrição';
     categoriaElement.textContent = atividade.categoria || 'Geral';
+    
+    // FIX: Aplicada a mesma lógica de formatação de quebra de linhas usada na tela do paciente
+    if (atividade.descricao && atividade.descricao.includes('\n')) {
+        descricaoElement.innerHTML = atividade.descricao
+            .split('\n')
+            .filter(l => l.trim())
+            .map(l => `<p>${sanitizarHTML(l.trim())}</p>`)
+            .join('');
+    } else {
+        descricaoElement.textContent = atividade.descricao || 'Sem descrição';
+    }
     
     const dataFormatada = atividade.data_publicacao 
         ? new Date(atividade.data_publicacao).toLocaleDateString('pt-BR')
@@ -75,14 +86,12 @@ function renderizarAnexo(arquivo, tipoArquivo) {
     anexoContainer.style.display = 'block';
 
     if (tipoArquivo && tipoArquivo.startsWith('image/')) {
-        // Imagem
         const img = document.createElement('img');
         img.src = `data:${tipoArquivo};base64,${arquivo}`;
         img.className = 'imagem-atividade';
         anexoContent.innerHTML = '';
         anexoContent.appendChild(img);
     } else {
-        // PDF ou arquivo não-imagem
         const btnPdf = document.createElement('a');
         btnPdf.href = `data:application/pdf;base64,${arquivo}`;
         btnPdf.download = 'anexo.pdf';
@@ -114,7 +123,6 @@ function renderizarSubmissoes(submissoes) {
             border-left: 4px solid #0284c7;
         `;
 
-        const statusClass = sub.status_conclusao === 'Concluída' ? 'concluida' : 'pendente';
         const statusBadge = sub.status_conclusao === 'Concluída' 
             ? '<span class="badge-status concluida">✓ Concluída</span>'
             : '<span class="badge-status pendente">⏱ Pendente</span>';
@@ -123,11 +131,15 @@ function renderizarSubmissoes(submissoes) {
             ? new Date(sub.data_conclusao).toLocaleDateString('pt-BR')
             : 'Não entregue';
 
+        // FIX: Sanitização direta na injeção do comentário e feedback para segurança.
+        const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
+        const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
+
         const feedbackExistente = sub.feedback_profissional
             ? `
                 <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
                     <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
-                    <p style="margin: 0; color: #1e293b;">${sub.feedback_profissional}</p>
+                    <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
                     <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
                         Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
                     </p>
@@ -135,17 +147,18 @@ function renderizarSubmissoes(submissoes) {
             `
             : '';
 
+        // FIX: Incorporação visual garantida da variável de comentário sanitizado.
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <div>
-                    <h5 style="margin: 0 0 0.25rem 0; color: #1e293b; font-weight: 700;">${sub.nome}</h5>
+                    <h5 style="margin: 0 0 0.25rem 0; color: #1e293b; font-weight: 700;">${sanitizarHTML(sub.nome)}</h5>
                     ${statusBadge}
                 </div>
             </div>
 
             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
                 <p style="margin: 0.25rem 0;"><strong>Data de entrega:</strong> ${dataEntrega}</p>
-                ${sub.comentario_paciente ? `<p style="margin: 0.25rem 0;"><strong>Comentário:</strong> ${sub.comentario_paciente}</p>` : ''}
+                ${sub.comentario_paciente ? `<p style="margin: 0.25rem 0; padding: 0.5rem; background: #fff; border-radius: 4px; border: 1px solid #e2e8f0;"><strong>Comentário do Paciente/Responsável:</strong><br/> ${comentarioSanitizado}</p>` : ''}
             </div>
 
             ${feedbackExistente}
@@ -199,7 +212,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
         if (data.status === 'sucesso') {
             alert('Feedback enviado com sucesso!');
             feedbackModal.hide();
-            carregarAtividadeComSubmissoes(); // Recarregar para mostrar o feedback
+            carregarAtividadeComSubmissoes(); 
         } else {
             alert('Erro: ' + data.mensagem);
         }
@@ -212,14 +225,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
     }
 });
 
-// Configurar logoff
-document.getElementById('logoff').addEventListener('click', (e) => {
-    e.preventDefault();
-    if (confirm('Tem certeza que deseja sair?')) {
-        window.location.href = '../../php/cliente_logoff.php';
-    }
-});
+// FIX: Removido o event listener de #logoff redundante daqui. 
 
 // Inicializar página
-carregarNomeUsuario();
 carregarAtividadeComSubmissoes();

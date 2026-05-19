@@ -1,11 +1,18 @@
+// valida_sessao.js
+
+// FIX: Criação de uma constante base para garantir o roteamento absoluto em qualquer nível de pasta. Isso mata o erro de 404 em telas aninhadas.
+const BASE_URL = '/projeto-lumind';
+
 async function validarAcesso(tipoPermitido) {
     try {
-        const retorno = await fetch("../php/valida_sessao.php");
+        // FIX: Substituição do caminho relativo '../' pela variável absoluta BASE_URL.
+        const retorno = await fetch(`${BASE_URL}/php/valida_sessao.php`);
         const resposta = await retorno.json();
 
         // 1. Se não estiver logado, expulsa
         if (resposta.status === "nok") {
-            window.location.href = "../login/index.html?erro=sem_sessao";
+            // FIX: Redirecionamento absoluto, evitando falhas de rota em pastas aninhadas.
+            window.location.href = `${BASE_URL}/login/index.html?erro=sem_sessao`;
             return;
         }
 
@@ -16,8 +23,8 @@ async function validarAcesso(tipoPermitido) {
             const perfisAceitos = Array.isArray(tipoPermitido) ? tipoPermitido : [tipoPermitido];
 
             if (!perfisAceitos.includes(usuarioLogado.tipo_usuario)) {
-                // Removemos o alert() para não travar a tela com o HTML vazado no fundo
-                window.location.href = "../login/index.html?erro=acesso_negado";
+                // FIX: Redirecionamento absoluto.
+                window.location.href = `${BASE_URL}/login/index.html?erro=acesso_negado`;
                 return;
             }
         }
@@ -33,8 +40,8 @@ async function validarAcesso(tipoPermitido) {
 
     } catch (e) {
         console.error("Erro ao processar JSON:", e);
-        // Em caso de erro de servidor, por segurança, joga para o login
-        window.location.href = "../login/index.html?erro=erro_servidor";
+        // FIX: Redirecionamento absoluto. Quando a sessão de fato quebrar no servidor, o usuário será levado à tela real de login.
+        window.location.href = `${BASE_URL}/login/index.html?erro=erro_servidor`;
     }
 }
 
@@ -46,11 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault(); 
             
             try {
-                const retorno = await fetch("../php/usuario_logoff.php");
+                // FIX: Utilização do BASE_URL na API de logoff.
+                const retorno = await fetch(`${BASE_URL}/php/usuario_logoff.php`);
                 const resposta = await retorno.json();
                 
                 if (resposta.status === "ok") {
-                    window.location.href = '/projeto-lumind/login.html'; 
+                    // FIX: Padronização do arquivo de destino.
+                    window.location.href = `${BASE_URL}/login/index.html`; 
                 }
             } catch (error) {
                 console.error("Erro na requisição de logoff:", error);

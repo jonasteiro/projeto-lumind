@@ -49,31 +49,64 @@
                     <!-- USER PROFILE MOVIDO DA SIDEBAR PARA A TOPBAR -->
                     <div class="user-profile d-flex align-items-center">
                         <div class="d-flex flex-column text-end me-3">
-                            <span class="user-name">Marcela Lagos</span>
+                            <span class="user-name">PERFIL</span>
                             <small style="font-size: 0.75rem; color: #1a7091;">Profissional da saúde</small>
                         </div>
-                        <img src="https://i.pravatar.cc/80?img=12" alt="Usuário" class="user-img">
+                       
                     </div>
                 </div>
             </header>
 
+            <!-- CONTEÚDO CENTRAL: GRID DE ATIVIDADES -->
             <section class="content p-4">
-                <div class="row g-4">
-                    <div class="col-sm-6 col-lg-4">
-                        <a href="../home/atividades/publicar_atividade.html" style="text-decoration: none; color: inherit;">
-                            <article class="card-option p-4 text-center">
-                                <i class="bi bi-file-earmark-medical icon"></i>
-                                <h4>POSTAR ATIVIDADE</h4>
-                                <p>Realize a postagem de tarefas</p>
-                            </article>
-                        </a>
+                <div id="lista-atividades">
+                    
+                    <!-- CARD 1: ATIVIDADES -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-file-earmark-medical me-2"></i> Atividades</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Postar tarefas terapêuticas.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <a href="../home/atividades/publicar_atividade.html" class="btn-card primary w-100">Acessar Módulo</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <article class="card-option p-4 text-center">
-                            <i class="bi bi-calendar3 icon"></i>
-                            <h4>EVENTOS</h4>
-                            <p>Acompanhar eventos agendados</p>
-                        </article>
+
+                    <!-- CARD 2: GERENCIAR ATIVIDADES (NÃO REMOVAM MAIS ESSE CARD, PELO AMOR DE DEUSSSSS)-->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-kanban"></i> Gerenciar Atividades</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Gerenciar atividades terapêuticas.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <a href="../home/atividades_painel.html" class="btn-card primary w-100">Acessar Módulo</a>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- CARD 2: EVENTOS -->
+                    <div class="atividade-card">
+                        <div class="card-header-activity">
+                            <h3><i class="bi bi-calendar3 me-2"></i> Eventos</h3>
+                            <span class="card-category">Módulo</span>
+                        </div>
+                        <div class="card-body-activity">
+                            <p class="text-muted m-0" style="font-size: 0.9rem;">Acompanhar eventos agendados.</p>
+                        </div>
+                        <div class="card-footer-activity">
+                            <div class="btn-group-card">
+                                <button class="btn-card primary w-100">Acessar Módulo</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- CARD 3: RELATÓRIOS -->
@@ -123,23 +156,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- CARD 6: HISTÓRICO DE PROGRESSO -->
-                    <div class="atividade-card">
-                        <div class="card-header-activity">
-                            <h3><i class="bi bi-bar-chart-fill me-2"></i> Progresso</h3>
-                            <span class="card-category">Módulo</span>
-                        </div>
-                        <div class="card-body-activity">
-                            <p class="text-muted m-0" style="font-size: 0.9rem;">Realiza o acompanhamento da evolução do paciente.</p>
-                        </div>
-                        <div class="card-footer-activity">
-                            <div class="btn-group-card">
-                                <button class="btn-card primary w-100">Acessar Módulo</button>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </section>
         </main>

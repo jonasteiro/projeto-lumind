@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumind | Meus Relatórios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/tela_responsavel.css">
+</head>
+<body>
+    <div class="tela-responsavel">
+        <aside class="sidebar">
+            <div class="sidebar-brand d-flex align-items-center p-4">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo" onerror="this.style.display='none'">
+                <span class="h4 m-0 ms-2">Lumind</span>
+            </div>
+            <nav class="nav flex-column p-3">
+                <a href="tela_responsavel.html" class="nav-link"><i class="bi bi-house-door-fill"></i> INICIAL</a>
+                <a href="atividades_responsavel.html" class="nav-link"><i class="bi bi-clipboard-check"></i> ATIVIDADES</a>
+                <a href="#" class="nav-link active"><i class="bi bi-journal-text"></i> RELATÓRIOS</a>
+                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+            </nav>
+            <div class="sidebar-footer text-center p-3">
+                <small>Versão 1.0</small>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar d-flex justify-content-between align-items-center p-4">
+                <div class="d-flex align-items-center">
+                    <a href="tela_responsavel.html" class="btn btn-sm btn-outline-secondary me-3">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2>MEUS RELATÓRIOS</h2>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span id="nome-usuario" class="fw-semibold"></span>
+                    <!-- Botão para criar novo relatório -->
+                    <a href="relatorio_responsavel.html" class="btn btn-primary fw-bold rounded-pill px-4">
+                        <i class="bi bi-plus-lg me-1"></i> NOVO RELATÓRIO
+                    </a>
+                </div>
+            </header>
+
+            <section class="content p-4">
+                <div id="lista-relatorios" class="row g-4">
+                    <p class="text-center text-muted">Buscando relatórios...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/valida_sessao.js"></script>
+    <script src="../js/responsavel/lista_relatorios.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            validarAcesso('ResponsavelLegal');
+        }
+    </script>
+</body>
+</html>

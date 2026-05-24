@@ -30,7 +30,6 @@ body {
         );
 
     border-right: 1px solid #cfe8f5;
-
     padding-top: 1rem;
 }
 
@@ -38,9 +37,14 @@ body {
     border-bottom: 1px solid #b7e3f8;
 }
 
+/* =========================================
+   AQUI ESTÁ A CORREÇÃO DO LOGO! 
+   Agora ele respira e fica retangular
+========================================= */
 .brand-logo {
-    height: 45px;
-    width: 45px;
+    max-width: 160px; /* Largura máxima profissional */
+    height: auto;     /* Altura se ajusta automaticamente */
+    max-height: 55px; /* Trava de segurança para não ficar gigante */
     object-fit: contain;
 }
 
@@ -77,88 +81,56 @@ body {
     padding: 1rem;
 }
 
-
-
 /* LINKS */
-
 .sidebar .nav-link {
-
     display: flex;
     align-items: center;
-
     gap: 0.8rem;
-
     color: #1c79ad;
-
     font-weight: 600;
-
     font-size: 0.92rem;
-
     padding: 0.9rem 1rem;
-
     border-radius: 1rem;
-
     margin-bottom: 0.45rem;
-
     transition: all 0.25s ease;
-
     position: relative;
-
     background: transparent;
 }
 
 /* ÍCONES */
-
 .sidebar .nav-link i {
-
     font-size: 1rem;
-
     opacity: 0.9;
-
     transition: 0.25s ease;
 }
 
 /* HOVER */
-
 .sidebar .nav-link:hover {
-
-    background:
-        rgba(255,255,255,0.55);
-
+    background: rgba(255,255,255,0.55);
     color: #125d89;
-
     transform: translateX(2px);
-
-    box-shadow:
-        0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 
 /* ACTIVE */
-
 .sidebar .nav-link.active {
-
     background:
         linear-gradient(
             135deg,
             rgba(255,255,255,0.85),
             rgba(235,248,255,0.95)
         );
-
     color: #0f5a87;
-
-    box-shadow:
-        0 6px 16px rgba(104,185,246,0.12);
+    box-shadow: 0 6px 16px rgba(104,185,246,0.12);
 }
 
 /* EFEITO NO ÍCONE */
-
 .sidebar .nav-link:hover i,
 .sidebar .nav-link.active i {
-
     transform: scale(1.05);
-
     color: #1684c2;
 }
+
 .main-panel {
     background: #f8fcff;
 }

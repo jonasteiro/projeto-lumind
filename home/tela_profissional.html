@@ -21,12 +21,21 @@
             <div class="brand-container">
                 <img src="../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
             </div>
+
+            <!-- Mudei -->
+            <div class="user-card d-flex align-items-center p-4">
+                <img src="https://i.pravatar.cc/80?img=12" alt="Usuário" class="user-photo">
+                <div>
+                    <strong id="nome-usuario"></strong>
+                    <small>Profissional da saúde</small>
+                </div>
+            </div>
             
-            <nav class="nav-menu">
-                <a href="#" class="active"><i class="bi bi-house-door-fill"></i> Início</a>
-                <a href="#"><i class="bi bi-gear-fill"></i> Configurações</a>
-                <hr>
-                <a href="#" id="logoff" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
+            <nav class="nav flex-column p-3">
+                <a href="#" class="nav-link active"><i class="bi bi-house-door-fill"></i> INICIAL</a>
+                <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES</a>
+                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+
             </nav>
         </aside>
 
@@ -57,72 +66,48 @@
                 </div>
             </header>
 
-            <!-- CONTEÚDO CENTRAL: GRID DE ATIVIDADES -->
+            <!-- Mudei -->
             <section class="content p-4">
-                <div id="lista-atividades">
-                    
-                    <!-- CARD 1: ATIVIDADES -->
-                    <div class="atividade-card">
-                        <div class="card-header-activity">
-                            <h3><i class="bi bi-file-earmark-medical me-2"></i> Atividades</h3>
-                            <span class="card-category">Módulo</span>
-                        </div>
-                        <div class="card-body-activity">
-                            <p class="text-muted m-0" style="font-size: 0.9rem;">Gerenciar e postar tarefas terapêuticas.</p>
-                        </div>
-                        <div class="card-footer-activity">
-                            <div class="btn-group-card">
-                                <a href="../home/atividades/publicar_atividade.html" class="btn-card primary w-100">Acessar Módulo</a>
-                            </div>
-                        </div>
+                <div class="row g-4">
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="atividades_painel.html" style="text-decoration: none; color: inherit;">
+                            <article class="card-option p-4 text-center" style="cursor: pointer;">
+                                <i class="bi bi-file-earmark-medical icon"></i>
+                                <h4>ATIVIDADES</h4>
+                                <p>Gerenciar e postar tarefas</p>
+                            </article>
+                        </a>
+                    </div>
+            <!--------------->
+
+                    <div class="col-sm-6 col-lg-4">
+                        <article class="card-option p-4 text-center">
+                            <i class="bi bi-calendar3 icon"></i>
+                            <h4>EVENTOS</h4>
+                            <p>Acompanhar eventos agendados</p>
+                        </article>
                     </div>
 
-                    <!-- CARD 2: EVENTOS -->
-                    <div class="atividade-card">
-                        <div class="card-header-activity">
-                            <h3><i class="bi bi-calendar3 me-2"></i> Eventos</h3>
-                            <span class="card-category">Módulo</span>
-                        </div>
-                        <div class="card-body-activity">
-                            <p class="text-muted m-0" style="font-size: 0.9rem;">Acompanhar eventos agendados.</p>
-                        </div>
-                        <div class="card-footer-activity">
-                            <div class="btn-group-card">
-                                <button class="btn-card primary w-100">Acessar Módulo</button>
-                            </div>
-                        </div>
+                    <!-- Mudei -->
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="lista_relatorios_profissional.html" style="text-decoration: none; color: inherit;">
+                            <article class="card-option p-4 text-center" style="cursor: pointer;">
+                                <i class="bi bi-journal-text icon"></i>
+                                <h4>RELATÓRIOS</h4>
+                                <p>Visualizar relatórios pacientes</p>
+                            </article>
+                        </a>
                     </div>
+                    <!--------------->
+                    <div class="col-sm-6 col-lg-4">
+                        <a href="lista_pessoa_tea.html" style="text-decoration: none; color: inherit;">
+                            <article class="card-option p-4 text-center" style="cursor: pointer;">
+                                <i class="bi bi-person-circle icon"></i>
+                                <h4>REGISTRO DE PACIENTES</h4>
+                                <p>Registro de pacientes cadastrados</p>
+                            </article>
+                        </a>
 
-                    <!-- CARD 3: RELATÓRIOS -->
-                    <div class="atividade-card">
-                        <div class="card-header-activity">
-                            <h3><i class="bi bi-journal-text me-2"></i> Relatórios</h3>
-                            <span class="card-category">Módulo</span>
-                        </div>
-                        <div class="card-body-activity">
-                            <p class="text-muted m-0" style="font-size: 0.9rem;">Visualizar relatórios de pacientes.</p>
-                        </div>
-                        <div class="card-footer-activity">
-                            <div class="btn-group-card">
-                                <button class="btn-card primary w-100">Acessar Módulo</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CARD 4: REGISTRO DE PACIENTES -->
-                    <div class="atividade-card">
-                        <div class="card-header-activity">
-                            <h3><i class="bi bi-person-circle me-2"></i> Registro de Pacientes</h3>
-                            <span class="card-category">Módulo</span>
-                        </div>
-                        <div class="card-body-activity">
-                            <p class="text-muted m-0" style="font-size: 0.9rem;">Registro de pacientes cadastrados.</p>
-                        </div>
-                        <div class="card-footer-activity">
-                            <div class="btn-group-card">
-                                <a href="lista_pessoa_tea.html" class="btn-card primary w-100">Acessar Módulo</a>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- CARD 5: REGISTRO DE RESPONSÁVEIS -->

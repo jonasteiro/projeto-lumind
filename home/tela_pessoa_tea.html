@@ -19,23 +19,32 @@
                 <img src="../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
                 <h1>PAINEL PACIENTE</h1>
             </div>
+            <!--Mudei-->
             <div class="user-profile d-flex align-items-center">
-                <span class="user-name me-3">Murilo Brito</span>
-                <img src="https://i.pravatar.cc/45?img=45" alt="Murilo" class="user-img me-4" style="border-radius: 50%;">
-                
+                <span id="nome-usuario" class="user-name me-3"></span>
+                <img src="https://i.pravatar.cc/45?img=45" alt="Paciente" class="user-img me-4" style="border-radius: 50%;">
                 <a href="#" id="logoff" class="btn btn-outline-danger btn-sm fw-bold px-3" style="border-radius: 20px;">SAIR</a>
             </div>
+            <!-------------------->
         </header>
 
+
+         <!-- Mudei -->
         <main class="content p-4">
             <div class="row g-4">
                 <div class="col-sm-6 col-lg-4">
-                    <article class="card-option text-center p-4">
+                    <!-- Adicionei onclick e um estilo de cursor pointer -->
+                    <article class="card-option text-center p-4" 
+                            onclick="location.href='atividades_paciente.html'" 
+                            style="cursor: pointer;">
                         <i class="bi bi-clipboard-check icon"></i>
                         <h4>ATIVIDADES</h4>
                         <p>Realizar as atividades</p>
                     </article>
                 </div>
+         <!-------------->
+
+
                 <div class="col-sm-6 col-lg-4">
                     <article class="card-option text-center p-4">
                         <i class="bi bi-calendar3 icon"></i>

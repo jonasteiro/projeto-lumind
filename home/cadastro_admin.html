@@ -3,101 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Administrador - Lumind</title>
+    <title>Lumind | Cadastro de Administrador</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="../css/administrador/cadastro_admin.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <h1>Cadastro de Administrador</h1>
-                <p class="subtitle">Criar novo perfil de administrador do sistema</p>
+    <div class="d-flex">
+        
+        <aside class="sidebar">
+            <div class="brand-container">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="logo" onerror="this.style.display='none'">
             </div>
-            <button class="btn-voltar" onclick="voltarPerfis()">← Voltar</button>
-        </header>
+            <nav class="nav-menu">
+                <a href="tela_administrador.html"><i class="bi bi-house-door"></i> Início</a>
+                <a href="lista_administrador.html" class="active"><i class="bi bi-shield-lock"></i> Administradores</a>
+                <a href="#"><i class="bi bi-gear"></i> Configurações</a>
+                <hr>
+                <a href="#" id="logoff" class="text-danger"><i class="bi bi-box-arrow-right"></i> Sair</a>
+            </nav>
+        </aside>
 
-        <main class="form-container">
-            <form id="formCadastroAdm" class="formulario-adm">
-                <div class="form-group">
-                    <label for="nome">Nome Completo *</label>
-                    <input 
-                        type="text" 
-                        id="nome" 
-                        name="nome" 
-                        placeholder="Digite o nome completo" 
-                        required
-                        maxlength="100"
-                    >
-                    <span class="form-error" id="erroNome"></span>
+        <main class="main-panel flex-grow-1">
+            
+            <header class="topbar d-flex justify-content-between align-items-center p-4">
+                <div class="d-flex align-items-center">
+                    <a href="lista_administrador.html" class="btn-back" onclick="if(typeof voltarPerfis === 'function') { event.preventDefault(); voltarPerfis(); }">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h2>CADASTRAR ADMINISTRADOR</h2>
                 </div>
+                <div class="user-profile d-flex align-items-center">
+                    <span class="user-name me-3">Painel Admin</span>
+                    <img src="https://i.pravatar.cc/45?img=11" alt="Perfil" class="user-img">
+                </div>
+            </header>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            placeholder="exemplo@email.com" 
-                            required
-                            maxlength="100"
-                        >
-                        <span class="form-error" id="erroEmail"></span>
+            <section class="content p-4">
+                
+                <div class="atividade-card" style="max-width: 800px; margin: 0 auto;">
+                    
+                    <div class="card-header-activity">
+                        <h3><i class="bi bi-person-plus-fill me-2"></i> Novo Perfil Administrativo</h3>
+                        <span class="card-category">Cadastro</span>
                     </div>
 
-                    <div class="form-group">
-                        <label for="cpf">CPF *</label>
-                        <input 
-                            type="text" 
-                            id="cpf" 
-                            name="cpf" 
-                            placeholder="Apenas números" 
-                            required
-                            maxlength="14"
-                        >
-                        <span class="form-error" id="erroCpf"></span>
+                    <div class="card-body-activity">
+                        <p class="text-muted mb-4" style="font-size: 0.9rem;">Preencha os dados abaixo para criar um novo perfil com acesso total ao sistema.</p>
+
+                        <form id="formCadastroAdm">
+                            
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control rounded-3" id="nome" name="nome" placeholder="Nome completo" required maxlength="100">
+                                    <label for="nome"><i class="bi bi-person me-2"></i>Nome Completo *</label>
+                                </div>
+                                <span class="text-danger small" id="erroNome"></span>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control rounded-3" id="email" name="email" placeholder="Email" required maxlength="100">
+                                        <label for="email"><i class="bi bi-envelope me-2"></i>Email *</label>
+                                    </div>
+                                    <span class="text-danger small" id="erroEmail"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control rounded-3" id="cpf" name="cpf" placeholder="CPF" required maxlength="14">
+                                        <label for="cpf"><i class="bi bi-card-text me-2"></i>CPF *</label>
+                                    </div>
+                                    <span class="text-danger small" id="erroCpf"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="date" class="form-control rounded-3" id="data_nascimento" name="data_nascimento" required>
+                                        <label for="data_nascimento"><i class="bi bi-calendar-event me-2"></i>Data de Nascimento *</label>
+                                    </div>
+                                    <span class="text-danger small" id="erroData"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control rounded-3" id="senha" name="senha" placeholder="Senha" required minlength="6">
+                                        <label for="senha"><i class="bi bi-lock me-2"></i>Senha *</label>
+                                    </div>
+                                    <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres.</small>
+                                    <span class="text-danger small d-block" id="erroSenha"></span>
+                                </div>
+                            </div>
+
+                            <div id="divErro" class="alert alert-danger d-none py-2" style="font-size: 0.85rem;"></div>
+                            <div id="divSucesso" class="alert alert-success d-none py-2" style="font-size: 0.85rem;"></div>
+
+                        </form>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="data_nascimento">Data de Nascimento *</label>
-                        <input 
-                            type="date" 
-                            id="data_nascimento" 
-                            name="data_nascimento" 
-                            required
-                        >
-                        <span class="form-error" id="erroData"></span>
+                    <div class="card-footer-activity">
+                        <div class="btn-group-card d-flex justify-content-end">
+                            <button type="button" class="btn-card secondary" style="flex: 0 1 auto;" onclick="limparFormulario()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Limpar
+                            </button>
+                            <button type="submit" form="formCadastroAdm" class="btn-card primary" style="flex: 0 1 auto;">
+                                <i class="bi bi-save"></i> Criar Administrador
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="senha">Senha *</label>
-                        <input 
-                            type="password" 
-                            id="senha" 
-                            name="senha" 
-                            placeholder="Digite uma senha segura" 
-                            required
-                            minlength="6"
-                        >
-                        <span class="form-error" id="erroSenha"></span>
-                        <small class="form-hint">Mínimo 6 caracteres</small>
-                    </div>
                 </div>
-
-                <div id="divErro" class="alert alert-error"></div>
-                <div id="divSucesso" class="alert alert-success"></div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
-                        <span>💾</span> Criar Administrador
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">
-                        <span>🔄</span> Limpar
-                    </button>
-                </div>
-            </form>
+            </section>
         </main>
     </div>
 

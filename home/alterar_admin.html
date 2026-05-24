@@ -14,123 +14,98 @@
     <link rel="stylesheet" href="../css/tela_administrador.css">
     <link rel="stylesheet" href="../css/administrador/alterar_admin.css">
 </head>
-<body>
-    <div class="tela-administrador">
+<body style="background: #f8fcff;">
+    
+    <main class="w-100 min-vh-100 d-flex flex-column">
         
-        <aside class="sidebar">
-            <div class="sidebar-top p-3 text-center">
-                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo img-fluid" onerror="this.style.display='none'">
+        <header class="topbar d-flex justify-content-between align-items-center p-4 bg-white shadow-sm border-bottom">
+            <div class="d-flex align-items-center container-xl">
+                <a href="lista_administrador.html" class="text-primary fs-4 me-3 text-decoration-none">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="fs-4 mb-0 fw-bold text-primary">EDITAR ADMINISTRADOR</h2>
             </div>
-            
-            <div class="admin-data d-flex align-items-center px-3 pb-3 border-bottom border-info border-opacity-25">
-                <div class="admin-avatar" id="sidebarAvatar">--</div>
-                <div>
-                    <strong id="sidebarNome" class="text-truncate d-inline-block" style="max-width: 140px;">Carregando...</strong>
-                </div>
-            </div>
-            
-            <nav class="nav flex-column p-3 gap-1">
-                <a href="tela_administrador.html" class="nav-link"><i class="bi bi-house-door-fill me-2"></i> INÍCIO</a>
-                <a href="../home/aprovacoes_admin.html" class="nav-link"><i class="bi bi-envelope me-2"></i> VALIDAÇÕES</a>
-                <a href="lista_administrador.html" class="nav-link active"><i class="bi bi-shield-lock me-2"></i> ADMINISTRADORES</a>
-                <a href="../home/profissional/listar-profissionais.html" class="nav-link"><i class="bi bi-person-badge me-2"></i> PROFISSIONAIS</a>
-                <a href="#" class="nav-link"><i class="bi bi-gear-fill me-2"></i> CONFIGURAÇÕES</a>
-                <hr class="my-2" style="border-color: #b5e5f5;">
-                <a href="#" id="logoff" class="nav-link text-danger fw-bold"><i class="bi bi-box-arrow-right me-2"></i> SAIR</a>
-            </nav>
-        </aside>
+        </header>
 
-        <main class="main-panel">
+        <section class="content p-4 container-xl flex-grow-1 mt-3">
             
-            <header class="topbar d-flex justify-content-between align-items-center p-4 bg-white shadow-sm">
-                <div class="d-flex align-items-center">
-                    <a href="lista_administrador.html" class="text-primary fs-4 me-3 text-decoration-none">
-                        <i class="bi bi-arrow-left"></i>
-                    </a>
-                    <h2 class="fs-4 mb-0 fw-bold text-primary">EDITAR ADMINISTRADOR</h2>
-                </div>
-            </header>
-
-            <section class="content p-4">
+            <div class="atividade-card shadow-sm" style="max-width: 800px; margin: 0 auto;">
                 
-                <div class="atividade-card shadow-sm" style="max-width: 800px; margin: 0 auto;">
-                    
-                    <div class="card-header-activity bg-light">
-                        <h3 class="text-primary"><i class="bi bi-person-lines-fill me-2"></i> Atualização de Dados</h3>
-                        <span class="card-category">Edição</span>
-                    </div>
-
-                    <div class="card-body-activity p-4">
-                        <p class="text-muted mb-4" style="font-size: 0.9rem;">Atualize as informações do administrador e valide as alterações abaixo.</p>
-
-                        <form id="form-alterar-admin">
-                            <input type="hidden" id="id_usuario">
-
-                            <div class="mb-3">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control rounded-3 border-light-subtle" id="nome" placeholder="Nome completo" required>
-                                    <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo *</label>
-                                </div>
-                                <span class="text-danger small" id="erroNome"></span>
-                            </div>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="email" class="form-control rounded-3 border-light-subtle" id="email" placeholder="Email" required>
-                                        <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email *</label>
-                                    </div>
-                                    <span class="text-danger small" id="erroEmail"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf" placeholder="CPF" required maxlength="14">
-                                        <label for="cpf" class="text-muted"><i class="bi bi-card-text me-2"></i>CPF *</label>
-                                    </div>
-                                    <span class="text-danger small" id="erroCpf"></span>
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="date" class="form-control rounded-3 border-light-subtle" id="data_nascimento" required>
-                                        <label for="data_nascimento" class="text-muted"><i class="bi bi-calendar-event me-2"></i>Data de Nascimento *</label>
-                                    </div>
-                                    <span class="text-danger small" id="erroData"></span>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" placeholder="Nova Senha">
-                                        <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha (opcional)</label>
-                                    </div>
-                                    <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres caso queira alterar.</small>
-                                </div>
-                            </div>
-
-                            <div class="form-check form-switch mb-4 ms-1 mt-3">
-                                <input class="form-check-input border-secondary" type="checkbox" role="switch" id="status_adm">
-                                <label class="form-check-label text-dark fw-medium" style="font-size: 0.9rem;" for="status_adm">Administrador Ativo</label>
-                            </div>
-
-                            <div id="divErro" class="alert alert-danger d-none py-2" style="font-size: 0.85rem;"></div>
-                            <div id="divSucesso" class="alert alert-success d-none py-2" style="font-size: 0.85rem;"></div>
-                        </form>
-                    </div>
-
-                    <div class="card-footer-activity p-3 bg-light border-top">
-                        <div class="btn-group-card d-flex justify-content-end gap-2">
-                            <a href="lista_administrador.html" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-3">Cancelar</a>
-                            <button type="submit" form="form-alterar-admin" id="btnEnviar" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
-                                <i class="bi bi-save me-1"></i> Salvar Alterações
-                            </button>
-                        </div>
-                    </div>
-
+                <div class="card-header-activity bg-light">
+                    <h3 class="text-primary"><i class="bi bi-person-lines-fill me-2"></i> Atualização de Dados</h3>
+                    <span class="card-category">Edição</span>
                 </div>
-            </section>
-        </main>
-    </div>
+
+                <div class="card-body-activity p-4">
+                    <p class="text-muted mb-4" style="font-size: 0.9rem;">Atualize as informações do administrador e valide as alterações abaixo.</p>
+
+                    <form id="form-alterar-admin">
+                        <input type="hidden" id="id_usuario">
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control rounded-3 border-light-subtle" id="nome" placeholder="Nome completo" required>
+                                <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo *</label>
+                            </div>
+                            <span class="text-danger small" id="erroNome"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control rounded-3 border-light-subtle" id="email" placeholder="Email" required>
+                                    <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email *</label>
+                                </div>
+                                <span class="text-danger small" id="erroEmail"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf" placeholder="CPF" required maxlength="14">
+                                    <label for="cpf" class="text-muted"><i class="bi bi-card-text me-2"></i>CPF *</label>
+                                </div>
+                                <span class="text-danger small" id="erroCpf"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control rounded-3 border-light-subtle" id="data_nascimento" required>
+                                    <label for="data_nascimento" class="text-muted"><i class="bi bi-calendar-event me-2"></i>Data de Nascimento *</label>
+                                </div>
+                                <span class="text-danger small" id="erroData"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" placeholder="Nova Senha">
+                                    <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha (opcional)</label>
+                                </div>
+                                <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres caso queira alterar.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch mb-4 ms-1 mt-3">
+                            <input class="form-check-input border-secondary" type="checkbox" role="switch" id="status_adm">
+                            <label class="form-check-label text-dark fw-medium" style="font-size: 0.9rem;" for="status_adm">Administrador Ativo</label>
+                        </div>
+
+                        <div id="divErro" class="alert alert-danger d-none py-2" style="font-size: 0.85rem;"></div>
+                        <div id="divSucesso" class="alert alert-success d-none py-2" style="font-size: 0.85rem;"></div>
+                    </form>
+                </div>
+
+                <div class="card-footer-activity p-3 bg-light border-top">
+                    <div class="btn-group-card d-flex justify-content-end gap-2">
+                        <a href="lista_administrador.html" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-3">Cancelar</a>
+                        <button type="submit" form="form-alterar-admin" id="btnEnviar" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                            <i class="bi bi-save me-1"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/admin/admin_alterar.js"></script>
@@ -140,32 +115,6 @@
         if (typeof validarAcesso === "function") {
             validarAcesso(['Administrador']);
         }
-
-        // Script para carregar o nome na barra lateral
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const retorno = await fetch("../php/get_sessao.php");
-                const resposta = await retorno.json();
-                
-                if (resposta.status === "ok" && resposta.nome) {
-                    document.getElementById("sidebarNome").textContent = resposta.nome;
-                    
-                    const partesNome = resposta.nome.trim().split(" ");
-                    let iniciais = partesNome[0].charAt(0).toUpperCase();
-                    
-                    if (partesNome.length > 1) {
-                        iniciais += partesNome[partesNome.length - 1].charAt(0).toUpperCase();
-                    }
-                    
-                    document.getElementById("sidebarAvatar").textContent = iniciais;
-                } else {
-                    document.getElementById("sidebarNome").textContent = "Administrador";
-                }
-            } catch (erro) {
-                console.error("Erro ao buscar a sessão:", erro);
-                document.getElementById("sidebarNome").textContent = "Administrador";
-            }
-        });
     </script>
 </body>
 </html>

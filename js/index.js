@@ -1,82 +1,41 @@
+/* ==========================================================================
+   index.js — Script Global do Sistema (Carregado em todas as telas)
+   ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Validação de Sessão Genérica (Se existir na tela)
     if (typeof valida_sessao === "function") {
         valida_sessao();
     }
     
-    if (document.getElementById("lista")) {
-        buscar();
+    // 2. Lógica Global do Botão de Logoff
+    // Procura qualquer botão com id="logoff" na tela e aplica a função de saída
+    const btnLogoff = document.getElementById("logoff");
+    if (btnLogoff) {
+        btnLogoff.addEventListener("click", (event) => {
+            event.preventDefault();
+            executarLogoff();
+        });
     }
 });
 
-const btnNovo = document.getElementById("novo");
-if (btnNovo) {
-    btnNovo.addEventListener("click", () => {
-        window.location.href = 'cliente_novo.html';
-    });
-}
-
-const btnLogoff = document.getElementById("logoff");
-if (btnLogoff) {
-    btnLogoff.addEventListener("click", (event) => {
-        event.preventDefault();
-        logoff();
-    });
-}
-
-async function logoff(){
-    const retorno = await fetch("../php/cliente_logoff.php");
-    const resposta = await retorno.json();
-    if(resposta.status == "ok"){
-        window.location.href = '../login/';   
+// =======================================================
+// FUNÇÃO GLOBAL DE SAÍDA (LOGOFF)
+// =======================================================
+async function executarLogoff() {
+    try {
+        const retorno = await fetch("../../php/cliente_logoff.php"); // Ajuste o caminho se necessário
+        const resposta = await retorno.json();
+        
+        if (resposta.status === "ok") {
+            // Caminho absoluto para garantir que funciona de qualquer pasta
+            window.location.href = '/projeto-lumind/login/index.html'; 
+        } else {
+            console.error("Falha ao destruir a sessão no servidor.");
+            alert("Erro ao tentar sair do sistema.");
+        }
+    } catch (error) {
+        console.error("Erro na requisição de logoff:", error);
     }
-}
-
-async function buscar(){
-    const retorno = await fetch("../php/cliente_get.php");
-    const resposta = await retorno.json();
-    if(resposta.status == "ok"){
-        preencherTabela(resposta.data);    
-    }
-}
-
-async function excluir(id){
-    const retorno = await fetch("../php/cliente_excluir.php?id="+id);
-    const resposta = await retorno.json();
-    if(resposta.status == "ok"){
-        alert(resposta.mensagem);
-        window.location.reload();    
-    }else{
-        alert(resposta.mensagem);
-    }
-}
-
-function preencherTabela(tabela){
-    var html = `<table>
-            <tr>
-                <th> Nome </th>
-                <th> Usuario </th>
-                <th> Email </th>
-                <th> Senha </th>
-                <th> Instagram </th>
-                <th> Ativo </th>
-                <th> # </th>
-            </tr>`;    
-            
-    for(var i=0; i<tabela.length; i++){
-        html += `<tr>
-                <td>${tabela[i].nome}</td>
-                <td>${tabela[i].usuario}</td>
-                <td>${tabela[i].email}</td>
-                <td>${tabela[i].senha}</td>
-                <td>${tabela[i].instagram}</td>
-                <td>${tabela[i].ativo}</td>
-                <td>
-                    <a href='cliente_alterar.html?id=${tabela[i].id}'>Alterar</a>
-                    <a href='#' onclick='excluir(${tabela[i].id})'>Excluir</a>
-                </td>
-            </tr>`;    
-    }
-    html += '</table>';
-    document.getElementById("lista").innerHTML = html;
 }

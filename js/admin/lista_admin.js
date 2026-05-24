@@ -1,15 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 1. Busca os dados de quem está logado para preencher a barra lateral
+    // 1. Busca os dados de quem está logado para preencher a barra lateral (se existir)
     carregarSessaoLogada();
 
     // 2. Busca a lista de administradores para a tabela
     buscarAdmins();
 
     // Redireciona para a tela de cadastro
-    document.getElementById("btnNovoAdmin").addEventListener("click", () => {
-        window.location.href = 'cadastro_admin.html';
-    });
+    const btnNovoAdmin = document.getElementById("btnNovoAdmin");
+    if (btnNovoAdmin) {
+        btnNovoAdmin.addEventListener("click", () => {
+            window.location.href = 'cadastro_admin.html';
+        });
+    }
 
     // Lógica do botão de Logoff
     const btnLogoff = document.getElementById("logoff");
@@ -37,29 +40,33 @@ document.addEventListener("DOMContentLoaded", () => {
 // FUNÇÃO NOVA: Preenche o nome do usuário logado no Menu
 // =======================================================
 async function carregarSessaoLogada() {
+    const elNome = document.getElementById("sidebarNome");
+    const elAvatar = document.getElementById("sidebarAvatar");
+
+    // SE OS ELEMENTOS NÃO EXISTIREM NA TELA (Ex: Tela de lista limpa), ELE ABORTA SILENCIOSAMENTE!
+    if (!elNome || !elAvatar) return;
+
     try {
         const retorno = await fetch("../php/get_sessao.php");
         const resposta = await retorno.json();
         
         if (resposta.status === "ok" && resposta.nome) {
-            // Imprime o nome na lateral
-            document.getElementById("sidebarNome").textContent = resposta.nome;
+            elNome.textContent = resposta.nome;
             
-            // Lógica para pegar as Iniciais (Ex: "João Silva" -> "JS")
             const partesNome = resposta.nome.trim().split(" ");
-            let iniciais = partesNome[0].charAt(0).toUpperCase(); // Primeira letra do 1º nome
+            let iniciais = partesNome[0].charAt(0).toUpperCase(); 
             
             if (partesNome.length > 1) {
-                iniciais += partesNome[partesNome.length - 1].charAt(0).toUpperCase(); // Primeira letra do último nome
+                iniciais += partesNome[partesNome.length - 1].charAt(0).toUpperCase();
             }
             
-            document.getElementById("sidebarAvatar").textContent = iniciais;
+            elAvatar.textContent = iniciais;
         } else {
-            document.getElementById("sidebarNome").textContent = "Administrador";
+            elNome.textContent = "Administrador";
         }
     } catch (erro) {
         console.error("Erro ao buscar a sessão:", erro);
-        document.getElementById("sidebarNome").textContent = "Administrador";
+        elNome.textContent = "Administrador";
     }
 }
 
@@ -69,6 +76,9 @@ async function carregarSessaoLogada() {
 async function buscarAdmins() {
     const tbody = document.getElementById("tabela-admins-body");
     
+    // Trava de segurança: Se a tabela não existir, não faz fetch à toa
+    if (!tbody) return; 
+
     try {
         const retorno = await fetch("../php/admin/administrador_get.php");
         const resposta = await retorno.json();

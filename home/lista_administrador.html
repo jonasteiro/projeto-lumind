@@ -14,79 +14,54 @@
     <link rel="stylesheet" href="../css/tela_administrador.css">
     <link rel="stylesheet" href="../css/administrador/lista_administrador.css">
 </head>
-<body>
-    <div class="tela-administrador">
+<body style="background: #f8fcff;">
+    
+    <main class="w-100 min-vh-100 d-flex flex-column">
         
-        <aside class="sidebar">
-            <div class="sidebar-top p-3 text-center">
-                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo img-fluid" onerror="this.style.display='none'">
+        <header class="topbar d-flex justify-content-between align-items-center p-4 bg-white shadow-sm border-bottom">
+            <div class="d-flex align-items-center container-xl">
+                <a href="tela_administrador.html" class="text-primary fs-4 me-3 text-decoration-none">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="fs-4 mb-0 fw-bold text-primary">GESTÃO DE ADMINISTRADORES</h2>
             </div>
-            
-            <div class="admin-data d-flex align-items-center px-3 pb-3 border-bottom border-info border-opacity-25">
-                <div class="admin-avatar" id="sidebarAvatar">--</div>
+        </header>
+
+        <section class="content p-4 container-xl flex-grow-1 mt-3">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-light-subtle">
                 <div>
-                    <strong id="sidebarNome" class="text-truncate d-inline-block" style="max-width: 140px;">Carregando...</strong>
+                    <h2 class="h4 mb-1 fw-bold text-dark">Equipe de Administração</h2>
+                    <p class="text-muted small mb-0">Gerencie as pessoas que possuem acesso total ao painel.</p>
                 </div>
+                <button id="btnNovoAdmin" class="btn btn-primary rounded-pill fw-semibold shadow-sm px-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i> Novo Admin
+                </button>
             </div>
-            
-            <nav class="nav flex-column p-3 gap-1">
-                <a href="tela_administrador.html" class="nav-link"><i class="bi bi-house-door-fill me-2"></i> INÍCIO</a>
-                <a href="../home/aprovacoes_admin.html" class="nav-link"><i class="bi bi-envelope me-2"></i> VALIDAÇÕES</a>
-                <a href="lista_administrador.html" class="nav-link active"><i class="bi bi-shield-lock me-2"></i> ADMINISTRADORES</a>
-                <a href="../home/profissional/listar-profissionais.html" class="nav-link"><i class="bi bi-person-badge me-2"></i> PROFISSIONAIS</a>
-                <a href="#" class="nav-link"><i class="bi bi-gear-fill me-2"></i> CONFIGURAÇÕES</a>
-                <hr class="my-2" style="border-color: #b5e5f5;">
-                <a href="#" id="logoff" class="nav-link text-danger fw-bold"><i class="bi bi-box-arrow-right me-2"></i> SAIR</a>
-            </nav>
-        </aside>
 
-        <main class="main-panel">
-            
-            <header class="topbar d-flex justify-content-between align-items-center p-4 bg-white shadow-sm">
-                <div class="d-flex align-items-center">
-                    <a href="tela_administrador.html" class="text-primary fs-4 me-3 text-decoration-none">
-                        <i class="bi bi-arrow-left"></i>
-                    </a>
-                    <h2 class="fs-4 mb-0 fw-bold text-primary">GESTÃO DE ADMINISTRADORES</h2>
-                </div>
-            </header>
-
-            <section class="content p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
-                    <div>
-                        <h2 class="h4 mb-1 fw-bold text-dark">Equipe de Administração</h2>
-                        <p class="text-muted small mb-0">Gerencie as pessoas que possuem acesso total ao painel.</p>
-                    </div>
-                    <button id="btnNovoAdmin" class="btn btn-primary rounded-pill fw-semibold shadow-sm px-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-plus-lg"></i> Novo Admin
-                    </button>
-                </div>
-
-                <div class="table-responsive bg-white rounded-4 shadow-sm border p-2">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="text-secondary fw-semibold py-3 ps-3">Nome</th>
-                                <th class="text-secondary fw-semibold py-3">E-mail</th>
-                                <th class="text-secondary fw-semibold py-3">CPF</th>
-                                <th class="text-secondary fw-semibold py-3 text-center">Status</th>
-                                <th class="text-secondary fw-semibold py-3 text-end pe-3">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-admins-body">
-                            <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <div class="spinner-border text-primary mb-2" role="status"></div>
-                                    <p class="mb-0">Carregando administradores...</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            
-        </main>
-    </div>
+            <div class="table-responsive bg-white rounded-4 shadow-sm border border-light-subtle p-2">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-secondary fw-semibold py-3 ps-3">Nome</th>
+                            <th class="text-secondary fw-semibold py-3">E-mail</th>
+                            <th class="text-secondary fw-semibold py-3">CPF</th>
+                            <th class="text-secondary fw-semibold py-3 text-center">Status</th>
+                            <th class="text-secondary fw-semibold py-3 text-end pe-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-admins-body">
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <div class="spinner-border text-primary mb-2" role="status"></div>
+                                <p class="mb-0">Carregando administradores...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/valida_sessao.js"></script>

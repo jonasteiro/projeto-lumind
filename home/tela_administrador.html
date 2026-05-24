@@ -10,25 +10,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <link rel="stylesheet" href="../css/tela_administrador.css">
-
 </head>
 <body>
     <div class="tela-administrador">
+        
         <aside class="sidebar">
-            <nav class="nav flex-column p-3">
-                <a href="#" class="nav-link active"><i class="bi bi-house-door-fill"></i> INICIO</a>
-                <a href="../home/aprovacoes_admin.html" class="nav-link"><i class="bi bi-envelope"></i> VALIDAÇÃO PROFISSIONAL</a>
-                <a href="#" class="nav-link"><i class="bi bi-gear-fill"></i> CONFIGURAÇÕES DO SISTEMA</a>
-                <a href="#" class="nav-link"><i class="bi bi-person-check"></i> MODERAÇÃO</a>
-                <a href="#" class="nav-link"><i class="bi bi-clock-history"></i> LOGS DE ATIVIDADE</a>
-                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+            <div class="sidebar-top p-3 text-center">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo img-fluid" onerror="this.style.display='none'">
+            </div>
+            
+            <div class="admin-data d-flex align-items-center px-3 pb-3 border-bottom border-info border-opacity-25">
+                <div class="admin-avatar" id="sidebarAvatar">--</div>
+                <div>
+                    <strong id="sidebarNome" class="text-truncate d-inline-block" style="max-width: 140px;">Carregando...</strong>
+                </div>
+            </div>
+            
+            <nav class="nav flex-column p-3 gap-1">
+                <a href="tela_administrador.html" class="nav-link active"><i class="bi bi-house-door-fill me-2"></i> INÍCIO</a>
+                <a href="../home/aprovacoes_admin.html" class="nav-link"><i class="bi bi-envelope me-2"></i> VALIDAÇÕES</a>
+                <a href="lista_administrador.html" class="nav-link"><i class="bi bi-shield-lock me-2"></i> ADMINISTRADORES</a>
+                <a href="../home/profissional/listar-profissionais.html" class="nav-link"><i class="bi bi-person-badge me-2"></i> PROFISSIONAIS</a>
+                <a href="#" class="nav-link"><i class="bi bi-gear-fill me-2"></i> CONFIGURAÇÕES</a>
+                <hr class="my-2" style="border-color: #b5e5f5;">
+                <a href="#" id="logoff" class="nav-link text-danger fw-bold"><i class="bi bi-box-arrow-right me-2"></i> SAIR</a>
             </nav>
         </aside>
 
         <main class="main-panel">
-            <header class="topbar d-flex justify-content-between align-items-center p-4">
-                <h2>PAINEL ADMINISTRATIVO</h2>
+            <header class="topbar d-flex justify-content-between align-items-center p-4 bg-white shadow-sm">
+                <h2 class="fs-4 mb-0">PAINEL ADMINISTRATIVO</h2>
                 <div class="search-box d-flex align-items-center">
                     <i class="bi bi-search"></i>
                     <input type="search" class="form-control form-control-sm ms-2" placeholder="Buscar">
@@ -46,7 +59,8 @@
                     <div class="col-sm-4">
                         <a href="lista_administrador.html" style="text-decoration: none; color: inherit;">
                             <article class="card-option p-4 text-center">
-                                <i class="bi bi-shield-lock icon"></i> <h4>GESTÃO DE ADMINS</h4>
+                                <i class="bi bi-shield-lock icon"></i> 
+                                <h4>GESTÃO DE ADMINS</h4>
                             </article>
                         </a>
                     </div>
@@ -66,16 +80,42 @@
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
     
     <script src="../js/valida_sessao.js"></script>
     <script src="../js/index.js"></script>
     <script>
+        // Trava de segurança original
         if (typeof validarAcesso === "function") {
-            validarAcesso('Administrador');
+            validarAcesso(['Administrador']);
         }
+
+        // Script para carregar a sessão na barra lateral (específico para esta tela)
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const retorno = await fetch("../php/get_sessao.php");
+                const resposta = await retorno.json();
+                
+                if (resposta.status === "ok" && resposta.nome) {
+                    document.getElementById("sidebarNome").textContent = resposta.nome;
+                    
+                    const partesNome = resposta.nome.trim().split(" ");
+                    let iniciais = partesNome[0].charAt(0).toUpperCase();
+                    
+                    if (partesNome.length > 1) {
+                        iniciais += partesNome[partesNome.length - 1].charAt(0).toUpperCase();
+                    }
+                    
+                    document.getElementById("sidebarAvatar").textContent = iniciais;
+                } else {
+                    document.getElementById("sidebarNome").textContent = "Administrador";
+                }
+            } catch (erro) {
+                console.error("Erro ao buscar a sessão:", erro);
+                document.getElementById("sidebarNome").textContent = "Administrador";
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 -- =======================================================
--- 1. CRIAÇÃO E SELEÇÃO DO BANCO DE DADOS
+-- 1. PREPARAÇÃO DO AMBIENTE
 -- =======================================================
-CREATE DATABASE IF NOT EXISTS lumind_db;
+DROP DATABASE IF EXISTS lumind_db;
+CREATE DATABASE lumind_db;
 USE lumind_db;
 
 -- =======================================================
--- 2. TABELAS BASE (Entidades Principais)
+-- 2. TABELAS BASE
 -- =======================================================
 CREATE TABLE Usuario (
     id_usuario INT NOT NULL AUTO_INCREMENT,
@@ -27,7 +28,7 @@ CREATE TABLE Telefone (
 );
 
 -- =======================================================
--- 3. TABELAS DE PERFIS (Ordem de Dependência Corrigida)
+-- 3. TABELAS DE PERFIS (ORDEM RIGOROSA DE COMPILAÇÃO)
 -- =======================================================
 CREATE TABLE Administrador (
     id_usuario INT NOT NULL,
@@ -36,7 +37,6 @@ CREATE TABLE Administrador (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE
 );
 
--- ProfissionalSaude DEVE vir antes, pois outras tabelas dependem dela
 CREATE TABLE ProfissionalSaude (
     id_usuario INT NOT NULL,
     registro_profissional VARCHAR(30) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE ProfissionalSaude (
 
 CREATE TABLE ResponsavelLegal (
     id_usuario INT NOT NULL,
-    id_profissional INT NOT NULL, -- ALERTA DE ARQUITETURA: Reconsidere essa necessidade.
+    id_profissional INT NOT NULL, 
     PRIMARY KEY (id_usuario),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_profissional) REFERENCES ProfissionalSaude(id_usuario)
@@ -66,7 +66,7 @@ CREATE TABLE PessoaTea (
 );
 
 -- =======================================================
--- 4. TABELAS DE FUNCIONALIDADES E REGRAS DE NEGÓCIO
+-- 4. TABELAS DE FUNCIONALIDADES
 -- =======================================================
 CREATE TABLE Documentacao (
     id_documentacao INT AUTO_INCREMENT PRIMARY KEY,
@@ -114,7 +114,7 @@ CREATE TABLE Relatorio (
 );
 
 -- =======================================================
--- 5. TABELAS PIVÔ (Relacionamentos N:M)
+-- 5. TABELAS PIVÔ (N:M)
 -- =======================================================
 CREATE TABLE PessoaTea_Atividade (
     id_pessoa_tea INT NOT NULL,
@@ -133,27 +133,63 @@ CREATE TABLE PessoaTea_Evento (
 );
 
 -- =======================================================
--- 6. CARGA INICIAL DE DADOS (Corrigindo Ordem e Constraints)
+-- 6. MASSA DE DADOS PARA HOMOLOGAÇÃO (INSERTS)
 -- =======================================================
 
--- 1. Admin
+-- -------------------------------------------------------
+-- USUÁRIO 1: Administrador (Sistema)
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (1, 'Carlos Sistema', 'admin@lumind.com.br', 'senha_123', '11111111111', '1985-04-12', 'Administrador');
+VALUES (1, 'Admin Master', 'admin@lumind.com', 'hash_admin', '11111111111', '1990-01-01', 'Administrador');
 INSERT INTO Administrador (id_usuario, status_adm) VALUES (1, TRUE);
 
--- 2. Profissional de Saúde (Precisa existir antes do responsável referenciá-lo)
+-- -------------------------------------------------------
+-- USUÁRIO 2: Profissional de Saúde - APROVADO
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (3, 'Dr. Roberto Mendes', 'roberto.neuro@clinica.com', 'senha_789', '33333333333', '1975-11-03', 'ProfissionalSaude');
+VALUES (2, 'Dra. Alice Neuro', 'alice@clinica.com', 'hash_alice', '22222222222', '1985-05-15', 'ProfissionalSaude');
 INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
-VALUES (3, 'CRM-98765', 'Neurologista Pediátrico');
+VALUES (2, 'CRM-12345', 'Neurologia Integrativa');
+-- Doc validada pelo Admin (ID 1)
+INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao, id_admin_revisor, data_revisao) 
+VALUES (2, 'blob_cert', 'blob_rg', 'Aprovado', 1, NOW());
 
--- 3. Responsável Legal (Agora apontando para o Médico ID 3)
+-- -------------------------------------------------------
+-- USUÁRIO 3: Profissional de Saúde - REPROVADO
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (2, 'Marta Oliveira', 'marta.mae@email.com', 'senha_456', '22222222222', '1980-08-25', 'ResponsavelLegal');
-INSERT INTO ResponsavelLegal (id_usuario, id_profissional) VALUES (2, 3);
+VALUES (3, 'Dr. Bruno Fono', 'bruno@clinica.com', 'hash_bruno', '33333333333', '1988-08-20', 'ProfissionalSaude');
+INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
+VALUES (3, 'CRFA-9876', 'Fonoaudiologia');
+-- Doc rejeitada pelo Admin (ID 1) com motivo
+INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao, motivo_reprovacao, id_admin_revisor, data_revisao) 
+VALUES (3, 'blob_cert_borrado', 'blob_rg_vencido', 'Reprovado', 'CRFA ilegível e documento de identidade vencido.', 1, NOW());
 
--- 4. Pessoa TEA (Apontando para Médico ID 3 e Responsável ID 2)
+-- -------------------------------------------------------
+-- USUÁRIO 4: Profissional de Saúde - PENDENTE
+-- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (4, 'Lucas Oliveira', 'lucas.filho@email.com', 'senha_000', '44444444444', '2010-02-15', 'PessoaTea');
+VALUES (4, 'Dra. Carla Psico', 'carla@clinica.com', 'hash_carla', '44444444444', '1992-11-10', 'ProfissionalSaude');
+INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
+VALUES (4, 'CRP-55443', 'Psicologia Infantil');
+-- Doc aguardando análise (sem revisor, sem data de revisão)
+INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao) 
+VALUES (4, 'blob_cert_novo', 'blob_rg_novo', 'Aguardando');
+
+-- -------------------------------------------------------
+-- USUÁRIO 5: Responsável Legal (Mãe)
+-- VINCULADO: Obrigatoriamente à Dra. Alice (ID 2)
+-- -------------------------------------------------------
+INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
+VALUES (5, 'Marta Silva', 'marta@mae.com', 'hash_marta', '55555555555', '1980-03-22', 'ResponsavelLegal');
+INSERT INTO ResponsavelLegal (id_usuario, id_profissional) 
+VALUES (5, 2);
+
+-- -------------------------------------------------------
+-- USUÁRIO 6: Paciente (Pessoa TEA)
+-- VINCULADO: Dra. Alice (ID 2) e Mãe Marta (ID 5)
+-- -------------------------------------------------------
+INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
+VALUES (6, 'Lucas Silva', 'lucas@filho.com', 'hash_lucas', '66666666666', '2015-07-30', 'PessoaTea');
 INSERT INTO PessoaTea (id_usuario, id_profissional, id_responsavel, observacao, nivel_tea) 
-VALUES (4, 3, 2, 'Apresenta forte sensibilidade a ruídos...', 'Nível 2 - Suporte Substancial');
+VALUES (6, 2, 5, 'Comunicação não verbal, sensibilidade auditiva moderada.', 'Nível 3');

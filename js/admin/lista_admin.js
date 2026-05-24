@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Busca os dados de quem está logado para preencher a barra lateral
+    carregarSessaoLogada();
+
+    // 2. Busca a lista de administradores para a tabela
     buscarAdmins();
 
     // Redireciona para a tela de cadastro
@@ -6,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'cadastro_admin.html';
     });
 
+    // Lógica do botão de Logoff
     const btnLogoff = document.getElementById("logoff");
-    
     if (btnLogoff) {
         btnLogoff.addEventListener("click", async (event) => {
             event.preventDefault();
@@ -28,71 +33,123 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// =======================================================
+// FUNÇÃO NOVA: Preenche o nome do usuário logado no Menu
+// =======================================================
+async function carregarSessaoLogada() {
+    try {
+        const retorno = await fetch("../php/get_sessao.php");
+        const resposta = await retorno.json();
+        
+        if (resposta.status === "ok" && resposta.nome) {
+            // Imprime o nome na lateral
+            document.getElementById("sidebarNome").textContent = resposta.nome;
+            
+            // Lógica para pegar as Iniciais (Ex: "João Silva" -> "JS")
+            const partesNome = resposta.nome.trim().split(" ");
+            let iniciais = partesNome[0].charAt(0).toUpperCase(); // Primeira letra do 1º nome
+            
+            if (partesNome.length > 1) {
+                iniciais += partesNome[partesNome.length - 1].charAt(0).toUpperCase(); // Primeira letra do último nome
+            }
+            
+            document.getElementById("sidebarAvatar").textContent = iniciais;
+        } else {
+            document.getElementById("sidebarNome").textContent = "Administrador";
+        }
+    } catch (erro) {
+        console.error("Erro ao buscar a sessão:", erro);
+        document.getElementById("sidebarNome").textContent = "Administrador";
+    }
+}
+
+// =======================================================
+// RENDERIZAÇÃO DA TABELA
+// =======================================================
 async function buscarAdmins() {
-    const listaDiv = document.getElementById("lista");
+    const tbody = document.getElementById("tabela-admins-body");
     
     try {
         const retorno = await fetch("../php/admin/administrador_get.php");
         const resposta = await retorno.json();
         
         if (resposta.status === "ok") {
-            preencherTabela(resposta.data);
+            preencherTabela(resposta.data, tbody);
         } else {
-            listaDiv.innerHTML = `<p class="text-center text-muted">${resposta.mensagem}</p>`;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        ${resposta.mensagem}
+                    </td>
+                </tr>`;
         }
     } catch (erro) {
-        listaDiv.innerHTML = `<p class="text-center text-danger">Erro de comunicação com o servidor.</p>`;
+        console.error("Erro no fetch:", erro);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4 text-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Erro de comunicação com o servidor.
+                </td>
+            </tr>`;
     }
 }
 
-function preencherTabela(dados) {
-    let html = `
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th class="py-3">Nome</th>
-                    <th class="py-3">CPF</th>
-                    <th class="py-3">Email</th>
-                    <th class="py-3">Status</th>
-                    <th class="py-3 text-end">Ações</th>
-                </tr>
-            </thead>
-            <tbody>`;
+function preencherTabela(dados, tbody) {
+    if (!dados || dados.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">
+                    Nenhum administrador cadastrado.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    let html = '';
 
     dados.forEach(adm => {
         const isAtivo = (adm.status_adm == 1 || adm.status_adm === "1" || adm.status_adm === true);
-        
         const statusClass = isAtivo ? "bg-success" : "bg-danger";
         const statusTexto = isAtivo ? "Ativo" : "Inativo";
 
         html += `
             <tr>
-                <td class="fw-bold">${adm.nome}</td>
-                <td>${adm.cpf}</td>
+                <td class="ps-3 fw-medium text-dark">${adm.nome}</td>
                 <td class="text-muted">${adm.email}</td>
-                <td><span class="badge ${statusClass}">${statusTexto}</span></td>
-                <td class="text-end">
+                <td class="text-muted">${adm.cpf || '---'}</td>
+                <td class="text-center">
+                    <span class="badge ${statusClass} rounded-pill px-3 py-2">${statusTexto}</span>
+                </td>
+                <td class="text-end pe-3">
                     <div class="btn-group">
-                        <a href='alterar_admin.html?id=${adm.id_usuario}' class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                        <a href="alterar_admin.html?id=${adm.id_usuario}" class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger border-0">
-                            <i class="bi bi-trash"></i>
+                        <button onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger rounded-pill" title="Excluir">
+                            <i class="bi bi-trash3"></i>
                         </button>
                     </div>
                 </td>
             </tr>`;
     });
 
-    html += '</tbody></table>';
-    document.getElementById("lista").innerHTML = html;
+    tbody.innerHTML = html;
 }
 
 async function excluir(id) {
     if (confirm("Deseja realmente remover este administrador?")) {
-        const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
-        const resposta = await retorno.json();
-        alert(resposta.mensagem);
-        if (resposta.status === "ok") window.location.reload();
+        try {
+            const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
+            const resposta = await retorno.json();
+            
+            alert(resposta.mensagem); 
+            
+            if (resposta.status === "ok") {
+                window.location.reload();
+            }
+        } catch (erro) {
+            console.error("Erro ao excluir:", erro);
+            alert("Erro de comunicação ao tentar excluir.");
+        }
     }
 }

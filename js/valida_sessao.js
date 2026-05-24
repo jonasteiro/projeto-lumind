@@ -1,3 +1,4 @@
+
 // UTILITÁRIO — Extrai as 2 primeiras palavras do nome completo
 function formatarNomeUsuario(nomeCompleto) {
     if (!nomeCompleto || typeof nomeCompleto !== 'string') return '';
@@ -24,8 +25,10 @@ async function validarAcesso(tipoPermitido) {
 
         // 1. Se não estiver logado, expulsa
         if (resposta.status === "nok") {
-            sessionStorage.removeItem('lumind_nome_usuario');
-            window.location.href = "../login/index.html?erro=sem_sessao";
+
+            // FIX: Redirecionamento absoluto, evitando falhas de rota em pastas aninhadas.
+            window.location.href = `${BASE_URL}/login/index.html?erro=sem_sessao`;
+
             return;
         }
 
@@ -37,8 +40,8 @@ async function validarAcesso(tipoPermitido) {
         if (tipoPermitido) {
             const perfisAceitos = Array.isArray(tipoPermitido) ? tipoPermitido : [tipoPermitido];
             if (!perfisAceitos.includes(usuarioLogado.tipo_usuario)) {
-                // Removemos o alert() para não travar a tela com o HTML vazado no fundo
-                window.location.href = "../login/index.html?erro=acesso_negado";
+                // FIX: Redirecionamento absoluto.
+                window.location.href = `${BASE_URL}/login/index.html?erro=acesso_negado`;
                 return;
             }
         }
@@ -58,6 +61,7 @@ async function validarAcesso(tipoPermitido) {
 
     } catch (e) {
         console.error("Erro ao processar sessão:", e);
+
     }
 }
 
@@ -68,11 +72,16 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLogoff.addEventListener("click", async (event) => {
             event.preventDefault();
             try {
-                const retorno  = await fetch("../php/usuario_logoff.php");
+
+                // FIX: Utilização do BASE_URL na API de logoff.
+                const retorno = await fetch(`${BASE_URL}/php/usuario_logoff.php`);
+
                 const resposta = await retorno.json();
                 if (resposta.status === "ok") {
-                    sessionStorage.removeItem('lumind_nome_usuario');
-                    window.location.href = '/projeto-lumind/login.html';
+
+                    // FIX: Padronização do arquivo de destino.
+                    window.location.href = `${BASE_URL}/login/index.html`; 
+
                 }
             } catch (error) {
                 console.error("Erro na requisição de logoff:", error);

@@ -11,6 +11,8 @@ function validarEmail(email) {
 function validarCPF(cpf) {
     const apenasNumeros = cpf.replace(/\D/g, ''); 
     return apenasNumeros.length === 11; 
+    const apenasNumeros = cpf.replace(/\D/g, ''); 
+    return apenasNumeros.length === 11; 
 }
 
 function mostrarErro(mensagem) {
@@ -65,6 +67,7 @@ function validarCampos() {
         document.getElementById('erroCpfResponsavel').classList.add('show');
         temErro = true;
     }
+
 
     if (!dataNascimento) {
         document.getElementById('erroData').textContent = 'Data obrigatória';

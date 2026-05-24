@@ -17,7 +17,7 @@
         <aside class="sidebar">
             <div class="sidebar-brand d-flex align-items-center p-4">
                 <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo" onerror="this.style.display='none'">
-                <span class="h4 m-0 ms-2">Lumind</span>
+                <span class="h4 m-0 ms-2"></span>
             </div>
 
             <!--Mudei-->
@@ -25,12 +25,14 @@
                 <div class="member-item d-flex align-items-center mb-3">
                     <img src="https://i.pravatar.cc/60?img=32" alt="Responsável" class="member-avatar">
                     <div>
+
                         <strong id="nome-usuario"></strong>
                         <small>Responsável</small>
                     </div>
                 </div>
                 <!-- Dependentes são injetados dinamicamente pelo JS -->
                 <div id="lista-dependentes-sidebar"></div>
+
             </div>
             <!------------------------------------------>
 
@@ -61,15 +63,19 @@
             <section class="content p-4">
                 <div class="row g-4">
                     <div class="col-sm-6 col-lg-4">
+
                         <!--navegar para a nova página Responsavel Acompanhar atividades-->
                         <article class="card-option p-4 text-center"
                                 onclick="location.href='atividades_responsavel.html'"
                                 style="cursor: pointer;">
+
                             <i class="bi bi-clipboard-check icon"></i>
                             <h4>ATIVIDADES</h4>
                             <p>Acompanhar as atividades enviadas</p>
                         </article>
+
                         <!---------------------------------------------------------------->
+
                     </div>
                     <div class="col-sm-6 col-lg-4">
                         <article class="card-option p-4 text-center">
@@ -103,13 +109,7 @@
                             <p>Dicas para o responsável</p>
                         </article>
                     </div>
-                    <div class="col-sm-6 col-lg-4">
-                        <article class="card-option p-4 text-center">
-                            <i class="bi bi-bar-chart-fill icon"></i>
-                            <h4>HISTÓRICO DE PROGRESSO</h4>
-                            <p>Realiza o acompanhamento da evolução do paciente</p>
-                        </article>
-                    </div>
+
                 </div>
             </section>
         </main>

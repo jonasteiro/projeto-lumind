@@ -19,6 +19,13 @@ CREATE TABLE Usuario (
     PRIMARY KEY (id_usuario)
 );
 
+CREATE TABLE RecuperacaoSenha (
+    id_recuperacao INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    token VARCHAR(6) NOT NULL,
+    data_expiracao DATETIME NOT NULL
+);
+
 CREATE TABLE Telefone (
     id_telefone INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
@@ -140,16 +147,18 @@ CREATE TABLE PessoaTea_Evento (
 -- USUÁRIO 1: Administrador (Sistema)
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (1, 'Admin Master', 'admin@lumind.com', 'hash_admin', '11111111111', '1990-01-01', 'Administrador');
+VALUES (1, 'Admin Master', 'admin@lumind.com', '$2a$12$rALjqYABiVGVSirn.cwUEeY0bVXOcwTVlua9i92xnlIiRYW68cgEm', '11111111111', '1990-01-01', 'Administrador');
 INSERT INTO Administrador (id_usuario, status_adm) VALUES (1, TRUE);
+-- Senha admin: Admin@1234
 
 -- -------------------------------------------------------
 -- USUÁRIO 2: Profissional de Saúde - APROVADO
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (2, 'Dra. Alice Neuro', 'alice@clinica.com', 'hash_alice', '22222222222', '1985-05-15', 'ProfissionalSaude');
+VALUES (2, 'Dra. Alice Neuro', 'alice@clinica.com', '$2a$12$MG4/i/coqSh0nqavX6Igvu1d3VG7DNALqgClx1JewL2F.uF.ZPL3O', '22222222222', '1985-05-15', 'ProfissionalSaude');
 INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
 VALUES (2, 'CRM-12345', 'Neurologia Integrativa');
+-- Senha Alice: Alice@1234
 
 INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao, id_admin_revisor, data_revisao) 
 VALUES (2, 'blob_cert', 'blob_rg', 'Aprovado', 1, NOW());
@@ -158,9 +167,10 @@ VALUES (2, 'blob_cert', 'blob_rg', 'Aprovado', 1, NOW());
 -- USUÁRIO 3: Profissional de Saúde - REPROVADO
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (3, 'Dr. Bruno Fono', 'bruno@clinica.com', 'hash_bruno', '33333333333', '1988-08-20', 'ProfissionalSaude');
+VALUES (3, 'Dr. Bruno Fono', 'bruno@clinica.com', '$2a$12$glpeXYOr1aZigDI1ZRK6FevvNto3sa2ecgQX4hK1PUmfsKc1ikVje', '33333333333', '1988-08-20', 'ProfissionalSaude');
 INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
 VALUES (3, 'CRFA-9876', 'Fonoaudiologia');
+-- Senha Bruno: Bruno@1234
 
 INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao, motivo_reprovacao, id_admin_revisor, data_revisao) 
 VALUES (3, 'blob_cert_borrado', 'blob_rg_vencido', 'Reprovado', 'CRFA ilegível e documento de identidade vencido.', 1, NOW());
@@ -169,9 +179,10 @@ VALUES (3, 'blob_cert_borrado', 'blob_rg_vencido', 'Reprovado', 'CRFA ilegível 
 -- USUÁRIO 4: Profissional de Saúde - PENDENTE
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (4, 'Dra. Carla Psico', 'carla@clinica.com', 'hash_carla', '44444444444', '1992-11-10', 'ProfissionalSaude');
+VALUES (4, 'Dra. Carla Psico', 'carla@clinica.com', '$2a$12$QPrgqat9hpce6qoFwZ.zouoPifIjzJfdfxxVnzrpf3NgVHfQHMIxq', '44444444444', '1992-11-10', 'ProfissionalSaude');
 INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) 
 VALUES (4, 'CRP-55443', 'Psicologia Infantil');
+-- Senha Carla: Carla@1234
 
 INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, status_aprovacao) 
 VALUES (4, 'blob_cert_novo', 'blob_rg_novo', 'Aguardando');
@@ -181,18 +192,20 @@ VALUES (4, 'blob_cert_novo', 'blob_rg_novo', 'Aguardando');
 -- VINCULADO: Obrigatoriamente à Dra. Alice (ID 2)
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (5, 'Marta Silva', 'marta@mae.com', 'hash_marta', '55555555555', '1980-03-22', 'ResponsavelLegal');
+VALUES (5, 'Marta Silva', 'marta@mae.com', '$2a$12$TbroNLKR0vUiPS7bwWBeXesTAB/C8M2q7js0R.yAemGz5nHPuVb.W', '55555555555', '1980-03-22', 'ResponsavelLegal');
 INSERT INTO ResponsavelLegal (id_usuario, id_profissional) 
 VALUES (5, 2);
+-- Senha Marta: Marta@1234
 
 -- -------------------------------------------------------
 -- USUÁRIO 6: Paciente (Pessoa TEA)
 -- VINCULADO: Dra. Alice (ID 2) e Mãe Marta (ID 5)
 -- -------------------------------------------------------
 INSERT INTO Usuario (id_usuario, nome, email, senha, cpf, data_nascimento, tipo_usuario) 
-VALUES (6, 'Lucas Silva', 'lucas@filho.com', 'hash_lucas', '66666666666', '2015-07-30', 'PessoaTea');
+VALUES (6, 'Lucas Silva', 'lucas@filho.com', '$2a$12$ZSHYwiA1vNPs58wQLUOdrOHatKESHv82rgTX0fNHGI3WxPvUo56fm', '66666666666', '2015-07-30', 'PessoaTea');
 INSERT INTO PessoaTea (id_usuario, id_profissional, id_responsavel, observacao, nivel_tea) 
 VALUES (6, 2, 5, 'Comunicação não verbal, sensibilidade auditiva moderada.', 'Nível 3');
+-- Senha Lucas: Lucas@1234
 
 -- =======================================================
 -- 7. MASSA DE DADOS - ATIVIDADES (GABY)
@@ -269,15 +282,6 @@ ALTER TABLE PessoaTea_Atividade
     COMMENT 'Data e hora quando o profissional enviou o feedback'
     AFTER feedback_profissional;
     
-SELECT Usuario.*
-FROM Usuario;
 
-CREATE TABLE RecuperacaoSenha (
-    id_recuperacao INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(150) NOT NULL,
-    token VARCHAR(6) NOT NULL,
-    data_expiracao DATETIME NOT NULL
-);
 
-SELECT RecuperacaoSenha.*
-FROM RecuperacaoSenha;
+

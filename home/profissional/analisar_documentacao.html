@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumind | Analisar Documentação</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="../../css/tela_administrador.css">
+</head>
+<body style="background: #f8fcff;">
+    
+    <main class="w-100 min-vh-100 d-flex flex-column">
+        
+        <header class="topbar d-flex justify-content-between align-items-center p-4 border-bottom shadow-sm" style="background-color: #d5efff;">
+            <div class="d-flex align-items-center container-xl px-0">
+                
+                <a href="listar-profissionais.html" 
+                   class="d-flex align-items-center justify-content-center rounded-circle text-decoration-none me-3" 
+                   style="width: 44px; height: 44px; background-color: #bce2f9; color: #1474a8; transition: all 0.2s; cursor: pointer;" 
+                   onmouseover="this.style.backgroundColor='#a8d6f5'" 
+                   onmouseout="this.style.backgroundColor='#bce2f9'"
+                   title="Voltar para a lista">
+                    <i class="bi bi-arrow-left fs-4"></i>
+                </a>
+                
+                <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">ANÁLISE DE DOCUMENTAÇÃO</h2>
+                
+            </div>
+        </header>
+
+        <section class="content p-4 container-xl flex-grow-1 mt-3">
+            <div class="admin-card p-4 shadow-sm mx-auto w-100 bg-white" style="max-width: 900px; border-radius: 1.2rem; border: 1px solid #b3e4fc;">
+                <h4 class="mb-4 fw-bold text-uppercase" style="color: #1f6389;">
+                    <i class="bi bi-file-earmark-check me-2"></i> Documentos do Profissional
+                </h4>
+                
+                <div class="doc-viewer mb-4" style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                    <div class="doc-item" style="flex: 1; min-width: 280px; padding: 1.2rem; border-radius: 0.8rem; border: 1px solid #b3e4fc; background: #fff;">
+                        <label class="text-muted small fw-bold text-uppercase">Certificação Profissional</label>
+                        <div id="img-certificacao" class="mt-2 text-center py-4">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                        </div>
+                    </div>
+                    <div class="doc-item" style="flex: 1; min-width: 280px; padding: 1.2rem; border-radius: 0.8rem; border: 1px solid #b3e4fc; background: #fff;">
+                        <label class="text-muted small fw-bold text-uppercase">Documento de Identidade</label>
+                        <div id="img-identidade" class="mt-2 text-center py-4">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <p class="mb-0" style="color: #1f6389;">
+                        <strong>Status Atual:</strong> 
+                        <span id="status-badge" class="badge bg-secondary px-3 py-2">Aguardando...</span>
+                    </p>
+                </div>
+
+                <div class="d-flex gap-3 border-top pt-4" style="border-color: #b3e4fc !important;">
+                    <button class="btn btn-success px-4 py-2 fw-semibold shadow-sm" onclick="atualizarStatus('Aprovado')">
+                        <i class="bi bi-check-circle me-1"></i> Aprovar Cadastro
+                    </button>
+                    <button class="btn btn-danger px-4 py-2 fw-semibold shadow-sm" onclick="atualizarStatus('Reprovado')">
+                        <i class="bi bi-x-circle me-1"></i> Reprovar Cadastro
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/valida_sessao.js"></script>
+    <script src="../../js/profissional/analisar_documentacao.js"></script>
+    <script>
+        if (typeof validarAcesso === "function") {
+            validarAcesso(['Administrador']);
+        }
+    </script>
+</body>
+</html>

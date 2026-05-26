@@ -1,43 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
     // Configura a data de hoje como padrão no input de data
     document.getElementById('data_publicacao').valueAsDate = new Date();
 
-    // 1. CARREGAR PACIENTES (Referente ao Item 2 do Checklist)
+    // 1. CARREGAR PACIENTES
     carregarPacientes();
 
-    // 2. INTERCEPTAR O ENVIO DO FORMULÁRIO (Referente ao Item 3 do Checklist)
+    // 2. INTERCEPTAR O ENVIO DO FORMULÁRIO
     const form = document.getElementById("formPublicarAtividade");
     
     form.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Impede o recarregamento da página
+        event.preventDefault();
 
-        // Captura todas as checkboxes que foram marcadas
         const pacientesSelecionados = document.querySelectorAll('input[name="pacientes_ids[]"]:checked');
         const erroMsg = document.getElementById("erroPacientes");
 
-        // CHECKLIST ITEM 3: Validação do Array length > 0
         if (pacientesSelecionados.length === 0) {
-            erroMsg.classList.remove("d-none"); // Tira o display:none do Bootstrap
+            erroMsg.classList.remove("d-none");
             return; 
         } else {
-            erroMsg.classList.add("d-none"); // Devolve o display:none
+            erroMsg.classList.add("d-none");
         }
 
-        // Se passou na validação, preparamos os dados para enviar ao PHP
-        // Usamos FormData porque agora temos upload de arquivo (Material de Apoio)
         const formData = new FormData(form);
 
         try {
-            // Procura pelo tipo do botão
             const btnSubmit = form.querySelector('button[type="submit"]');
-            
             if (btnSubmit) {
                 btnSubmit.textContent = "Publicando...";
                 btnSubmit.disabled = true;
             }
 
-            // Envia para o Back-end
             const resposta = await fetch("../../php/atividades/criar_atividade.php", {
                 method: "POST",
                 body: formData
@@ -46,19 +38,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const resultado = await resposta.json();
 
             if (resultado.status === "ok") {
-                // ALERTA PERSONALIZADO DE SUCESSO
+                // REDIRECIONAMENTO APÓS SUCESSO
                 Swal.fire({
                     title: 'Sucesso!',
-                    text: 'Atividade publicada com sucesso para os pacientes selecionados!',
+                    text: 'Atividade publicada com sucesso!',
                     icon: 'success',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#0d6efd'
+                }).then(() => {
+                    // Aqui está o redirecionamento solicitado
+                    window.location.href = '../../home/atividades_painel.html';
                 });
 
-                form.reset(); // Limpa o formulário
-                document.getElementById('data_publicacao').valueAsDate = new Date(); // Reseta a data
             } else {
-                // ALERTA PERSONALIZADO DE ERRO (BACK-END)
                 Swal.fire({
                     title: 'Ops!',
                     text: resultado.mensagem,
@@ -70,16 +62,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         } catch (erro) {
             console.error("Erro na requisição:", erro);
-            // ALERTA PERSONALIZADO DE ERRO CRÍTICO (COMUNICAÇÃO)
             Swal.fire({
                 title: 'Erro de Comunicação',
-                text: 'Não foi possível conectar ao servidor. Verifique o console (F12) para mais detalhes.',
+                text: 'Não foi possível conectar ao servidor.',
                 icon: 'error',
                 confirmButtonText: 'Fechar',
-                confirmButtonColor: '#dc3545' // Botão vermelho para erro crítico
+                confirmButtonColor: '#dc3545'
             });
         } finally {
-            // Restaura o botão
             const btnSubmit = form.querySelector('button[type="submit"]');
             if (btnSubmit) {
                 btnSubmit.textContent = "Publicar Atividade";
@@ -89,34 +79,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Função para buscar os pacientes no banco via API
 async function carregarPacientes() {
     const container = document.getElementById("containerPacientes");
-
     try {
         const resposta = await fetch("../../php/atividades/buscar_pacientes.php");
         const pacientes = await resposta.json();
 
-        container.innerHTML = ""; // Limpa o texto "Carregando..."
-
+        container.innerHTML = ""; 
         if (pacientes.length === 0) {
             container.innerHTML = "<span class='text-muted'>Nenhum paciente encontrado.</span>";
             return;
         }
 
-        // Cria uma checkbox para cada paciente retornado do banco
         pacientes.forEach(paciente => {
             const label = document.createElement("label");
-            label.className = "paciente-item d-block mb-2"; // Adicionado classes do Bootstrap para espaçamento
-            
+            label.className = "paciente-item d-block mb-2";
             label.innerHTML = `
                 <input type="checkbox" name="pacientes_ids[]" value="${paciente.id_usuario}" class="form-check-input me-2">
                 ${paciente.nome}
             `;
-            
             container.appendChild(label);
         });
-
     } catch (erro) {
         console.error("Erro ao buscar pacientes:", erro);
         container.innerHTML = "<span class='text-danger'>Erro ao carregar lista de pacientes.</span>";

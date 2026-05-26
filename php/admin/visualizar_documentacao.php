@@ -35,7 +35,6 @@ if ($id > 0 && ($tipo == 'cert' || $tipo == 'iden')) {
         $finfo = new finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->buffer($binario);
 
-        // Fallback de segurança caso a detecção falhe
         if (!$mimeType || $mimeType === 'application/x-empty') {
             $mimeType = 'application/pdf'; 
         }
@@ -46,7 +45,6 @@ if ($id > 0 && ($tipo == 'cert' || $tipo == 'iden')) {
     }
 }
 
-// Mensagem amigável caso não ache o arquivo
 echo "<div style='font-family: Inter, Arial, sans-serif; text-align: center; padding: 60px 20px; color: #dc3545; background-color: #fff5f5; height: 100vh; margin: 0;'>";
 echo "<h3>Documento não localizado no banco de dados.</h3>";
 echo "</div>";

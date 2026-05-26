@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         container.innerHTML = '';
 
-        // Empty state
         if (!Array.isArray(relatorios) || relatorios.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
@@ -21,14 +20,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         relatorios.forEach(rel => {
-            // Formata a data corretamente sem deslocar por fuso horário
-            const dataFormatada = new Date(rel.data + 'T00:00:00')
-                .toLocaleDateString('pt-BR');
-
-            // Trunca a descrição para preview no card
-            const preview = rel.descricao.length > 120
-                ? rel.descricao.substring(0, 120) + '...'
-                : rel.descricao;
+            const dataFormatada = new Date(rel.data + 'T00:00:00').toLocaleDateString('pt-BR');
+            const preview = rel.descricao.length > 120 ? rel.descricao.substring(0, 120) + '...' : rel.descricao;
+            
+            // Transformamos o objeto em string para passar ao modal
+            const relString = JSON.stringify(rel).replace(/"/g, '&quot;');
 
             container.innerHTML += `
                 <div class="col-12 col-md-6 col-lg-4">
@@ -38,11 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle">
                                     <i class="bi bi-person-fill me-1"></i>${rel.nome_dependente}
                                 </span>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar-event me-1"></i>${dataFormatada}
-                                </small>
+                                <small class="text-muted"><i class="bi bi-calendar-event me-1"></i>${dataFormatada}</small>
                             </div>
                             <p class="card-text text-muted small flex-grow-1">${preview}</p>
+                            
+                            <button class="btn btn-outline-primary btn-sm mt-3" onclick="abrirModal(${relString})">
+                                <i class="bi bi-eye"></i> Ler Completo
+                            </button>
                         </div>
                     </div>
                 </div>`;
@@ -52,7 +50,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erro ao carregar relatórios:', error);
         container.innerHTML = `
             <div class="alert alert-danger w-100 text-center">
-                Erro ao conectar com o servidor. Verifique sua conexão.
+                Erro ao conectar com o servidor.
             </div>`;
     }
 });
+
+// Função global para preencher e abrir o modal
+window.abrirModal = function(rel) {
+    document.getElementById('modal-data').textContent = new Date(rel.data + 'T00:00:00').toLocaleDateString('pt-BR');
+    document.getElementById('modal-descricao').textContent = rel.descricao;
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalRelatorio'));
+    modal.show();
+};

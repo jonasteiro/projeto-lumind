@@ -36,10 +36,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <p class="text-muted small mt-auto mb-3">
                                 <i class="bi bi-calendar-check me-1"></i> Publicado em: ${dataFormatada}
                             </p>
-                            <a href="/atividades/detalhes/${atv.id_atividade}"
-                               class="btn btn-primary w-100 fw-bold rounded-pill py-2 shadow-sm">
-                                <i class="bi bi-eye me-1"></i> VER DETALHES
-                            </a>
+                            <a href="atividades/tela_atividade.html?id=${atv.id_atividade}"
+                           class="btn btn-primary w-100 fw-bold rounded-pill py-2 shadow-sm mt-auto">
+                            <i class="bi bi-play-fill me-1"></i> COMEÇAR
+                        </a>
                         </div>
                     </div>
                 </div>`;

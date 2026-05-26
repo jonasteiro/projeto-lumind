@@ -93,10 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                class="btn-card primary">
                                 <i class="bi bi-eye"></i> Ver Submissões
                             </a>
-                            <a href="atividades/publicar_atividade.html"
-                               class="btn-card secondary">
-                                <i class="bi bi-plus-circle"></i> Outra Atividade
-                            </a>
+                        
                         </div>
                     </div>
                 </div>`;

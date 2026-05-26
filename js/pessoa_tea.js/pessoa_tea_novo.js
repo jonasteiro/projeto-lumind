@@ -11,8 +11,7 @@ function validarEmail(email) {
 function validarCPF(cpf) {
     const apenasNumeros = cpf.replace(/\D/g, ''); 
     return apenasNumeros.length === 11; 
-    const apenasNumeros = cpf.replace(/\D/g, ''); 
-    return apenasNumeros.length === 11; 
+     
 }
 
 function mostrarErro(mensagem) {

@@ -1,4 +1,3 @@
-
 // UTILITÁRIO — Extrai as 2 primeiras palavras do nome completo
 function formatarNomeUsuario(nomeCompleto) {
     if (!nomeCompleto || typeof nomeCompleto !== 'string') return '';
@@ -6,14 +5,26 @@ function formatarNomeUsuario(nomeCompleto) {
     return partes.slice(0, 2).join(' ');
 }
 
-// RENDERIZAÇÃO INSTANTÂNEA — Cenário 3 (sem nova query ao banco)
-// Lê do sessionStorage antes de qualquer fetch, eliminando
-// o flash de "Carregando..." ao trocar de página.
+// UTILITÁRIO — Gera as iniciais para o avatar (ex: "João Silva" → "JS")
+function gerarIniciais(nomeCompleto) {
+    if (!nomeCompleto || typeof nomeCompleto !== 'string') return '--';
+    const partes = nomeCompleto.trim().split(/\s+/);
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+// RENDERIZAÇÃO INSTANTÂNEA — lê do sessionStorage antes de qualquer fetch
 (function renderizarNomeInstantaneo() {
     const nomeSalvo = sessionStorage.getItem('lumind_nome_usuario');
     if (nomeSalvo) {
         const el = document.getElementById('nome-usuario');
         if (el) el.textContent = nomeSalvo;
+
+        const elSidebar = document.getElementById('sidebarNome');
+        if (elSidebar) elSidebar.textContent = nomeSalvo;
+
+        const elAvatar = document.getElementById('sidebarAvatar');
+        if (elAvatar) elAvatar.textContent = gerarIniciais(nomeSalvo);
     }
 })();
 
@@ -23,45 +34,40 @@ async function validarAcesso(tipoPermitido) {
         const retorno  = await fetch("../php/valida_sessao.php");
         const resposta = await retorno.json();
 
-        // 1. Se não estiver logado, expulsa
         if (resposta.status === "nok") {
-
-            // FIX: Redirecionamento absoluto, evitando falhas de rota em pastas aninhadas.
             window.location.href = `${BASE_URL}/login/index.html?erro=sem_sessao`;
-
             return;
         }
 
         const usuarioLogado = resposta.usuario;
 
-
-        // Verifica permissão de perfil
-
         if (tipoPermitido) {
             const perfisAceitos = Array.isArray(tipoPermitido) ? tipoPermitido : [tipoPermitido];
             if (!perfisAceitos.includes(usuarioLogado.tipo_usuario)) {
-                // FIX: Redirecionamento absoluto.
                 window.location.href = `${BASE_URL}/login/index.html?erro=acesso_negado`;
                 return;
             }
         }
 
-
-        // Formata e persiste no sessionStorage — Cenário 3
         const nomeFormatado = formatarNomeUsuario(usuarioLogado.nome);
         sessionStorage.setItem('lumind_nome_usuario', nomeFormatado);
 
-        // Injeta no elemento id="nome-usuario" onde existir
+        // Injeta no id="nome-usuario" (padrão antigo)
         const elNome = document.getElementById('nome-usuario');
         if (elNome) elNome.textContent = nomeFormatado;
 
+        // Injeta no id="sidebarNome" (topbar das telas de edição)
+        const elSidebar = document.getElementById('sidebarNome');
+        if (elSidebar) elSidebar.textContent = nomeFormatado;
 
-        // 4. Libera a visualização da tela após garantir que é a pessoa certa
+        // Gera e injeta as iniciais no avatar
+        const elAvatar = document.getElementById('sidebarAvatar');
+        if (elAvatar) elAvatar.textContent = gerarIniciais(usuarioLogado.nome);
+
         document.body.style.display = "block";
 
     } catch (e) {
         console.error("Erro ao processar sessão:", e);
-
     }
 }
 
@@ -72,16 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLogoff.addEventListener("click", async (event) => {
             event.preventDefault();
             try {
-
-                // FIX: Utilização do BASE_URL na API de logoff.
                 const retorno = await fetch(`${BASE_URL}/php/usuario_logoff.php`);
-
                 const resposta = await retorno.json();
                 if (resposta.status === "ok") {
-
-                    // FIX: Padronização do arquivo de destino.
-                    window.location.href = `${BASE_URL}/login/index.html`; 
-
+                    window.location.href = `${BASE_URL}/login/index.html`;
                 }
             } catch (error) {
                 console.error("Erro na requisição de logoff:", error);

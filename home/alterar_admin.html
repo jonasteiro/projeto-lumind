@@ -28,9 +28,22 @@
                     <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">EDITAR ADMINISTRADOR</h2>
                 </div>
 
-                <a href="#" id="logoff" class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm">
-                    <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
-                </a>
+                <div class="d-flex align-items-center gap-3">
+                    
+                    <div class="d-flex align-items-center border-end border-info pe-3">
+                        <div class="d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
+                            --
+                        </div>
+                        <div class="d-none d-sm-block text-end">
+                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="sidebarNome">Carregando...</span>
+                            <small class="text-muted" style="font-size: 0.8rem;" id="cargo-sessao">Administrador</small>
+                        </div>
+                    </div>
+
+                    <a href="#" id="logoff" class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
+                    </a>
+                </div>
                 
             </div>
         </header>
@@ -85,10 +98,11 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" placeholder="Nova Senha">
+                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" placeholder="Nova Senha" minlength="8">
                                     <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha (opcional)</label>
                                 </div>
-                                <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres caso queira alterar.</small>
+                                <small class="text-muted ms-2" style="font-size: 0.75rem;">Mín. 8 caracteres, letras, números e símbolos.</small>
+                                <span class="text-danger small d-block" id="erroSenha"></span>
                             </div>
                         </div>
 

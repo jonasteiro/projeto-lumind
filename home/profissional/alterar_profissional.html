@@ -32,8 +32,7 @@
                         onmouseout="this.style.backgroundColor='#bce2f9'">
                         <i class="bi bi-arrow-left fs-4"></i>
                     </a>
-                    <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">EDITAR PROFISSIONAL
-                    </h2>
+                    <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">EDITAR PROFISSIONAL</h2>
                 </div>
 
                 <a href="#" id="logoff"
@@ -64,8 +63,7 @@
                             <div class="form-floating">
                                 <input type="text" class="form-control rounded-3 border-light-subtle" id="nome"
                                     placeholder="Nome completo" required>
-                                <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo
-                                    *</label>
+                                <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo *</label>
                             </div>
                             <span class="text-danger small" id="erroNome"></span>
                         </div>
@@ -75,23 +73,10 @@
                                 <div class="form-floating">
                                     <input type="email" class="form-control rounded-3 border-light-subtle" id="email"
                                         placeholder="Email" required>
-                                    <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email
-                                        *</label>
+                                    <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email *</label>
                                 </div>
                                 <span class="text-danger small" id="erroEmail"></span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf"
-                                        placeholder="CPF" required maxlength="14">
-                                    <label for="cpf" class="text-muted"><i class="bi bi-card-text me-2"></i>CPF
-                                        *</label>
-                                </div>
-                                <span class="text-danger small" id="erroCpf"></span>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="date" class="form-control rounded-3 border-light-subtle"
@@ -101,16 +86,15 @@
                                 </div>
                                 <span class="text-danger small" id="erroData"></span>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha"
-                                        placeholder="Nova Senha">
-                                    <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha
-                                        (opcional)</label>
-                                </div>
-                                <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres caso
-                                    queira alterar.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="password" class="form-control rounded-3 border-light-subtle" id="senha"
+                                    placeholder="Nova Senha">
+                                <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha (opcional)</label>
                             </div>
+                            <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres caso queira alterar.</small>
                         </div>
 
                         <hr class="my-4 border-light-subtle">
@@ -129,8 +113,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select class="form-select rounded-3 border-light-subtle" id="especialidade"
-                                        required>
+                                    <select class="form-select rounded-3 border-light-subtle" id="especialidade" required>
                                         <option value="">Selecione...</option>
                                         <option value="Fonoaudiologia">Fonoaudiologia</option>
                                         <option value="Psicologia">Psicologia</option>
@@ -147,8 +130,7 @@
                         </div>
 
                         <div id="divErro" class="alert alert-danger d-none py-2 mt-3" style="font-size: 0.85rem;"></div>
-                        <div id="divSucesso" class="alert alert-success d-none py-2 mt-3" style="font-size: 0.85rem;">
-                        </div>
+                        <div id="divSucesso" class="alert alert-success d-none py-2 mt-3" style="font-size: 0.85rem;"></div>
 
                     </form>
                 </div>

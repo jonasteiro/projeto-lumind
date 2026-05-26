@@ -1,5 +1,4 @@
 <?php
-    // INICIA A SESSÃO PARA RESGATAR O PROFISSIONAL LOGADO
     session_start(); 
     include_once('conexao.php');
     
@@ -9,11 +8,8 @@
         'data'      => []
     ];
 
-    // Recupera o ID do profissional logado da sessão
-    // OBS: Ajuste 'id_usuario' caso a sua variável de sessão tenha outro nome
     $id_profissional_logado = $_SESSION['usuario']['id_usuario'] ?? null;
 
-    // Usuario
     $nome            = htmlspecialchars($_POST['nome'] ?? '', ENT_QUOTES, 'UTF-8');
     $email           = htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8');
     $cpf             = htmlspecialchars($_POST['cpf'] ?? '', ENT_QUOTES, 'UTF-8'); 
@@ -22,14 +18,11 @@
     $tipo_usuario    = htmlspecialchars($_POST['tipo_usuario'] ?? '', ENT_QUOTES, 'UTF-8'); 
     $telefone        = htmlspecialchars($_POST['telefone'] ?? '', ENT_QUOTES, 'UTF-8');
     
-    // Específicos do Profissional
     $registro_profissional = htmlspecialchars($_POST['registro_profissional'] ?? '', ENT_QUOTES, 'UTF-8');
     $especialidade         = htmlspecialchars($_POST['especialidade'] ?? '', ENT_QUOTES, 'UTF-8');
     
-    // Específicos da Pessoa com TEA
     $nivel_tea      = htmlspecialchars($_POST['nivel_tea'] ?? '', ENT_QUOTES, 'UTF-8');
     $observacao     = htmlspecialchars($_POST['observacao'] ?? '', ENT_QUOTES, 'UTF-8');
-    // NOVO: Resgata o ID do responsável escolhido no formulário HTML
     $cpf_responsavel = htmlspecialchars($_POST['cpf_responsavel'] ?? '', ENT_QUOTES, 'UTF-8'); 
 
     // VALIDAÇÃO ARQUIVOS
@@ -47,7 +40,12 @@
         header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
     }
 
-    // verifica email e cpf
+    // CORREÇÃO: Validação de segurança no Backend para a Senha Forte
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $senha)) {
+        $retorno = ['status' => 'erro', 'mensagem' => 'A senha não atende aos requisitos mínimos de segurança.', 'data' => []];
+        header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
+    }
+
     $stmt_check = $conexao->prepare("SELECT id_usuario FROM Usuario WHERE email = ? OR cpf = ? LIMIT 1");
     $stmt_check->bind_param("ss", $email, $cpf);
     $stmt_check->execute();
@@ -98,7 +96,6 @@
             header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
         }
 
-        // 1. Busca o ID do Responsável pelo CPF fornecido, garantindo que é atrelado a este profissional
         $stmt_busca = $conexao->prepare("
             SELECT R.id_usuario 
             FROM ResponsavelLegal R
@@ -115,25 +112,21 @@
             header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
         }
 
-        // Pega o ID encontrado
         $linha_resp = $resultado_busca->fetch_assoc();
         $id_responsavel_encontrado = $linha_resp['id_usuario'];
         $stmt_busca->close();
 
-        // 2. Realiza o cadastro usando o ID encontrado
         $stmt_tea = $conexao->prepare("INSERT INTO PessoaTea (id_usuario, id_profissional, id_responsavel, observacao, nivel_tea) VALUES (?, ?, ?, ?, ?)");
         $stmt_tea->bind_param("iiiss", $id_usuario, $id_profissional_logado, $id_responsavel_encontrado, $observacao, $nivel_tea);
         $stmt_tea->execute(); 
         $stmt_tea->close();
 
     } elseif ($tipo_usuario === 'ResponsavelLegal') {
-        // NOVO: Trava de segurança
         if (!$id_profissional_logado) {
             $retorno = ['status' => 'erro', 'mensagem' => 'Falha de vínculo: Nenhum profissional autenticado na sessão.', 'data' => []];
             header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
         }
 
-        // NOVO: Adicionado id_profissional na Query ("ii")
         $stmt_resp = $conexao->prepare("INSERT INTO ResponsavelLegal (id_usuario, id_profissional) VALUES (?, ?)");
         $stmt_resp->bind_param("ii", $id_usuario, $id_profissional_logado);
         $stmt_resp->execute(); $stmt_resp->close();

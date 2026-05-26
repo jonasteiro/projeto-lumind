@@ -17,7 +17,12 @@ function validarCPF(cpf) {
     return apenasNumeros.length === 11;
 }
 
-// Mostra a div de sucesso ou erro nativa do HTML (se não usar o SweetAlert)
+// CORREÇÃO: Função para checar senha forte
+function validarSenhaForte(senha) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    return regex.test(senha);
+}
+
 function mostrarMensagem(tipo, msg) {
     const div = tipo === 'erro' ? divErro : divSucesso;
     const outra = tipo === 'erro' ? divSucesso : divErro;
@@ -28,26 +33,20 @@ function mostrarMensagem(tipo, msg) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Limpa as mensagens em vermelho debaixo dos inputs
 function limparErrosInputs() {
-    const mensagensErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroData'];
+    const mensagensErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroData', 'erroSenha'];
     mensagensErro.forEach(id => {
         const el = document.getElementById(id);
         if(el) el.textContent = "";
     });
 }
 
-// ==========================================
-// FUNÇÃO DE BUSCA CORRIGIDA (Voltou o [0])
-// ==========================================
 async function buscar(id) {
     try {
-        // Apontando para o seu arquivo original que já funcionava
         const retorno = await fetch("../php/admin/administrador_get.php?id=" + id);
         const resposta = await retorno.json();
 
         if (resposta.status === "ok" && resposta.data.length > 0) {
-            // Retornamos o [0] para ler o primeiro item do Array devolvido pelo PHP
             const adm = resposta.data[0]; 
             
             document.getElementById("id_usuario").value = id;
@@ -56,18 +55,16 @@ async function buscar(id) {
             document.getElementById("cpf").value = adm.cpf || "";
             
             if (adm.data_nascimento) {
-                // Pega só a data (YYYY-MM-DD)
                 document.getElementById("data_nascimento").value = adm.data_nascimento.split(' ')[0];
             }
             
-            // Marca o switch se o status for 1
             document.getElementById("status_adm").checked = (adm.status_adm == 1 || adm.status_adm === "1");
         } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Ops!',
                 text: resposta.mensagem || 'Administrador não encontrado.',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#167ebc' // Azul Lumind
             }).then(() => {
                 window.location.href = "lista_administrador.html"; 
             });
@@ -80,7 +77,6 @@ async function buscar(id) {
 
 formulario.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
     limparErrosInputs();
     
     const nome = document.getElementById("nome").value.trim();
@@ -106,19 +102,19 @@ formulario.addEventListener("submit", async (e) => {
         document.getElementById("erroData").textContent = "Data obrigatória.";
         temErro = true;
     }
-    if (senha.length > 0 && senha.length < 6) {
-        Swal.fire('Atenção', 'A nova senha deve ter no mínimo 6 caracteres.', 'warning');
+    
+    // CORREÇÃO: Valida a senha APENAS se o usuário tentou alterá-la
+    if (senha.length > 0 && !validarSenhaForte(senha)) {
+        document.getElementById("erroSenha").textContent = "A senha não atende aos requisitos de segurança.";
         temErro = true;
     }
 
     if (temErro) return;
 
-    // Prepara o botão para carregamento
     const btn = document.getElementById("btnEnviar");
     btn.disabled = true;
     btn.innerHTML = "⏳ Salvando...";
 
-    // Prepara os dados para o PHP
     const fd = new FormData();
     fd.append("id_usuario", document.getElementById("id_usuario").value); 
     fd.append("nome", nome);
@@ -133,14 +129,17 @@ formulario.addEventListener("submit", async (e) => {
             method: 'POST',
             body: fd  
         });
-        const resposta = await retorno.json();
+        
+        const text = await retorno.text();
+        const resposta = JSON.parse(text);
 
-        if (resposta.status == "ok") {
+        if (resposta.status === "ok") {
             Swal.fire({
                 icon: 'success',
                 title: 'Sucesso!',
                 text: resposta.mensagem || 'Dados atualizados com êxito!',
-                confirmButtonColor: '#0284c7'
+                confirmButtonColor: '#167ebc', // Azul Lumind
+                allowOutsideClick: false
             }).then(() => {
                 window.location.href = 'lista_administrador.html'; 
             });
@@ -156,14 +155,19 @@ formulario.addEventListener("submit", async (e) => {
     }
 });
 
-// Máscara básica para CPF
 document.getElementById('cpf').addEventListener('input', function (e) {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 11) value = value.slice(0, 11);
     e.target.value = value;
 });
 
-// Segurança
+// Limpa erro de senha ao digitar (se preencher os requisitos)
+document.getElementById('senha').addEventListener('input', function() {
+    if (this.value === '' || validarSenhaForte(this.value)) {
+        document.getElementById('erroSenha').textContent = "";
+    }
+});
+
 if (typeof validarAcesso === "function") {
     validarAcesso(['Administrador']);
 }

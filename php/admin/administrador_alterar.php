@@ -1,52 +1,45 @@
 <?php
-    include_once('../conexao.php');
+ob_clean();
+header('Content-Type: application/json; charset=utf-8');
+include_once('../conexao.php');
 
-    $retorno = ['status' => 'nok', 'mensagem' => ''];
+$retorno = ['status' => 'nok', 'mensagem' => ''];
+$id = isset($_POST['id_usuario']) ? intval($_POST['id_usuario']) : 0;
 
-    if(isset($_GET['id']) && !empty($_GET['id'])){
-        $id = intval($_GET['id']);
-        $nome = $_POST['nome'];
-        $email = $_POST['email'];
-        $cpf = $_POST['cpf'];
-        $data_nascimento = $_POST['data_nascimento'];
-        $senha = $_POST['senha'];
-        $status_adm = (int) $_POST['status_adm'];
+if ($id > 0) {
+    $nome           = $_POST['nome'];
+    $email          = $_POST['email'];
+    $data_nascimento = $_POST['data_nascimento'];
+    $senha          = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
+    $status_adm     = (int) $_POST['status_adm'];
 
-        if(empty($nome) || empty($email) || strlen($cpf) != 11){
-            echo json_encode(['status' => 'nok', 'mensagem' => 'Dados inválidos enviados.']);
-            exit;
-        }
-
-        if(!empty($senha)){
-            $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, cpf = ?, data_nascimento = ?, senha = ? WHERE id_usuario = ?");
-            $stmt->bind_param("sssssi", $nome, $email, $cpf, $data_nascimento, $senha, $id);
-        } else {
-            $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, cpf = ?, data_nascimento = ? WHERE id_usuario = ?");
-            $stmt->bind_param("ssssi", $nome, $email, $cpf, $data_nascimento, $id);
-        }
-        
-        $stmt->execute();
-
-        $stmt_adm = $conexao->prepare("UPDATE Administrador SET status_adm = ? WHERE id_usuario = ?");
-        $stmt_adm->bind_param("ii", $status_adm, $id);
-        $stmt_adm->execute();
-
-        if($stmt->error == "" && $stmt_adm->error == ""){
-            $retorno = [
-                'status' => 'ok',
-                'mensagem' => 'Dados do administrador atualizados com sucesso!'
-            ];
-        } else {
-            $retorno['mensagem'] = 'Erro ao atualizar: ' . $conexao->error;
-        }
-
-        $stmt->close();
-        $stmt_adm->close();
+    if ($senha) {
+        $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, data_nascimento = ?, senha = ? WHERE id_usuario = ?");
+        $stmt->bind_param("ssssi", $nome, $email, $data_nascimento, $senha, $id);
     } else {
-        $retorno['mensagem'] = 'ID inválido ou não informado.';
+        $stmt = $conexao->prepare("UPDATE Usuario SET nome = ?, email = ?, data_nascimento = ? WHERE id_usuario = ?");
+        $stmt->bind_param("sssi", $nome, $email, $data_nascimento, $id);
     }
-        
-    $conexao->close();
-    header("Content-type:application/json;charset:utf-8");
-    echo json_encode($retorno);
+
+    $stmt->execute();
+
+    $stmt_adm = $conexao->prepare("UPDATE Administrador SET status_adm = ? WHERE id_usuario = ?");
+    $stmt_adm->bind_param("ii", $status_adm, $id);
+    $stmt_adm->execute();
+
+    if (!$stmt->error && !$stmt_adm->error) {
+        $retorno = ['status' => 'ok', 'mensagem' => 'Dados atualizados com sucesso!'];
+    } else {
+        $retorno['mensagem'] = 'Erro no banco: ' . $conexao->error;
+    }
+
+    $stmt->close();
+    $stmt_adm->close();
+} else {
+    $retorno['mensagem'] = 'ID inválido ou não informado.';
+}
+
+$conexao->close();
+echo json_encode($retorno);
+exit;
 ?>

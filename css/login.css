@@ -543,3 +543,13 @@ body::before {
 
     animation: shineMove 4s infinite;
 }
+
+.link-azul {
+    color: var(--primary-blue);
+    transition: var(--transition);
+}
+
+.link-azul:hover {
+    color: var(--dark-blue);
+    text-decoration: underline !important;
+}

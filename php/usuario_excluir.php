@@ -7,38 +7,66 @@
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = intval($_GET['id']);
 
-        $tabelas_filhas = ['Administrador', 'ResponsavelLegal', 'PessoaTea', 'Telefone', 'ProfissionalSaude'];
-        
-        foreach ($tabelas_filhas as $tabela) {
-            $sql_filha = "DELETE FROM $tabela WHERE id_usuario = ?";
-            $stmt_filha = $conexao->prepare($sql_filha);
-            $stmt_filha->bind_param("i", $id);
-            $stmt_filha->execute();
-        }
+        try {
+            // Inicia uma transação: ou apaga TUDO, ou não apaga NADA.
+            $conexao->begin_transaction();
 
-        $stmt = $conexao->prepare("DELETE FROM Usuario WHERE id_usuario = ?");
-        $stmt->bind_param("i", $id);
+            // 1. Limpar vínculos de Atividades com Pacientes (Netos)
+            $conexao->query("DELETE FROM PessoaTea_Atividade WHERE id_atividade IN (SELECT id_atividade FROM Atividade WHERE id_profissional = $id)");
 
-        if ($stmt->execute()) {
+            // 2. Limpar as Atividades do Profissional (Filhos)
+            $conexao->query("DELETE FROM Atividade WHERE id_profissional = $id");
+
+            // 3. Limpar Relatórios dos pacientes vinculados a esse profissional
+            $conexao->query("DELETE FROM Relatorio WHERE id_pessoa_tea IN (SELECT id_usuario FROM PessoaTea WHERE id_profissional = $id)");
+
+            // 4. Limpar vínculos de Eventos dos pacientes
+            $conexao->query("DELETE FROM PessoaTea_Evento WHERE id_pessoa_tea IN (SELECT id_usuario FROM PessoaTea WHERE id_profissional = $id)");
+
+            // 5. Excluir os Pacientes (PessoaTea) do profissional
+            $conexao->query("DELETE FROM PessoaTea WHERE id_profissional = $id");
+
+            // 6. Excluir os Responsáveis Legais vinculados ao profissional
+            $conexao->query("DELETE FROM ResponsavelLegal WHERE id_profissional = $id");
+
+            // 7. Limpar tabelas genéricas que usam id_usuario (Documentos, Telefones e Perfis)
+            $tabelas_filhas = ['Documentacao', 'Telefone', 'Administrador', 'ProfissionalSaude'];
+            foreach ($tabelas_filhas as $tabela) {
+                $conexao->query("DELETE FROM $tabela WHERE id_usuario = $id");
+            }
+
+            // 8. Por fim, excluir o Usuário Mestre (O Pai de todos)
+            $stmt = $conexao->prepare("DELETE FROM Usuario WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
             if ($stmt->affected_rows > 0) {
+                // Se deu tudo certo, confirma as exclusões no banco!
+                $conexao->commit();
                 $retorno = [
                     'status' => 'ok',
-                    'mensagem' => 'Registro excluído com sucesso!'
+                    'mensagem' => 'Usuário e todos os seus vínculos foram excluídos com sucesso!'
                 ];
             } else {
-                $retorno['mensagem'] = 'Registro não encontrado.';
+                // Se não achou o usuário principal, desfaz tudo
+                $conexao->rollback();
+                $retorno['mensagem'] = 'Registro não encontrado ou já excluído.';
             }
-        } else {
-            $retorno['mensagem'] = 'Erro no banco: ' . $conexao->error;
+            $stmt->close();
+
+        } catch (Exception $e) {
+            // Se o banco barrar alguma coisa, desfazemos tudo e avisamos
+            $conexao->rollback();
+            $retorno['mensagem'] = 'Erro de restrição do banco: ' . $e->getMessage();
         }
-        
-        $stmt->close();
     } else {
         $retorno['mensagem'] = 'ID não fornecido.';
     }
 
     $conexao->close();
     ob_clean();
-    header("Content-type:application/json;charset:utf-8");
+    
+    // Corrigido um pequeno erro de sintaxe no charset (de : para =)
+    header("Content-type:application/json;charset=utf-8");
     echo json_encode($retorno);
 ?>

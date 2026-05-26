@@ -1,0 +1,37 @@
+:root {
+    --primary-color: #0284c7;
+    --bg-card: #ffffff;
+    --border-light: #e2e8f0;
+}
+
+.atividade-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.card-header-activity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.card-header-activity h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.card-category {
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #e0f2fe;
+    color: var(--primary-color);
+    border: 1px solid #bae6fd;
+}

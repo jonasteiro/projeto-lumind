@@ -11,9 +11,10 @@
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $id = intval($_GET['id']);
         
+        // CORREÇÃO 1: Os documentos estão na tabela Documentacao (D) e o nome correto é certificacao_profissional
         $sql = "SELECT 
                     U.id_usuario, U.nome, U.email, U.cpf, U.data_nascimento, 
-                    P.carteira_identidade_nacional, P.certificado_profissional, P.registro_profissional, P.especialidade,
+                    D.carteira_identidade_nacional, D.certificacao_profissional, P.registro_profissional, P.especialidade,
                     D.status_aprovacao, D.motivo_reprovacao
                 FROM Usuario U
                 INNER JOIN ProfissionalSaude P ON U.id_usuario = P.id_usuario
@@ -22,6 +23,13 @@
                 ORDER BY D.data_envio DESC LIMIT 1"; 
         
         $stmt = $conexao->prepare($sql);
+        
+        // Trava de segurança: Se o SQL estiver errado, o PHP avisa o motivo exato em vez de quebrar a tela
+        if (!$stmt) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro no banco de dados (SQL): ' . $conexao->error]);
+            exit;
+        }
+        
         $stmt->bind_param("i", $id);
     } else {
         $sql = "SELECT 
@@ -34,6 +42,11 @@
                 ORDER BY U.nome ASC";
         
         $stmt = $conexao->prepare($sql);
+        
+        if (!$stmt) {
+            echo json_encode(['status' => 'erro', 'mensagem' => 'Erro no banco de dados (SQL): ' . $conexao->error]);
+            exit;
+        }
     }
 
     if ($stmt->execute()) {
@@ -41,6 +54,11 @@
         $tabela = [];
 
         while ($linha = $resultado->fetch_assoc()) {
+            // CORREÇÃO 2: Removemos as imagens (BLOBs) do array antes de converter para JSON.
+            // Isso impede que o PHP trave por falta de memória ou erro de codificação UTF-8.
+            unset($linha['carteira_identidade_nacional']);
+            unset($linha['certificacao_profissional']);
+            
             $tabela[] = $linha;
         }
 

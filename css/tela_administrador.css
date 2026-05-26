@@ -57,7 +57,7 @@ body {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%);
+    background: linear-gradient(145deg, #9cd1ff 10%, #0c8fd6 90%);
     color: #fff;
     display: grid;
     place-items: center;

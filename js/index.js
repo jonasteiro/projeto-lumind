@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // =======================================================
 async function executarLogoff() {
     try {
-        const retorno = await fetch("../../php/cliente_logoff.php"); // Ajuste o caminho se necessário
+        // CORREÇÃO: Usar caminho absoluto a partir do "htdocs" do XAMPP
+        const retorno = await fetch("/projeto-lumind/php/cliente_logoff.php"); 
         const resposta = await retorno.json();
         
         if (resposta.status === "ok") {

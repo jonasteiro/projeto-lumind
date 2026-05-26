@@ -268,3 +268,16 @@ ALTER TABLE PessoaTea_Atividade
     ADD COLUMN data_feedback DATETIME NULL
     COMMENT 'Data e hora quando o profissional enviou o feedback'
     AFTER feedback_profissional;
+    
+SELECT Usuario.*
+FROM Usuario;
+
+CREATE TABLE RecuperacaoSenha (
+    id_recuperacao INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(150) NOT NULL,
+    token VARCHAR(6) NOT NULL,
+    data_expiracao DATETIME NOT NULL
+);
+
+SELECT RecuperacaoSenha.*
+FROM RecuperacaoSenha;

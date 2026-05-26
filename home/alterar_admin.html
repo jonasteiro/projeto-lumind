@@ -31,11 +31,11 @@
                 <div class="d-flex align-items-center gap-3">
                     
                     <div class="d-flex align-items-center border-end border-info pe-3">
-                        <div class="d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
+                        <div class="navbar-user-avatar d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
                             --
                         </div>
                         <div class="d-none d-sm-block text-end">
-                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="sidebarNome">Carregando...</span>
+                            <div class="navbar-user-name fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="sidebarNome">Carregando...</div>
                             <small class="text-muted" style="font-size: 0.8rem;" id="cargo-sessao">Administrador</small>
                         </div>
                     </div>
@@ -130,9 +130,10 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../js/admin/admin_alterar.js"></script>
     <script src="../js/valida_sessao.js"></script>
     <script src="../js/index.js"></script>
+    <script src="../js/admin/admin_alterar.js"></script>
+    
     <script>
         if (typeof validarAcesso === "function") {
             validarAcesso(['Administrador']);

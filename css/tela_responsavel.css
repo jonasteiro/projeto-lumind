@@ -200,3 +200,23 @@ body {
         margin-top: 0.75rem;
     }
 }
+
+/* Linha entre logo e avatar */
+.brand-container {
+    border-bottom: 1px solid #b7e3f8;
+}
+
+/* Linha entre nav links e SAIR */
+.nav-link-sair {
+    color: #dc3545 !important;
+    font-weight: 700 !important;
+    border-top: 1px solid #b7e3f8;
+    margin-top: 0.5rem;
+    padding-top: 1rem !important;
+}
+
+.nav-link-sair:hover {
+    background: rgba(220, 53, 69, 0.08) !important;
+    color: #dc3545 !important;
+}
+

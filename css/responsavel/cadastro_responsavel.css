@@ -1,0 +1,540 @@
+:root {
+
+    --primary-blue: #4d9fe7;
+    --dark-blue: #3763ae;
+    --hover-blue: #37a2b0;
+    --soft-blue: #b8e4ff;
+
+    --bg-overlay: rgba(91, 188, 207, 0.296);
+
+    --text-main: #2d3436;
+    --text-soft: #6b7c93;
+
+    --transition: all 0.3s ease;
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+
+    font-family: 'Inter', sans-serif;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    color: var(--text-main);
+
+    background: #dfeef7;
+
+    position: relative;
+}
+
+/* =========================================================
+   FUNDO ANIMADO
+========================================================= */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: -30px;
+
+    background-image:
+        linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+        url('https://i.pinimg.com/1200x/50/71/44/50714458b1b2ce62c0d0e2ff592ff524.jpg');
+
+    background-size: cover;
+
+    background-position: center;
+
+    z-index: -2;
+
+    animation: bgWave 9s ease-in-out infinite alternate;
+
+    will-change: transform;
+}
+
+@keyframes bgWave {
+
+    0% {
+        transform:
+            scale(1)
+            translateX(0px)
+            translateY(0px)
+            rotate(0deg);
+    }
+
+    25% {
+        transform:
+            scale(1.04)
+            translateX(-25px)
+            translateY(-8px)
+            rotate(-0.4deg);
+    }
+
+    50% {
+        transform:
+            scale(1.07)
+            translateX(18px)
+            translateY(10px)
+            rotate(0.3deg);
+    }
+
+    75% {
+        transform:
+            scale(1.05)
+            translateX(-19px)
+            translateY(4px)
+            rotate(-0.2deg);
+    }
+
+    100% {
+        transform:
+            scale(1.08)
+            translateX(28px)
+            translateY(-6px)
+            rotate(0.4deg);
+    }
+}
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 3rem 1.2rem;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+
+    font-size: 2rem;
+
+    font-weight: 700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4d9fe7,
+            #6ec6ff,
+            #3763ae
+        );
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+
+    color: var(--text-soft);
+
+    margin-top: 0.4rem;
+}
+
+/* =========================================================
+   BOTÃO VOLTAR
+========================================================= */
+
+.btn-voltar {
+
+    border: none;
+
+    border-radius: 999px;
+
+    padding: 0.8rem 1.4rem;
+
+    background:
+        linear-gradient(
+            135deg,
+            #b4f2fd,
+            #4088b2
+        );
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+    box-shadow:
+        0 8px 20px rgba(65,137,201,0.18);
+}
+
+.btn-voltar:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(65,137,201,0.22);
+}
+
+/* =========================================================
+   CARD FORM
+========================================================= */
+
+.form-container {
+
+    background: rgba(255, 255, 255, 0.866);
+
+    backdrop-filter: blur(22px);
+
+    -webkit-backdrop-filter: blur(22px);
+
+    border-radius: 2rem;
+
+    border: 1px solid rgba(255,255,255,0.25);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.05),
+        0 30px 80px rgba(65,137,201,0.18),
+        inset 0 1px 1px rgba(255,255,255,0.5);
+
+    padding: 3rem;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+/* brilho */
+
+.form-container::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            140deg,
+            rgba(0,170,255,0.12),
+            transparent 45%
+        );
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.formulario-adm {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1.5rem;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+/* =========================================================
+   ROW
+========================================================= */
+
+.form-row {
+
+    display: flex;
+
+    gap: 1.5rem;
+}
+
+.form-row .form-group {
+
+    flex: 1;
+}
+
+/* =========================================================
+   GROUP
+========================================================= */
+
+.form-group {
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+label {
+
+    font-weight: 600;
+
+    margin-bottom: 0.55rem;
+
+    color: var(--dark-blue);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+select,
+textarea {
+
+    border: 1.5px solid rgba(65, 137, 201, 0.12);
+
+    background-color: rgba(255,255,255,0.72);
+
+    border-radius: 1rem;
+
+    padding: 0.95rem 1rem;
+
+    font-size: 0.96rem;
+
+    color: var(--text-main);
+
+    transition: var(--transition);
+
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,0.5),
+        0 4px 10px rgba(65,137,201,0.04);
+}
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    outline: none;
+
+    border-color: rgba(65, 137, 201, 0.35);
+
+    background-color: rgba(255,255,255,0.92);
+
+    box-shadow:
+        0 0 0 4px rgba(184, 228, 255, 0.5),
+        0 8px 18px rgba(65,137,201,0.08);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+textarea {
+
+    resize: vertical;
+
+    min-height: 110px;
+}
+
+/* =========================================================
+   ERROS
+========================================================= */
+
+.form-error {
+
+    font-size: 0.78rem;
+
+    color: #d64949;
+
+    margin-top: 0.4rem;
+}
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+
+.alert {
+
+    display: none;
+
+    padding: 1rem;
+
+    border-radius: 1rem;
+
+    font-size: 0.92rem;
+}
+
+.alert-error {
+
+    background: rgba(255, 109, 109, 0.12);
+
+    color: #c24d4d;
+}
+
+.alert-success {
+
+    background: rgba(109, 255, 158, 0.12);
+
+    color: #22884c;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.form-actions {
+
+    display: flex;
+
+    gap: 1rem;
+
+    margin-top: 1rem;
+}
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.btn {
+
+    flex: 1;
+
+    height: 56px;
+
+    border: none;
+
+    border-radius: 999px;
+
+    font-weight: 700;
+
+    font-size: 0.95rem;
+
+    cursor: pointer;
+
+    transition: var(--transition);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+/* =========================================================
+   BOTÃO PRIMÁRIO
+========================================================= */
+
+.btn-primary {
+
+    background:
+        linear-gradient(
+            135deg,
+            #b4f2fd,
+            #4088b2
+        );
+
+    color: white;
+
+    box-shadow:
+        0 8px 20px rgba(65,137,201,0.18);
+}
+
+.btn-primary:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(65,137,201,0.22);
+}
+
+/* =========================================================
+   BOTÃO SECUNDÁRIO
+========================================================= */
+
+.btn-secondary {
+
+    background: rgba(255,255,255,0.55);
+
+    color: var(--dark-blue);
+
+    border: 1px solid rgba(65,137,201,0.12);
+}
+
+.btn-secondary:hover {
+
+    background: rgba(184,228,255,0.4);
+
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .form-row {
+
+        flex-direction: column;
+    }
+
+    .form-container {
+
+        padding: 2rem;
+    }
+
+    .form-actions {
+
+        flex-direction: column;
+    }
+
+    .header h1 {
+
+        font-size: 1.7rem;
+    }
+}

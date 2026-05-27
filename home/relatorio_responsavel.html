@@ -32,16 +32,15 @@
 </head>
 <body>
     <div class="tela-responsavel">
-        <aside class="sidebar">
-            <div class="sidebar-brand d-flex align-items-center p-4">
-                <img src="../css/logo-lumind.png" alt="Lumind" class="brand-logo" onerror="this.style.display='none'">
-                <span class="h4 m-0 ms-2">Lumind</span>
+         <aside class="sidebar">
+            <div class="brand-container text-center py-4">
+                <img src="../css/logo-lumind.png" alt="Lumind" class="img-fluid" style="width: 120px; height: auto;" onerror="this.style.display='none'">
             </div>
             <nav class="nav flex-column p-3">
                 <a href="tela_responsavel.html" class="nav-link"><i class="bi bi-house-door-fill"></i> INICIAL</a>
                 <a href="atividades_responsavel.html" class="nav-link"><i class="bi bi-clipboard-check"></i> ATIVIDADES</a>
                 <a href="#" class="nav-link active"><i class="bi bi-journal-text"></i> RELATÓRIOS</a>
-                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
+        
             </nav>
             <div class="sidebar-footer text-center p-3">
                 <small>Versão 1.0</small>
@@ -56,9 +55,10 @@
                     </a>
                     <h2>NOVO RELATÓRIO</h2>
                 </div>
-                <div class="d-flex align-items-center">
-                    <span id="nome-usuario" class="me-3 fw-semibold">Carregando...</span>
+                 <div class="user-profile d-flex align-items-center">
+                    <span id="nome-usuario" class="user-name me-3">Carregando...</span>
                 </div>
+            </header>
             </header>
 
             <section class="content p-4">

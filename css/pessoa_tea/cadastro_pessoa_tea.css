@@ -218,7 +218,7 @@ body::before {
 
 .form-container {
 
-    background: rgba(255,255,255,0.42);
+    background:  rgba(255, 255, 255, 0.866);
 
     backdrop-filter: blur(22px);
 

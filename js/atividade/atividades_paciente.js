@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         atividades.forEach(atv => {
-            const concluida = atv.status_conclusao === 'Concluída';
+            // 'Avaliada' também deve aparecer como Concluída na listagem
+            const concluida = atv.status_conclusao === 'Concluída' || atv.status_conclusao === 'Avaliada';
             const statusBadge = concluida
                 ? '<span class="badge rounded-pill bg-success">✅ Concluída</span>'
                 : '<span class="badge rounded-pill bg-warning text-dark">⏳ Pendente</span>';

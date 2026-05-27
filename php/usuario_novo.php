@@ -46,6 +46,8 @@
         header("Content-type:application/json;charset=utf-8"); echo json_encode($retorno); exit;
     }
 
+    $senha_hasheada = password_hash($senha, PASSWORD_DEFAULT);
+
     $stmt_check = $conexao->prepare("SELECT id_usuario FROM Usuario WHERE email = ? OR cpf = ? LIMIT 1");
     $stmt_check->bind_param("ss", $email, $cpf);
     $stmt_check->execute();
@@ -57,7 +59,7 @@
     $stmt_check->close();
 
     $stmt = $conexao->prepare("INSERT INTO Usuario (nome, email, senha, cpf, data_nascimento, tipo_usuario) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $nome, $email, $senha, $cpf, $data_nascimento, $tipo_usuario);
+    $stmt->bind_param("ssssss", $nome, $email, $senha_hasheada, $cpf, $data_nascimento, $tipo_usuario);
     $stmt->execute();
     
     if ($stmt->affected_rows <= 0) {

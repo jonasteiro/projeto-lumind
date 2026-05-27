@@ -158,7 +158,56 @@
         </section>
     </main>
 
+<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+=======
+                <div class="form-group">
+                    <label for="observacao">Observações Clínicas / Comportamentais</label>
+                    <textarea id="observacao" name="observacao" rows="3" placeholder="Detalhes importantes sobre o paciente..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone (Opcional)</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="DDD + Número">
+                    </div>
+                    <div class="form-group">
+                        <label for="senha">Senha de Acesso *</label>
+                        <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+                        <span class="form-error" id="erroSenha"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf_responsavel">CPF do Responsável Legal *</label>
+                    <input type="text" id="cpf_responsavel" name="cpf_responsavel" placeholder="Apenas números" required maxlength="14">
+                    <span class="form-error" id="erroCpfResponsavel"></span>
+                </div>
+
+                <!-- 
+                COLOCAR AQUI TRATAMENTO DE EXCEÇÃO 
+                <div class="form-group">
+                    <label for="email_exercicio">E-mail do Exercício *</label>
+                    <input type="text" id="email_exercicio" placeholder="Digite para testar o @">
+                    
+                    COLOCAR AQUI ERRO E ID
+                    <p id="erro_exercicio"></p>
+                </div>
+                -->
+
+                <div id="divErro" class="alert alert-error"></div>
+                <div id="divSucesso" class="alert alert-success"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Cadastrar Paciente</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+                </div>
+            </form>
+        </main>
+    </div>
+    
+    <script src="../js/pessoa_tea.js/pessoa_tea_novo.js"></script>
+>>>>>>> 4ce98d976a9f942a2228f0b20e70203491591c82
     <script src="../js/valida_sessao.js"></script>
     <script src="../js/index.js"></script>
     <script src="../js/pessoa_tea.js/pessoa_tea_novo.js"></script>

@@ -88,6 +88,7 @@ try {
             data_conclusao      = NOW()
         WHERE id_atividade  = ?
           AND id_pessoa_tea  = ?
+          AND status_conclusao != 'Avaliada'
     ";
 
     $stmt = $conexao->prepare($sql);
@@ -100,22 +101,32 @@ try {
 
     if ($stmt->affected_rows === 0) {
         $stmt->close();
-        // Verifica se o registro existe (para distinguir IDOR de "dados iguais")
+        // Verifica se o bloqueio foi por status 'Avaliada' ou por IDOR
         $check = $conexao->prepare(
-            "SELECT 1 FROM PessoaTea_Atividade WHERE id_atividade = ? AND id_pessoa_tea = ? LIMIT 1"
+            "SELECT status_conclusao FROM PessoaTea_Atividade WHERE id_atividade = ? AND id_pessoa_tea = ? LIMIT 1"
         );
         $check->bind_param('ii', $id_atividade, $id_pessoa_tea);
         $check->execute();
-        $check->store_result();
+        $res_check = $check->get_result();
 
-        if ($check->num_rows === 0) {
+        if ($res_check->num_rows === 0) {
             http_response_code(403);
             echo json_encode(['status' => 'nok', 'mensagem' => 'Acesso negado: atividade não pertence a este perfil.']);
             $check->close();
             $conexao->close();
             exit;
         }
+
+        $row_check = $res_check->fetch_assoc();
         $check->close();
+
+        if ($row_check['status_conclusao'] === 'Avaliada') {
+            http_response_code(403);
+            echo json_encode(['status' => 'nok', 'mensagem' => 'Esta atividade já foi avaliada pelo profissional e não pode ser reenviada.']);
+            $conexao->close();
+            exit;
+        }
+
         // Dados idênticos, sem erro real
         echo json_encode(['status' => 'ok', 'mensagem' => 'Envio registrado!']);
         $conexao->close();

@@ -43,7 +43,7 @@ try {
                 (SELECT COUNT(*)
                    FROM PessoaTea_Atividade pa3
                   WHERE pa3.id_atividade = a.id_atividade
-                    AND pa3.status_conclusao = 'Concluída')                          AS concluidas
+                    AND pa3.status_conclusao IN ('Concluída', 'Avaliada'))           AS concluidas
             FROM Atividade a
             WHERE a.id_profissional = ?
             ORDER BY a.data_publicacao DESC

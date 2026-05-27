@@ -125,8 +125,12 @@ function renderizarAtividade(atv) {
 
     // Status
     const badgeStatus    = document.getElementById('badge-status');
-    const estaConcluida  = atv.status_conclusao === 'Concluída';
-    if (estaConcluida) {
+    const estaAvaliada   = atv.status_conclusao === 'Avaliada';
+    const estaConcluida  = atv.status_conclusao === 'Concluída' || estaAvaliada;
+    if (estaAvaliada) {
+        badgeStatus.textContent = '⭐ Avaliada';
+        badgeStatus.className   = 'badge-status avaliada ms-2';
+    } else if (estaConcluida) {
         badgeStatus.textContent = '✅ Concluída';
         badgeStatus.className   = 'badge-status concluida ms-2';
     } else {
@@ -164,17 +168,21 @@ function renderizarAtividade(atv) {
         }
     }
 
-    // Pré-preenche comentário se já concluída
+    // Pré-preenche comentário se já concluída ou avaliada
     if (estaConcluida && atv.comentario_paciente) {
         document.getElementById('comentario-paciente').value = atv.comentario_paciente;
     }
 
-    // Exibir feedback do profissional se existir
-    if (atv.feedback_profissional) {
+    // ── Feedback do profissional ──────────────────────────────────────────
+    if (estaAvaliada && atv.feedback_profissional) {
+        // Cenário 1: atividade avaliada — exibe o feedback
         renderizarFeedbackProfissional(atv.feedback_profissional, atv.data_feedback);
+    } else if (estaConcluida && !atv.feedback_profissional) {
+        // Cenário 2 (PBI04): atividade enviada mas ainda sem avaliação — exibe empty state
+        renderizarAguardandoAvaliacao();
     }
 
-    ajustarBotaoConclusao(estaConcluida);
+    ajustarBotaoConclusao(atv.status_conclusao);
 }
 
 async function concluirAtividade(idAtividade) {
@@ -203,7 +211,7 @@ async function concluirAtividade(idAtividade) {
             mostrarFeedback('✅ Atividade enviada com sucesso!', 'sucesso');
             document.getElementById('badge-status').textContent = '✅ Concluída';
             document.getElementById('badge-status').className   = 'badge-status concluida ms-2';
-            ajustarBotaoConclusao(true);
+            ajustarBotaoConclusao('Concluída');
         } else {
             mostrarFeedback('❌ ' + (resultado.mensagem || 'Não foi possível registrar.'), 'erro');
         }
@@ -234,52 +242,105 @@ function mostrarFeedback(mensagem, tipo) {
     div.className   = `feedback-msg ${tipo} mt-3`;
 }
 
-function ajustarBotaoConclusao(jaConcluida) {
+function ajustarBotaoConclusao(statusConclusao) {
     const btn   = document.getElementById('btn-concluir');
     const texto = document.getElementById('btn-concluir-texto');
     const icone = btn.querySelector('i');
+    const comentarioTextarea = document.getElementById('comentario-paciente');
 
-    if (jaConcluida) {
+    if (statusConclusao === 'Avaliada') {
+        // PBI06 fix: atividade já avaliada — bloqueia TUDO, paciente não pode reenviar
+        btn.disabled = true;
+        btn.classList.remove('btn-atualizar');
+        btn.classList.add('btn-bloqueado');
+        btn.style.opacity    = '0.55';
+        btn.style.cursor     = 'not-allowed';
+        texto.textContent    = 'Atividade Avaliada';
+        if (icone) icone.className = 'bi bi-lock-fill me-2';
+        if (comentarioTextarea) comentarioTextarea.disabled = true;
+    } else if (statusConclusao === 'Concluída') {
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.style.cursor  = '';
         btn.classList.add('btn-atualizar');
         texto.textContent  = 'Atualizar Envio';
         if (icone) icone.className = 'bi bi-arrow-repeat me-2';
     } else {
+        // Pendente
+        btn.disabled = false;
+        btn.style.opacity = '';
+        btn.style.cursor  = '';
         btn.classList.remove('btn-atualizar');
         texto.textContent  = 'Marcar como Concluída';
         if (icone) icone.className = 'bi bi-check-circle-fill me-2';
     }
 }
 
-function renderizarFeedbackProfissional(feedback, dataFeedback) {
-    const containerAnexo = document.getElementById('card-anexo');
-    
-    if (containerAnexo) {
-        // Cria elemento para o feedback
-        const feedbackEl = document.createElement('div');
-        feedbackEl.style.cssText = `
-            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
-            border: 2px solid #86efac;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-            border-left: 5px solid #16a34a;
-        `;
+function renderizarAguardandoAvaliacao() {
+    // PBI04 Cenário 2: empty state — atividade enviada mas ainda não avaliada
+    // Ancora no card pai do btn-concluir (card "Minha Resposta") e insere ANTES dele
+    const btnConcluir = document.getElementById('btn-concluir');
+    const cardResposta = btnConcluir ? btnConcluir.closest('.activity-card') : null;
+    const ref = cardResposta || document.getElementById('corpo-atividade');
+    if (!ref) return;
 
-        const dataFormatada = dataFeedback
-            ? new Date(dataFeedback).toLocaleDateString('pt-BR')
-            : 'Data não informada';
-
-        feedbackEl.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <i class="bi bi-chat-left-quote" style="font-size: 1.5rem; color: #16a34a;"></i>
-                <h5 style="margin: 0; color: #15803d; font-weight: 700;">Feedback do Profissional</h5>
-            </div>
-            <p style="margin: 0.75rem 0; color: #1e293b; line-height: 1.6; font-size: 1rem;">${feedback}</p>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #64748b;">
-                <i class="bi bi-calendar-event me-1"></i>Recebido em ${dataFormatada}
+    const el = document.createElement('div');
+    el.id = 'card-aguardando-avaliacao';
+    el.style.cssText = `
+        background: linear-gradient(135deg, #fef9c3 0%, #fefce8 100%);
+        border: 2px solid #fde047;
+        border-left: 5px solid #ca8a04;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    `;
+    el.innerHTML = `
+        <i class="bi bi-hourglass-split" style="font-size: 2rem; color: #ca8a04; flex-shrink: 0;"></i>
+        <div>
+            <h5 style="margin: 0 0 0.4rem 0; color: #92400e; font-weight: 700;">Aguardando Avaliação</h5>
+            <p style="margin: 0; color: #78350f; line-height: 1.6; font-size: 0.95rem;">
+                Sua atividade foi enviada com sucesso! O profissional responsável irá analisá-la
+                e em breve você receberá o feedback aqui nesta tela.
             </p>
-        `;
+        </div>
+    `;
 
-        containerAnexo.insertAdjacentElement('afterend', feedbackEl);
-    }
+    // Insere ANTES do card "Minha Resposta" — funciona com ou sem anexo
+    ref.insertAdjacentElement('beforebegin', el);
+}
+
+function renderizarFeedbackProfissional(feedback, dataFeedback) {
+    const btnConcluir = document.getElementById('btn-concluir');
+    const cardResposta = btnConcluir ? btnConcluir.closest('.activity-card') : null;
+    if (!cardResposta) return;
+
+    const feedbackEl = document.createElement('div');
+    feedbackEl.style.cssText = `
+        background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+        border: 2px solid #86efac;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 5px solid #16a34a;
+    `;
+
+    const dataFormatada = dataFeedback
+        ? new Date(dataFeedback).toLocaleDateString('pt-BR')
+        : 'Data não informada';
+
+    feedbackEl.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <i class="bi bi-chat-left-quote" style="font-size: 1.5rem; color: #16a34a;"></i>
+            <h5 style="margin: 0; color: #15803d; font-weight: 700;">Feedback do Profissional</h5>
+        </div>
+        <p style="margin: 0.75rem 0; color: #1e293b; line-height: 1.6; font-size: 1rem;">${feedback}</p>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #64748b;">
+            <i class="bi bi-calendar-event me-1"></i>Recebido em ${dataFormatada}
+        </p>
+    `;
+
+    cardResposta.insertAdjacentElement('beforebegin', feedbackEl);
 }

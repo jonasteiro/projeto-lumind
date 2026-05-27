@@ -123,7 +123,7 @@ function renderizarSubmissoes(submissoes) {
             border-left: 4px solid #0284c7;
         `;
 
-        const statusBadge = sub.status_conclusao === 'Concluída' 
+        const statusBadge = (sub.status_conclusao === 'Concluída' || sub.status_conclusao === 'Avaliada')
             ? '<span class="badge-status concluida">✓ Concluída</span>'
             : '<span class="badge-status pendente">⏱ Pendente</span>';
 

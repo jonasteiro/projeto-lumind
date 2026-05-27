@@ -79,10 +79,12 @@ try {
         exit;
     }
     
-    // Atualizar ou inserir feedback
+    // Atualizar ou inserir feedback + marcar como Avaliada
     $stmt = $conexao->prepare("
         UPDATE PessoaTea_Atividade
-        SET feedback_profissional = ?, data_feedback = NOW()
+        SET feedback_profissional = ?,
+            data_feedback = NOW(),
+            status_conclusao = 'Avaliada'
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
     

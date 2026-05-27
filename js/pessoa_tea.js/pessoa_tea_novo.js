@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const divErro = document.getElementById('divErro');
     const divSucesso = document.getElementById('divSucesso');
 
-    // Função de validar email com regex (texto + @ + texto)
     function validarEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }

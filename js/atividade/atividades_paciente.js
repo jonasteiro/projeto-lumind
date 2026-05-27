@@ -2,23 +2,20 @@
  * atividades_paciente.js
  * Lista de atividades para PessoaTea e ResponsavelLegal.
  * CORRIGIDO:
- *   - Nome exibido via validarAcesso (sessão real) e não localStorage
- *   - Link "COMEÇAR" aponta para atividades/tela_atividade.html?id=
- *   - Busca de status_conclusao exibida no card
+ * - Nome exibido via validarAcesso (sessão real) e não localStorage
+ * - Link "COMEÇAR" aponta para atividades/tela_atividade.html?id=
+ * - Busca de status_conclusao exibida no card
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('lista-atividades');
+    const inputBusca = document.getElementById('inputBusca');
+    let todasAtividades = [];
 
-
-    // Carrega atividades
-    try {
-        const response   = await fetch('../php/atividades/atividades_get.php');
-        const atividades = await response.json();
-
+    function renderizarAtividades(lista) {
         container.innerHTML = '';
 
-        if (!Array.isArray(atividades) || atividades.length === 0) {
+        if (!Array.isArray(lista) || lista.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="bi bi-clipboard-x fs-1 text-muted"></i>
@@ -27,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        atividades.forEach(atv => {
+        lista.forEach(atv => {
             const concluida = atv.status_conclusao === 'Concluída';
             const statusBadge = concluida
                 ? '<span class="badge rounded-pill bg-success">✅ Concluída</span>'
@@ -55,6 +52,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>`;
         });
+    }
+
+    try {
+        const response   = await fetch('../php/atividades/atividades_get.php');
+        todasAtividades = await response.json();
+
+        renderizarAtividades(todasAtividades);
+
+        if (inputBusca) {
+            inputBusca.addEventListener('input', (e) => {
+                const termoDeBusca = e.target.value.toLowerCase().trim();
+                const atividadesFiltradas = todasAtividades.filter(atv => 
+                    atv.titulo.toLowerCase().includes(termoDeBusca)
+                );
+                renderizarAtividades(atividadesFiltradas);
+            });
+        }
 
     } catch (error) {
         console.error('Erro ao carregar atividades:', error);

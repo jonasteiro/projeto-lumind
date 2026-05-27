@@ -2,14 +2,17 @@
  * painel_atividades.js
  * Painel do ProfissionalSaude: lista suas atividades com contadores.
  * CORRIGIDO:
- *   - Removido botão "Nova Atividade" que apontava para âncora inexistente
- *   - Link "Ver Submissões" aponta para atividades/view_atividade_profissional.html
- *   - Renderiza cards bonitos com painel_atividades.css
+ * - Removido botão "Nova Atividade" que apontava para âncora inexistente
+ * - Link "Ver Submissões" aponta para atividades/view_atividade_profissional.html
+ * - Renderiza cards bonitos com painel_atividades.css
+ * - Adicionado filtro de busca por título da atividade
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     const listaContainer = document.getElementById('lista-atividades');
     const nomeContainer = document.getElementById('nome-profissional');
+    const inputBusca = document.getElementById('inputBusca');
+    let todasAtividades = [];
 
     // Carregar nome do usuário
     const nome = localStorage.getItem('nome_usuario');
@@ -28,22 +31,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    try {
-        const response   = await fetch('../php/atividades/atividades_get.php');
-        const atividades = await response.json();
-
+    function renderizarAtividades(lista) {
         listaContainer.innerHTML = '';
 
-        if (!Array.isArray(atividades) || atividades.length === 0) {
+        if (!Array.isArray(lista) || lista.length === 0) {
             listaContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="bi bi-inbox"></i>
-                    <p>Você ainda não publicou nenhuma atividade.</p>
+                    <p>Nenhuma atividade encontrada.</p>
                 </div>`;
             return;
         }
 
-        atividades.forEach(atv => {
+        lista.forEach(atv => {
             const dataFormatada = atv.data_publicacao
                 ? new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR')
                 : '—';
@@ -93,13 +93,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                                class="btn-card primary">
                                 <i class="bi bi-eye"></i> Ver Submissões
                             </a>
-                        
                         </div>
                     </div>
                 </div>`;
 
             listaContainer.innerHTML += cardHTML;
         });
+    }
+
+    try {
+        const response   = await fetch('../php/atividades/atividades_get.php');
+        todasAtividades = await response.json();
+
+        renderizarAtividades(todasAtividades);
+
+        if (inputBusca) {
+            inputBusca.addEventListener('input', (e) => {
+                const termoDeBusca = e.target.value.toLowerCase().trim();
+                const atividadesFiltradas = todasAtividades.filter(atv => 
+                    atv.titulo.toLowerCase().includes(termoDeBusca)
+                );
+                renderizarAtividades(atividadesFiltradas);
+            });
+        }
 
     } catch (error) {
         console.error('Erro ao carregar painel:', error);

@@ -1,167 +1,175 @@
-const formulario = document.getElementById("form-alterar-responsavel");
-const divErro = document.getElementById("divErro");
-const divSucesso = document.getElementById("divSucesso");
-
 document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("form-alterar-responsavel");
+
+    // Captura o ID da URL
     const url = new URLSearchParams(window.location.search);
     const id = url.get("id");
+
     if (id) {
         buscar(id);
-    } else {
-        alert("ID não encontrado na URL.");
-        window.location.href = "lista_responsaveis.html";
-    }
-});
-
-function validarEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function validarCPF(cpf) {
-    const apenasNumeros = cpf.replace(/\D/g, '');
-    return apenasNumeros.length === 11;
-}
-
-function validarTelefone(tel) {
-    const apenasNumeros = tel.replace(/\D/g, '');
-    return apenasNumeros.length >= 10 && apenasNumeros.length <= 11;
-}
-
-function mostrarMensagem(tipo, msg) {
-    const div = tipo === 'erro' ? divErro : divSucesso;
-    const outra = tipo === 'erro' ? divSucesso : divErro;
-    
-    div.textContent = msg;
-    div.classList.add('show');
-    div.style.display = 'block';
-    outra.classList.remove('show');
-    outra.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function buscar(id) {
-    try {
-        const retorno = await fetch("../php/responsavel/responsavel_get.php?id=" + id);
-        const resposta = await retorno.json();
-
-        if (resposta.status == "ok") {
-            const r = resposta.data[0];
-            document.getElementById("id_usuario").value = id;
-            document.getElementById("nome").value = r.nome;
-            document.getElementById("email").value = r.email;
-            document.getElementById("cpf").value = r.cpf;
-            document.getElementById("telefone").value = r.telefone || "";
-            document.getElementById("data_nascimento").value = r.data_nascimento;
-        } else {
-            alert("Erro ao recuperar dados: " + resposta.mensagem);
-            window.location.href = "lista_responsaveis.html";
-        }
-    } catch (e) {
-        console.error("Erro no fetch de busca:", e);
-        alert("Erro de conexão ao buscar dados.");
-    }
-}
-
-formulario.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-    divErro.style.display = 'none';
-    divSucesso.style.display = 'none';
-
-    const nome = document.getElementById("nome").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.trim();
-    const telefone = document.getElementById("telefone").value.trim();
-    const data = document.getElementById("data_nascimento").value;
-    const senha = document.getElementById("senha").value;
-    let temErro = false;
-
-    if (nome.length < 3) {
-        document.getElementById("erroNome").textContent = "O nome deve ter pelo menos 3 caracteres.";
-        document.getElementById("erroNome").classList.add("show");
-        temErro = true;
     }
 
-    if (!validarEmail(email)) {
-        document.getElementById("erroEmail").textContent = "Informe um e-mail válido.";
-        document.getElementById("erroEmail").classList.add("show");
-        temErro = true;
-    }
-
-    if (!validarCPF(cpf)) {
-        document.getElementById("erroCpf").textContent = "CPF deve conter 11 dígitos numéricos.";
-        document.getElementById("erroCpf").classList.add("show");
-        temErro = true;
-    }
-
-    if (!validarTelefone(telefone)) {
-        document.getElementById("erroTelefone").textContent = "Telefone inválido (DDD + número).";
-        document.getElementById("erroTelefone").classList.add("show");
-        temErro = true;
-    }
-
-    if (!data) {
-        document.getElementById("erroData").textContent = "A data de nascimento é obrigatória.";
-        document.getElementById("erroData").classList.add("show");
-        temErro = true;
-    }
-
-    if (senha.length > 0 && senha.length < 6) {
-        mostrarMensagem('erro', "A nova senha deve ter no mínimo 6 caracteres.");
-        temErro = true;
-    }
-
-    if (temErro) return;
-
-    const btn = document.getElementById("btnEnviar");
-    const textoOriginal = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = "⏳ Salvando Alterações...";
-
-    const fd = new FormData();
-    fd.append("nome", nome);
-    fd.append("email", email);
-    fd.append("cpf", cpf.replace(/\D/g, ''));
-    fd.append("telefone", telefone.replace(/\D/g, ''));
-    fd.append("data_nascimento", data);
-    fd.append("senha", senha);
-
-    try {
-        const id = document.getElementById("id_usuario").value;
-        const retorno = await fetch("../php/responsavel/responsavel_alterar.php?id=" + id, {
-            method: 'POST',
-            body: fd  
-        });
-
-        const textoResposta = await retorno.text();
-        let resposta;
+    // Função para buscar os dados no banco
+    async function buscar(id) {
         try {
-            resposta = JSON.parse(textoResposta);
+            // Ajuste o caminho do PHP conforme a estrutura do seu projeto
+            const retorno = await fetch("../php/responsavel/responsavel_get.php?id=" + id);
+            const resposta = await retorno.json();
+
+            if (resposta.status === "ok") {
+                const p = resposta.data[0];
+                
+                document.getElementById("id_usuario").value = id;
+                document.getElementById("nome").value = p.nome;
+                document.getElementById("email").value = p.email;
+                document.getElementById("cpf").value = p.cpf; 
+                
+                if (p.telefone) {
+                    document.getElementById("telefone").value = p.telefone;
+                }
+                
+                if (p.data_nascimento) {
+                    // Pega apenas a parte da data (YYYY-MM-DD) caso venha com hora do banco
+                    document.getElementById("data_nascimento").value = p.data_nascimento.split(' ')[0];
+                }
+
+                // 1. GARANTE QUE A SENHA FIQUE EM BRANCO NA TELA
+                document.getElementById("senha").value = ""; 
+
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: "Erro: " + resposta.mensagem,
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        window.location.href = "lista_responsavel.html";
+                    });
+                } else {
+                    alert("Erro: " + resposta.mensagem);
+                    window.location.href = "lista_responsavel.html";
+                }
+            }
         } catch (e) {
-            throw new Error("O servidor retornou uma resposta inválida (não-JSON).");
+            console.error("Erro ao buscar responsável:", e);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Erro de conexão ao buscar dados.',
+                    confirmButtonColor: '#d33'
+                });
+            }
         }
-
-        if (resposta.status == "ok") {
-            mostrarMensagem('sucesso', " " + resposta.mensagem);
-            setTimeout(() => { window.location.href = 'lista_responsavel.html'; }, 2000);
-        } else {
-            mostrarMensagem('erro', " " + resposta.mensagem);
-        }
-
-    } catch (erro) {
-        mostrarMensagem('erro', " Erro: " + erro.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = textoOriginal;
     }
-});
 
-// Máscaras em tempo real (Apenas números)
-document.getElementById('cpf').addEventListener('input', function (e) {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
-});
+    // Submissão do formulário
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault(); // Impede o redirecionamento automático
 
-document.getElementById('telefone').addEventListener('input', function (e) {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+            // Limpa as mensagens de erro na tela
+            const camposErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroTelefone', 'erroData'];
+            camposErro.forEach(idErro => {
+                const el = document.getElementById(idErro);
+                if(el) el.textContent = '';
+            });
+
+            // Captura os valores digitados
+            const nome = document.getElementById("nome").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const telefone = document.getElementById("telefone").value.trim();
+            const data = document.getElementById("data_nascimento").value;
+            const senha = document.getElementById("senha").value;
+            let temErro = false;
+
+            // Validações básicas
+            if (nome.length < 3) { 
+                const el = document.getElementById("erroNome");
+                if (el) el.textContent = "Nome muito curto."; 
+                temErro = true; 
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) { 
+                const el = document.getElementById("erroEmail");
+                if (el) el.textContent = "E-mail inválido."; 
+                temErro = true; 
+            }
+            if (!data) { 
+                const el = document.getElementById("erroData");
+                if (el) el.textContent = "Data obrigatória."; 
+                temErro = true; 
+            }
+
+            if (temErro) return;
+
+            // Animação do botão carregando
+            const btn = document.getElementById("btnEnviar");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i> Salvando...';
+            }
+
+            // Preparação dos dados para envio
+            const fd = new FormData();
+            fd.append("id_usuario", document.getElementById("id_usuario").value);
+            fd.append("nome", nome);
+            fd.append("email", email);
+            
+            // Envia o CPF limpo (somente números) para o PHP não dar Warning
+            fd.append("cpf", document.getElementById("cpf").value.replace(/\D/g, ''));
+            
+            // Envia o Telefone limpo
+            fd.append("telefone", telefone.replace(/\D/g, ''));
+            
+            fd.append("data_nascimento", data);
+            fd.append("senha", senha);
+
+            try {
+                // Ajuste o caminho do PHP
+                const id_user = document.getElementById("id_usuario").value;
+                const retorno = await fetch("../php/responsavel/responsavel_alterar.php?id=" + id_user, {
+                    method: 'POST',
+                    body: fd  
+                });
+                
+                const resposta = await retorno.json();
+
+                if (resposta.status === "ok" || resposta.status === "sucesso") {
+                    // 2. EXIBE O ALERTA SWEET ALERT E REDIRECIONA
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Atualizado!',
+                        text: resposta.mensagem || 'Dados do responsável salvos com sucesso.',
+                        confirmButtonColor: '#0284c7'
+                    }).then(() => {
+                        // Só muda de página quando o usuário clica no "OK" do SweetAlert
+                        window.location.href = 'lista_responsavel.html';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro ao Salvar',
+                        text: resposta.mensagem || 'Verifique os dados e tente novamente.',
+                        confirmButtonColor: '#d33'
+                    });
+                }
+            } catch (erro) {
+                console.error("Erro na requisição:", erro);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Erro de comunicação com o servidor.',
+                    confirmButtonColor: '#d33'
+                });
+            } finally {
+                // Restaura o botão
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = "<i class='bi bi-save me-1'></i> Salvar Alterações";
+                }
+            }
+        });
+    }
 });

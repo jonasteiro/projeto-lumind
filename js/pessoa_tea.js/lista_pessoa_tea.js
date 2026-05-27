@@ -1,10 +1,25 @@
+// js/pessoa_tea.js/lista_pessoa_tea.js
 document.addEventListener("DOMContentLoaded", () => {
     buscarPacientes();
     
     // Botão Novo
-    document.getElementById("novoPaciente").addEventListener("click", () => {
-        window.location.href = 'cadastro_pessoa_tea.html';
-    });
+    const btnNovo = document.getElementById("novoPaciente");
+    if(btnNovo) {
+        btnNovo.addEventListener("click", () => {
+            window.location.href = 'cadastro_pessoa_tea.html';
+        });
+    }
+
+    // Botão Logoff já é tratado pelo valida_sessao.js, 
+    // mas se precisar de fallback para o logoff nesta página específica:
+    const btnLogoff = document.getElementById("logoff");
+    if(btnLogoff && !btnLogoff.onclick) {
+        btnLogoff.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await fetch('../php/cliente_logoff.php');
+            window.location.href = '../login/index.html';
+        });
+    }
 });
 
 async function buscarPacientes() {
@@ -13,20 +28,33 @@ async function buscarPacientes() {
     if (resposta.status == "ok") {
         preencherTabela(resposta.data);
     } else {
-        document.getElementById("lista").innerHTML = `<p class='text-center text-muted'>${resposta.mensagem}</p>`;
+        document.getElementById("lista").innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted fs-1 mb-3 d-block"></i>
+                <p class='text-muted fs-5'>${resposta.mensagem}</p>
+            </div>`;
     }
 }
 
 function preencherTabela(tabela) {
+    if(!tabela || tabela.length === 0) {
+        document.getElementById("lista").innerHTML = `
+            <div class="text-center py-5">
+                <i class="bi bi-people text-muted fs-1 mb-3 d-block"></i>
+                <p class='text-muted fs-5'>Nenhum paciente (TEA) cadastrado.</p>
+            </div>`;
+        return;
+    }
+
     var html = `
-        <table class="table table-hover align-middle">
+        <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th class="py-3">Nome</th>
-                    <th class="py-3">Nível TEA</th>
-                    <th class="py-3">Email</th>
-                    <th class="py-3">CPF</th>
-                    <th class="py-3 text-end">Ações</th>
+                    <th class="text-secondary fw-semibold py-3 ps-3">Nome</th>
+                    <th class="text-secondary fw-semibold py-3">Nível TEA</th>
+                    <th class="text-secondary fw-semibold py-3">Email</th>
+                    <th class="text-secondary fw-semibold py-3">CPF</th>
+                    <th class="text-secondary fw-semibold py-3 text-end pe-3">Ações</th>
                 </tr>
             </thead>
             <tbody>`;
@@ -34,16 +62,16 @@ function preencherTabela(tabela) {
     for (var i = 0; i < tabela.length; i++) {
         html += `
             <tr>
-                <td class="fw-medium">${tabela[i].nome}</td>
-                <td><span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3">${tabela[i].nivel_tea}</span></td>
+                <td class="fw-bold text-dark ps-3">${tabela[i].nome}</td>
+                <td><span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3 py-2">${tabela[i].nivel_tea}</span></td>
                 <td class="text-muted">${tabela[i].email}</td>
-                <td>${tabela[i].cpf}</td>
-                <td class="text-end">
-                    <div class="btn-group">
-                        <a href='alterar_pessoa_tea.html?id=${tabela[i].id_usuario}' class="btn btn-sm btn-outline-primary border-0">
+                <td class="text-muted">${tabela[i].cpf}</td>
+                <td class="text-end pe-3">
+                    <div class="btn-group gap-2">
+                        <a href='alterar_pessoa_tea.html?id=${tabela[i].id_usuario}' class="btn btn-sm btn-outline-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Editar Paciente">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button onclick='excluir(${tabela[i].id_usuario})' class="btn btn-sm btn-outline-danger border-0">
+                        <button onclick='excluir(${tabela[i].id_usuario})' class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Excluir Paciente">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -56,10 +84,34 @@ function preencherTabela(tabela) {
 }
 
 async function excluir(id) {
-    if (confirm("Deseja realmente excluir este registro?")) {
+    if (confirm("Deseja realmente excluir este paciente? Esta ação não pode ser desfeita.")) {
         const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
         const resposta = await retorno.json();
-        alert(resposta.mensagem);
-        if (resposta.status == "ok") window.location.reload();
+        
+        if (resposta.status == "ok") {
+            // Se tiver SweetAlert na página usa, senão usa alert normal
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Excluído!',
+                    text: resposta.mensagem,
+                    confirmButtonColor: '#0284c7'
+                }).then(() => window.location.reload());
+            } else {
+                alert(resposta.mensagem);
+                window.location.reload();
+            }
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: resposta.mensagem,
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                alert(resposta.mensagem);
+            }
+        }
     }
 }

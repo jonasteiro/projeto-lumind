@@ -1,281 +1,154 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Lumind | Editar Pessoa TEA</title>
-
-    <!-- Fonts -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <!-- Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Icons -->
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
-
-    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="../css/tela_administrador.css">
     <link rel="stylesheet" href="../css/pessoa_tea/alterar-cadastro.css">
 </head>
-
-<body>
-
-    <div class="container d-flex align-items-center justify-content-center min-vh-100 py-5">
-
-        <div class="form-card w-100 p-4 p-md-5">
-
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom">
-
-                <div>
-                    <h1 class="h3 fw-bold mb-1">
-                        Editar Pessoa TEA
-                    </h1>
-
-                    <p class="text-muted small mb-0">
-                        Atualize as informações clínicas e de cadastro.
-                    </p>
+<body style="background: #f8fcff;">
+    
+    <main class="w-100 min-vh-100 d-flex flex-column">
+        
+        <header class="topbar d-flex justify-content-center align-items-center p-4 border-bottom shadow-sm" style="background-color: #d5efff;">
+            <div class="d-flex justify-content-between align-items-center container-xl w-100 px-0">
+                
+                <div class="d-flex align-items-center">
+                    <a href="lista_pessoa_tea.html" class="d-inline-flex align-items-center justify-content-center rounded-circle text-decoration-none me-3" style="width: 44px; height: 44px; background-color: #bce2f9; color: #1474a8; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#a8d6f5'" onmouseout="this.style.backgroundColor='#bce2f9'">
+                        <i class="bi bi-arrow-left fs-4"></i>
+                    </a>
+                    <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">EDITAR PACIENTE</h2>
                 </div>
 
-                <a
-                    href="lista_pessoa_tea.html"
-                    class="btn btn-outline-secondary rounded-pill px-3"
-                >
-                    <i class="bi bi-arrow-left"></i>
-                    Voltar
-                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center border-end border-info pe-3">
+                        <div class="d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
+                            --
+                        </div>
+                        <div class="d-none d-sm-block text-end">
+                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="sidebarNome">Carregando...</span>
+                            <small class="text-muted" style="font-size: 0.8rem;">Profissional / Admin</small>
+                        </div>
+                    </div>
+
+                    <a href="#" id="logoff" class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <section class="content p-4 container-xl flex-grow-1 mt-3">
+            <div class="atividade-card shadow-sm" style="max-width: 800px; margin: 0 auto; background: white; border-radius: 1.5rem; border: 1px solid rgba(0,0,0,0.05); overflow: hidden;">
+                
+                <div class="card-header-activity bg-light p-4 border-bottom">
+                    <h3 class="text-primary mb-0 fs-5 fw-bold"><i class="bi bi-person-gear me-2"></i> Atualizar Dados do Paciente</h3>
+                </div>
+
+                <div class="card-body-activity p-4">
+                    <p class="text-muted mb-4" style="font-size: 0.9rem;">Atualize as informações clínicas e de cadastro do paciente abaixo.</p>
+
+                    <form id="form-alterar-pessoa-tea">
+                        <input type="hidden" id="id_usuario">
+                        
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="text" class="form-control rounded-3 border-light-subtle" id="nome" name="nome" placeholder="Nome completo" required maxlength="100">
+                                <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo *</label>
+                            </div>
+                            <span class="text-danger small" id="erroNome"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control rounded-3 border-light-subtle" id="email" name="email" placeholder="Email" required maxlength="100">
+                                    <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email *</label>
+                                </div>
+                                <span class="text-danger small" id="erroEmail"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control rounded-3 border-light-subtle bg-light text-muted" id="cpf" name="cpf" placeholder="CPF" readonly>
+                                    <label for="cpf" class="text-muted"><i class="bi bi-lock me-2"></i>CPF (Não editável)</label>
+                                </div>
+                                <span class="text-danger small" id="erroCpf"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control rounded-3 border-light-subtle" id="data_nascimento" name="data_nascimento" required>
+                                    <label for="data_nascimento" class="text-muted"><i class="bi bi-calendar-event me-2"></i>Data de Nascimento *</label>
+                                </div>
+                                <span class="text-danger small" id="erroData"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select id="nivel_tea" name="nivel_tea" class="form-select rounded-3 border-light-subtle" required>
+                                        <option value="">Selecione o nível</option>
+                                        <option value="Nível 1 - Suporte Leve">Nível 1 - Suporte Leve</option>
+                                        <option value="Nível 2 - Suporte Moderado">Nível 2 - Suporte Moderado</option>
+                                        <option value="Nível 3 - Suporte Substancial">Nível 3 - Suporte Substancial</option>
+                                    </select>
+                                    <label for="nivel_tea" class="text-muted"><i class="bi bi-bar-chart me-2"></i>Nível de Suporte (TEA) *</label>
+                                </div>
+                                <span class="text-danger small" id="erroNivel"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <textarea id="observacao" name="observacao" class="form-control rounded-3 border-light-subtle" placeholder="Observações" style="height: 100px;"></textarea>
+                                <label for="observacao" class="text-muted"><i class="bi bi-journal-medical me-2"></i>Observações Clínicas / Comportamentais</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-floating">
+                                <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" name="senha" placeholder="Nova senha">
+                                <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Nova Senha (opcional)</label>
+                            </div>
+                            <small class="text-muted ms-2" style="font-size: 0.75rem;">Deixe em branco para manter a senha atual.</small>
+                        </div>
+
+                        <div id="divErro" class="alert alert-danger d-none py-2 mt-3" style="font-size: 0.85rem;"></div>
+                        <div id="divSucesso" class="alert alert-success d-none py-2 mt-3" style="font-size: 0.85rem;"></div>
+                    </form>
+                </div>
+
+                <div class="card-footer-activity p-3 bg-light border-top">
+                    <div class="btn-group-card d-flex justify-content-end gap-2">
+                        <a href="lista_pessoa_tea.html" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-3">
+                            Cancelar
+                        </a>
+                        <button type="submit" form="form-alterar-pessoa-tea" id="btnEnviar" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                            <i class="bi bi-save me-1"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </div>
 
             </div>
-
-            <!-- FORM -->
-            <form id="form-alterar-pessoa-tea">
-
-                <input type="hidden" id="id_usuario">
-
-                <!-- NOME -->
-                <div class="mb-3">
-
-                    <div class="form-floating">
-
-                        <input
-                            type="text"
-                            id="nome"
-                            class="form-control custom-input rounded-4"
-                            placeholder="Nome completo"
-                            required
-                        >
-
-                        <label for="nome">
-                            <i class="bi bi-person me-2"></i>
-                            Nome Completo *
-                        </label>
-
-                    </div>
-
-                    <span class="form-error" id="erroNome"></span>
-
-                </div>
-
-                <!-- EMAIL + CPF -->
-                <div class="row g-3 mb-3">
-
-                    <div class="col-md-6">
-
-                        <div class="form-floating">
-
-                            <input
-                                type="email"
-                                id="email"
-                                class="form-control custom-input rounded-4"
-                                placeholder="Email"
-                                required
-                            >
-
-                            <label for="email">
-                                <i class="bi bi-envelope me-2"></i>
-                                Email *
-                            </label>
-
-                        </div>
-
-                        <span class="form-error" id="erroEmail"></span>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <div class="form-floating">
-
-                            <input
-                                type="text"
-                                id="cpf"
-                                class="form-control custom-input rounded-4"
-                                placeholder="CPF"
-                                required
-                                maxlength="11"
-                            >
-
-                            <label for="cpf">
-                                <i class="bi bi-card-text me-2"></i>
-                                CPF *
-                            </label>
-
-                        </div>
-
-                        <span class="form-error" id="erroCpf"></span>
-
-                    </div>
-
-                </div>
-
-                <!-- DATA + NIVEL -->
-                <div class="row g-3 mb-3">
-
-                    <div class="col-md-6">
-
-                        <div class="form-floating">
-
-                            <input
-                                type="date"
-                                id="data_nascimento"
-                                class="form-control custom-input rounded-4"
-                                required
-                            >
-
-                            <label for="data_nascimento">
-                                <i class="bi bi-calendar-event me-2"></i>
-                                Data de Nascimento *
-                            </label>
-
-                        </div>
-
-                        <span class="form-error" id="erroData"></span>
-
-                    </div>
-
-                    <div class="col-md-6">
-
-                        <div class="form-floating">
-
-                            <select
-                                id="nivel_tea"
-                                class="form-select custom-input rounded-4"
-                                required
-                            >
-
-                                <option value="">
-                                    Selecione o nível
-                                </option>
-
-                                <option value="Nível 1 - Suporte Leve">
-                                    Nível 1 - Suporte Leve
-                                </option>
-
-                                <option value="Nível 2 - Suporte Moderado">
-                                    Nível 2 - Suporte Moderado
-                                </option>
-
-                                <option value="Nível 3 - Suporte Substancial">
-                                    Nível 3 - Suporte Substancial
-                                </option>
-
-                            </select>
-
-                            <label for="nivel_tea">
-                                <i class="bi bi-activity me-2"></i>
-                                Nível de Suporte *
-                            </label>
-
-                        </div>
-
-                        <span class="form-error" id="erroNivel"></span>
-
-                    </div>
-
-                </div>
-
-                <!-- OBSERVAÇÃO -->
-                <div class="form-floating mb-3">
-
-                    <textarea
-                        id="observacao"
-                        class="form-control custom-input rounded-4"
-                        placeholder="Observações"
-                        style="height: 120px"
-                    ></textarea>
-
-                    <label for="observacao">
-                        <i class="bi bi-journal-text me-2"></i>
-                        Observações Clínicas
-                    </label>
-
-                </div>
-
-                <!-- SENHA -->
-                <div class="form-floating mb-4">
-
-                    <input
-                        type="password"
-                        id="senha"
-                        class="form-control custom-input rounded-4"
-                        placeholder="Nova senha"
-                    >
-
-                    <label for="senha">
-                        <i class="bi bi-lock me-2"></i>
-                        Nova Senha (opcional)
-                    </label>
-
-                </div>
-
-                <!-- ALERTAS -->
-                <div
-                    id="divErro"
-                    class="alert alert-danger d-none"
-                ></div>
-
-                <div
-                    id="divSucesso"
-                    class="alert alert-success d-none"
-                ></div>
-
-                <!-- BOTÃO -->
-                <div class="mt-4">
-
-                    <button
-                        type="submit"
-                        id="btnEnviar"
-                        class="btn btn-primary-neutral w-100 rounded-pill fw-bold py-3"
-                    >
-
-                        <i class="bi bi-save me-2"></i>
-
-                        Salvar Alterações
-
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../js/valida_sessao.js"></script>
+    <script src="../js/index.js"></script>
     <script src="../js/pessoa_tea.js/pessoa_tea_alterar.js"></script>
-
+    <script>
+        if (typeof validarAcesso === "function") {
+            validarAcesso(['ProfissionalSaude', 'Administrador']); 
+        }
+    </script>
 </body>
-
 </html>

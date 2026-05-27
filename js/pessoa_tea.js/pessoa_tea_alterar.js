@@ -1,129 +1,199 @@
-const formulario = document.getElementById("form-alterar-pessoa-tea");
-const divErro = document.getElementById("divErro");
-const divSucesso = document.getElementById("divSucesso");
+// js/pessoa_tea.js/pessoa_tea_alterar.js
 
 document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("form-alterar-pessoa-tea");
+    const divErro = document.getElementById("divErro");
+    const divSucesso = document.getElementById("divSucesso");
+
     const url = new URLSearchParams(window.location.search);
     const id = url.get("id");
     if (id) buscar(id);
-});
 
-function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-function validarCPF(cpf) { return cpf.replace(/\D/g, '').length === 11; }
+    function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+    // Removemos a validação de CPF pois o campo é readonly
 
-function mostrarMensagem(tipo, msg) {
-    const div = tipo === 'erro' ? divErro : divSucesso;
-    const outra = tipo === 'erro' ? divSucesso : divErro;
-    div.textContent = msg;
-    div.classList.add('show');
-    div.style.display = 'block';
-    outra.classList.remove('show');
-    outra.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function buscar(id) {
-    try {
-        const retorno = await fetch("../php/pessoa_tea/pessoa_tea_get.php?id=" + id);
-        const resposta = await retorno.json();
-
-        if (resposta.status == "ok") {
-            const p = resposta.data[0];
-            document.getElementById("id_usuario").value = id;
-            document.getElementById("nome").value = p.nome;
-            document.getElementById("email").value = p.email;
-            document.getElementById("cpf").value = p.cpf;
-            document.getElementById("nivel_tea").value = p.nivel_tea;
-            document.getElementById("observacao").value = p.observacao || "";
-            
-            if (p.data_nascimento) {
-                document.getElementById("data_nascimento").value = p.data_nascimento.split(' ')[0];
+    function mostrarMensagem(tipo, msg) {
+        if (typeof Swal !== 'undefined') {
+            if (tipo === 'erro') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro!',
+                    text: msg,
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: msg,
+                    confirmButtonColor: '#0284c7'
+                }).then(() => {
+                    window.location.href = 'lista_pessoa_tea.html';
+                });
             }
         } else {
-            alert("Erro: " + resposta.mensagem);
-            window.location.href = "lista_pessoa_tea.html";
+            const div = tipo === 'erro' ? divErro : divSucesso;
+            const outra = tipo === 'erro' ? divSucesso : divErro;
+            div.textContent = msg;
+            div.classList.remove('d-none');
+            outra.classList.add('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (tipo === 'sucesso') {
+                setTimeout(() => { window.location.href = 'lista_pessoa_tea.html'; }, 2000);
+            }
         }
-    } catch (e) {
-        alert("Erro de conexão ao buscar dados.");
-    }
-}
-
-formulario.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
-
-    const nome = document.getElementById("nome").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.trim();
-    const nivel = document.getElementById("nivel_tea").value;
-    const data = document.getElementById("data_nascimento").value;
-    const senha = document.getElementById("senha").value;
-    let temErro = false;
-
-    // Blocos de Exceção
-    if (nome.length < 3) { 
-        document.getElementById("erroNome").textContent = "Nome muito curto."; 
-        document.getElementById("erroNome").classList.add("show"); 
-        temErro = true; 
-    }
-    if (!validarEmail(email)) { 
-        document.getElementById("erroEmail").textContent = "E-mail inválido."; 
-        document.getElementById("erroEmail").classList.add("show"); 
-        temErro = true; 
-    }
-    if (!validarCPF(cpf)) { 
-        document.getElementById("erroCpf").textContent = "CPF inválido (11 dígitos)."; 
-        document.getElementById("erroCpf").classList.add("show"); 
-        temErro = true; 
-    }
-    if (!nivel) { 
-        document.getElementById("erroNivel").textContent = "Selecione um nível."; 
-        document.getElementById("erroNivel").classList.add("show"); 
-        temErro = true; 
-    }
-    if (!data) { 
-        document.getElementById("erroData").textContent = "Data obrigatória."; 
-        document.getElementById("erroData").classList.add("show"); 
-        temErro = true; 
     }
 
-    if (temErro) return;
+    async function buscar(id) {
+        try {
+            const retorno = await fetch("../php/pessoa_tea/pessoa_tea_get.php?id=" + id);
+            const resposta = await retorno.json();
 
-    const btn = document.getElementById("btnEnviar");
-    btn.disabled = true;
-    btn.innerHTML = "⏳ Salvando...";
+            if (resposta.status == "ok") {
+                const p = resposta.data[0];
+                document.getElementById("id_usuario").value = id;
+                document.getElementById("nome").value = p.nome;
+                document.getElementById("email").value = p.email;
+                document.getElementById("cpf").value = p.cpf; 
+                document.getElementById("observacao").value = p.observacao || "";
+                
+                // 1. Garante que o campo de senha fique sempre vazio na tela de alteração
+                document.getElementById("senha").value = ""; 
+                
+                // 2. Preenche a data de nascimento
+                if (p.data_nascimento) {
+                    document.getElementById("data_nascimento").value = p.data_nascimento.split(' ')[0];
+                }
 
-    const fd = new FormData();
-    fd.append("nome", nome);
-    fd.append("email", email);
-    fd.append("cpf", cpf.replace(/\D/g, ''));
-    fd.append("nivel_tea", nivel);
-    fd.append("observacao", document.getElementById("observacao").value);
-    fd.append("data_nascimento", data);
-    fd.append("senha", senha);
+                // 3. Seleção inteligente do Nível TEA
+                const selectNivel = document.getElementById("nivel_tea");
+                if (p.nivel_tea) {
+                    // Tenta a seleção direta primeiro (se a string for exatamente igual)
+                    selectNivel.value = p.nivel_tea;
+                    
+                    // Se não tiver selecionado nada (selectedIndex === 0 ou -1), faz uma busca por aproximação
+                    if (selectNivel.selectedIndex <= 0) {
+                        for (let i = 0; i < selectNivel.options.length; i++) {
+                            // Se a opção contiver o texto do banco ou o texto do banco contiver a opção
+                            if (selectNivel.options[i].value.includes(p.nivel_tea) || p.nivel_tea.includes(selectNivel.options[i].value)) {
+                                selectNivel.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
 
-    try {
-        const id = document.getElementById("id_usuario").value;
-        const retorno = await fetch("../php/pessoa_tea/pessoa_tea_alterar.php?id=" + id, {
-            method: 'POST',
-            body: fd  
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: "Erro: " + resposta.mensagem,
+                        confirmButtonColor: '#d33'
+                    }).then(() => {
+                        window.location.href = "lista_pessoa_tea.html";
+                    });
+                } else {
+                    alert("Erro: " + resposta.mensagem);
+                    window.location.href = "lista_pessoa_tea.html";
+                }
+            }
+        } catch (e) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Erro de conexão ao buscar dados.',
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                alert("Erro de conexão ao buscar dados.");
+            }
+        }
+    }
+
+    if (form) {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            // Limpa os erros de texto embaixo dos inputs
+            const camposErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroData', 'erroNivel'];
+            camposErro.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.textContent = '';
+            });
+
+            const nome = document.getElementById("nome").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const nivel = document.getElementById("nivel_tea").value;
+            const data = document.getElementById("data_nascimento").value;
+            const senha = document.getElementById("senha").value;
+            let temErro = false;
+
+            // Validações
+            if (nome.length < 3) { 
+                const el = document.getElementById("erroNome");
+                if (el) el.textContent = "Nome muito curto."; 
+                temErro = true; 
+            }
+            if (!validarEmail(email)) { 
+                const el = document.getElementById("erroEmail");
+                if (el) el.textContent = "E-mail inválido."; 
+                temErro = true; 
+            }
+            if (!nivel) { 
+                const el = document.getElementById("erroNivel");
+                if (el) el.textContent = "Selecione um nível."; 
+                temErro = true; 
+            }
+            if (!data) { 
+                const el = document.getElementById("erroData");
+                if (el) el.textContent = "Data obrigatória."; 
+                temErro = true; 
+            }
+
+            if (temErro) return;
+
+            const btn = document.getElementById("btnEnviar");
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i> Salvando...';
+            }
+
+            const fd = new FormData();
+            fd.append("nome", nome);
+            fd.append("email", email);
+
+            fd.append("cpf", document.getElementById("cpf").value.replace(/\D/g, ''));
+            
+            fd.append("nivel_tea", nivel);
+            fd.append("observacao", document.getElementById("observacao").value);
+            fd.append("data_nascimento", data);
+            fd.append("senha", senha);
+
+            try {
+                const id = document.getElementById("id_usuario").value;
+                const retorno = await fetch("../php/pessoa_tea/pessoa_tea_alterar.php?id=" + id, {
+                    method: 'POST',
+                    body: fd  
+                });
+                
+                const resposta = await retorno.json();
+
+                if (resposta.status == "ok" || resposta.status == "sucesso") {
+                    mostrarMensagem('sucesso', resposta.mensagem || 'Dados atualizados com sucesso!');
+                } else {
+                    mostrarMensagem('erro', resposta.mensagem || 'Verifique os dados e tente novamente.');
+                }
+            } catch (erro) {
+                mostrarMensagem('erro', 'Erro de conexão com o servidor.');
+                console.error("Erro na requisição:", erro);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = "<i class='bi bi-save me-1'></i> Salvar Alterações";
+                }
+            }
         });
-        const resposta = await retorno.json();
-
-        if (resposta.status == "ok") {
-            mostrarMensagem('sucesso', " " + resposta.mensagem);
-            setTimeout(() => { window.location.href = 'lista_pessoa_tea.html'; }, 2000);
-        } else {
-            mostrarMensagem('erro', " " + resposta.mensagem);
-        }
-    } catch (e) {
-        mostrarMensagem('erro', " Erro de comunicação com o servidor.");
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = "<i class='bi bi-save me-2'></i> Salvar Alterações";
     }
-});
-
-document.getElementById('cpf').addEventListener('input', function (e) {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
 });

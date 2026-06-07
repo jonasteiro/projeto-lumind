@@ -68,6 +68,10 @@ function renderizarAtividade(atividade) {
         descricaoElement.textContent = atividade.descricao || 'Sem descrição';
     }
     
+    //IMPLEMENTAÇÃO NOVO CAMPO
+    //++Colocar novo campo abaixo do IF e ELSE (if de cima aqui)
+    //document.getElementById('novocampo-atividade').textContent = atividade.novoCampo || 'Não preenchido';
+    
     const dataFormatada = atividade.data_publicacao 
         ? new Date(atividade.data_publicacao).toLocaleDateString('pt-BR')
         : 'Data não informada';
@@ -102,6 +106,7 @@ function renderizarAnexo(arquivo, tipoArquivo) {
     }
 }
 
+//GET DO CAMPO NOVO DE FEEDBACK
 // Renderizar lista de submissões
 function renderizarSubmissoes(submissoes) {
     if (!submissoes || submissoes.length === 0) {
@@ -135,6 +140,9 @@ function renderizarSubmissoes(submissoes) {
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
+        //++COLOCAR ABAIXO DE UMA TAG P O NOVO CAMPO
+        //<p style="font-size: 0.9rem; color: #1e293b; margin-bottom: 0.5rem;"><strong>Nota:</strong> ${sanitizarHTML(sub.nota_feedback ?? '--')}</p>
+        //++MUDAR O NOME DA VARIAVEL
         const feedbackExistente = sub.feedback_profissional
             ? `
                 <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
@@ -187,16 +195,22 @@ feedbackText.addEventListener('input', (e) => {
 });
 
 // Enviar feedback
+//++COLOCAR AQUI AS ALTERAÇÕES PARA INCLUIR O NOVO CAMPO DO FEEDBACK
 submitFeedbackBtn.addEventListener('click', async () => {
     if (!feedbackText.value.trim()) {
         alert('Por favor, escreva um feedback');
         return;
     }
 
+    //ADICIONAR O CAMPO NOVO DE FEEDBACK
+    //const notaFeedback = document.getElementById('nota_feedback').value.trim();
+
     const formData = new FormData();
     formData.append('id_atividade', idAtividade);
     formData.append('id_pessoa_tea', currentFeedbackData.id_pessoa_tea);
     formData.append('feedback', feedbackText.value);
+    //COLOCAR CAMPO NOVO NO FORMDATA
+    //formData.append('nota_feedback', notaFeedback);
 
     try {
         submitFeedbackBtn.disabled = true;

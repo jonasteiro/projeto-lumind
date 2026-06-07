@@ -23,6 +23,7 @@ $sql = "SELECT
         WHERE r.id_responsavel = ?
         ORDER BY r.data DESC";
 
+// r.numFloat, Colocar as variáveis seguido da  virgula, abaixo de "r.descricao,"
 $stmt = $conexao->prepare($sql);
 $stmt->bind_param("i", $id_responsavel);
 $stmt->execute();

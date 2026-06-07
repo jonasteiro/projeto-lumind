@@ -29,6 +29,7 @@ $id_atividade = (int) $_GET['id'];
 
 try {
     // Verifica se a atividade pertence ao profissional
+    //++COLOCAR O NOVO CAMPO ATIVIDADE NO SELECT (antes de TO_BASE64)
     $check = $conexao->prepare("SELECT id_atividade, titulo, descricao, categoria, data_publicacao, tipo_arquivo, TO_BASE64(arquivo_anexo) AS arquivo_anexo FROM Atividade WHERE id_atividade = ? AND id_profissional = ? LIMIT 1");
     $check->bind_param('ii', $id_atividade, $id_usuario);
     $check->execute();
@@ -44,6 +45,8 @@ try {
     $check->close();
 
     // Buscar submissões dos pacientes
+    //++SELECT DO FEEDBACK VEM AQUI, COLOCAR A VARIAVEL ALI
+    //Ex:, pa.nota_feedback
     $stmt = $conexao->prepare(
         "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback
          FROM PessoaTea_Atividade pa

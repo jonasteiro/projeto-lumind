@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.abrirModal = function(rel) {
     document.getElementById('modal-data').textContent = new Date(rel.data + 'T00:00:00').toLocaleDateString('pt-BR');
     document.getElementById('modal-descricao').textContent = rel.descricao;
+    //++Adicionar o get do html aqui
+    //document.getElementById('modal-numFloat').textContent = rel.numFloat ?? '--';
     
     const modal = new bootstrap.Modal(document.getElementById('modalRelatorio'));
     modal.show();

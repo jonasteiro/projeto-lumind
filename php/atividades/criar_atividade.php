@@ -23,7 +23,10 @@ try {
     $descricao = $_POST['descricao'];
     $categoria = $_POST['categoria'];
     $data_publicacao = $_POST['data_publicacao'];
-    $pacientes_ids = $_POST['pacientes_ids']; 
+    $pacientes_ids = $_POST['pacientes_ids'];
+
+    //Adicionar variável
+    //$novoCampo     = $_POST['novoCampo'];
     
     // Tratamento do Arquivo Anexo
     $arquivo_binario = null;
@@ -47,8 +50,8 @@ try {
     
     $stmt->bind_param("issssss", $id_profissional, $titulo, $descricao, $data_publicacao, $categoria, $arquivo_binario, $tipo_arquivo);
     $stmt->execute();
+    //Adicionar s,i ou d e o $nome da variável
     
-    // ... [resto do código] ...
     
     $id_atividade = $conexao->insert_id;
     $stmt->close();

@@ -7,6 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnSpinner = document.getElementById('btn-spinner');
     const contadorChars = document.getElementById('contador-chars');
     const alertaDescricao = document.getElementById('alerta-descricao');
+    //++ADIÇÃO DE NOVO CAMPO - COLOCAR O GetElement aqui
+    //Precisa colocar o nome da variavel com input para não dar problema lá embaixo
+    //const inputNumFloat = document.getElementById('numFloat');
 
     // Oculta a div de alerta global antiga por segurança, caso ela tenha ficado no HTML
     const alertaGlobal = document.getElementById('alerta-global');
@@ -69,6 +72,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const dependente = selectDependente.value;
             const data = inputData.value;
             const descricao = textareaDescricao.value.trim();
+            //++ Adicionar variável aqui (agora inverte novamente o nome para padronizar)
+            //const numFloat = inputNumFloat.value; -- numFloat usa inputNumFloat (exemplo)
 
             if (!dependente || !data || descricao === '') {
                 Swal.fire({ icon: 'warning', title: 'Atenção', text: 'Todos os campos são obrigatórios!', confirmButtonColor: '#f59e0b' });
@@ -88,6 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 formData.append('id_pessoa_tea', dependente);
                 formData.append('data_evento', data);
                 formData.append('descricao', descricao);
+                
+
+                //++Colocar append padrão
+                //formData.append('numFloat', numFloat);
 
                 const resposta = await fetch('../php/responsavel/relatorio_salvar.php', { method: 'POST', body: formData });
                 const dados = await resposta.json();

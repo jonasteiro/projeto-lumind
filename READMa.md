@@ -286,6 +286,45 @@ $stmt->execute();
     temErro = true;
 }
 
+1. Funcionalidade: Relatórios
+HTML: relatorio_responsavel.html (Formulário de criação)
+JavaScript: relatorio.js (Gerencia o envio do formulário de criação)
+PHP: relatorio_salvar.php (Faz o INSERT no banco de dados)
+-----
+HTML: lista_relatorios_responsavel.html (Tela onde fica a lista e o modal de visualização)
+JavaScript: lista_relatorios.js (Busca os dados do PHP e monta a lista/modal na tela)
+PHP: relatorios_listar.php (Faz o SELECT para trazer os dados do banco)
+-----
+SQL: ALTER TABLE Relatorio
+ADD COLUMN "x" "tipo";
+
+++++++++++++++++++++++++++++++++++++++++++
+2. Funcionalidade: Atividade
+HTML: publicar_atividade.html (Formulário com os campos da nova atividade)
+PHP: criar_atividade.php (Faz o INSERT na tabela Atividade)
+JS: Não precisa ser alterado pois a modificação é feita por Form
+-----
+HTML: view_atividade_profissional.html 
+JS: view_atividade_profissional.js 
+PHP: atividade_submissoes.php (faz o GET)
+-----
+SQL: ALTER TABLE Atividade
+ADD COLUMN "x" "tipo"; 
+
+++++++++++++++++++++++++++++++++++++++++++
+3. Funcionalidade: Feedback
+HTML: view_atividade_profissional.html (Tela dos detalhes da atividade e onde fica o modal de dar feedback)
+JavaScript: view_atividade_profissional.js (Gerencia a exibição da nota na tela e o clique para enviar a nota nova)
+JS > line 197+ é pra enviar o feedback
+PHP: salvar_feedback.php (Faz o UPDATE para gravar a nova nota na tabela associativa)
+-----
+JavaScript: view_atividade_profissional.js (Gerencia a exibição da nota na tela e o clique para enviar a nota nova)
+JS >line 100-160 é pro GET
+PHP: atividade_submissoes.php (Faz o SELECT para trazer os dados da atividade e a nota_feedback das submissões)
+-----
+SQL: ALTER TABLE PessoaTea_Atividade
+ADD COLUMN "x" "tipo" ;
+++++++++++++++++++++++++++++++++++++++++++
 
 ```
 

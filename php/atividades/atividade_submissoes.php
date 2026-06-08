@@ -45,6 +45,8 @@ try {
     $check->close();
 
     // Buscar submissões dos pacientes
+
+    //[8-feedback]
     //++SELECT DO FEEDBACK VEM AQUI, COLOCAR A VARIAVEL ALI
     //Ex:, pa.nota_feedback
     $stmt = $conexao->prepare(

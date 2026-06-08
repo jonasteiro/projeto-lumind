@@ -140,6 +140,7 @@ function renderizarSubmissoes(submissoes) {
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
+        //[7-feedback]
         //++COLOCAR ABAIXO DE UMA TAG P O NOVO CAMPO
         //<p style="font-size: 0.9rem; color: #1e293b; margin-bottom: 0.5rem;"><strong>Nota:</strong> ${sanitizarHTML(sub.nota_feedback ?? '--')}</p>
         //++MUDAR O NOME DA VARIAVEL
@@ -202,6 +203,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
         return;
     }
 
+    //[2-feedback]
     //ADICIONAR O CAMPO NOVO DE FEEDBACK
     //const notaFeedback = document.getElementById('nota_feedback').value.trim();
 
@@ -209,6 +211,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
     formData.append('id_atividade', idAtividade);
     formData.append('id_pessoa_tea', currentFeedbackData.id_pessoa_tea);
     formData.append('feedback', feedbackText.value);
+    //[3-feedback]
     //COLOCAR CAMPO NOVO NO FORMDATA
     //formData.append('nota_feedback', notaFeedback);
 

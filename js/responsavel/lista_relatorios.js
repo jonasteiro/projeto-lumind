@@ -59,8 +59,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.abrirModal = function(rel) {
     document.getElementById('modal-data').textContent = new Date(rel.data + 'T00:00:00').toLocaleDateString('pt-BR');
     document.getElementById('modal-descricao').textContent = rel.descricao;
-    //++Adicionar o get do html aqui
-    //document.getElementById('modal-numFloat').textContent = rel.numFloat ?? '--';
+
+    // Verifica se o campo veio preenchido do banco de dados
+    const observacoesHTML = rel.observacoes_extras 
+        ? `<div class="mt-3 p-3 bg-light border rounded">
+            <h6 class="text-muted small fw-bold text-uppercase"><i class="bi bi-info-circle me-1"></i> Observações Extras</h6>
+            <p class="mb-0 text-dark" style="white-space: pre-wrap;">${rel.observacoes_extras}</p>
+        </div>`
+        : ''; // Se for vazio/nulo, não renderiza nada
+
+    // Injeta no modal (supondo que você criou um espaço com id="modal-observacoes" no HTML)
+    const containerObservacoes = document.getElementById('modal-observacoes');
+    if (containerObservacoes) {
+        containerObservacoes.innerHTML = observacoesHTML;
+    }
     
     const modal = new bootstrap.Modal(document.getElementById('modalRelatorio'));
     modal.show();

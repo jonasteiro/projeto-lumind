@@ -137,7 +137,8 @@ formulario.addEventListener('submit', async function(e) {
         formData.append('especialidade', document.getElementById('especialidade').value.trim());
         formData.append('data_nascimento', document.getElementById('data_nascimento').value);
         formData.append('senha', document.getElementById('senha').value);
-        
+        formData.append('ano_emissao', document.getElementById('ano_emissao').value);
+
         const telInput = document.getElementById('telefone');
         if (telInput && telInput.value) {
             formData.append('telefone', telInput.value.replace(/\D/g, ''));

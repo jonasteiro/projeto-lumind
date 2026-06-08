@@ -46,9 +46,9 @@ try {
 
     // Buscar submissões dos pacientes
     //++SELECT DO FEEDBACK VEM AQUI, COLOCAR A VARIAVEL ALI
-    //Ex:, pa.nota_feedback
+    //PASSO 9:
     $stmt = $conexao->prepare(
-        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback
+        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback, pa.nota_feedback
          FROM PessoaTea_Atividade pa
          JOIN Usuario u ON u.id_usuario = pa.id_pessoa_tea
          WHERE pa.id_atividade = ?"

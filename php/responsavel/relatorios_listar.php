@@ -17,7 +17,8 @@ $sql = "SELECT
             r.id_relatorio,
             r.data,
             r.descricao,
-            u.nome AS nome_dependente
+            u.nome AS nome_dependente,
+            r.observacoes_extras
         FROM Relatorio r
         INNER JOIN Usuario u ON r.id_pessoa_tea = u.id_usuario
         WHERE r.id_responsavel = ?

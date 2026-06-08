@@ -21,6 +21,7 @@ async function buscarProfissionais() {
 }
 
 function preencherTabela(dados) {
+    // 1. ADICIONADO: <th class="py-3">Ano Emissão</th> no cabeçalho
     let html = `
         <table class="table table-hover align-middle">
             <thead class="table-light">
@@ -28,6 +29,7 @@ function preencherTabela(dados) {
                     <th class="py-3">Nome</th>
                     <th class="py-3">Especialidade</th>
                     <th class="py-3">CRP/CRM</th>
+                    <th class="py-3">Ano Emissão</th>
                     <th class="py-3">Status Doc.</th>
                     <th class="py-3 text-end">Ações</th>
                 </tr>
@@ -42,6 +44,10 @@ function preencherTabela(dados) {
         else if (prof.status_aprovacao === "Aguardando") statusColor = "text-bg-warning";
         else if (prof.status_aprovacao === "Reprovado") statusColor = "text-bg-danger";
 
+        // 2. ADICIONADO: Condição para exibir o ano ou "--" caso seja nulo
+        let anoTexto = prof.ano_emissao ? prof.ano_emissao : "--";
+
+        // 3. ADICIONADO: A tag <td>${anoTexto}</td> logo após o registro profissional
         html += `
             <tr>
                 <td class="fw-bold">
@@ -50,6 +56,9 @@ function preencherTabela(dados) {
                 </td>
                 <td><span class="badge bg-light text-dark border">${prof.especialidade}</span></td>
                 <td class="text-muted">${prof.registro_profissional}</td>
+                
+                <td class="text-muted fw-semibold">${anoTexto}</td>
+                
                 <td><span class="badge ${statusColor}">${statusTexto}</span></td>
                 <td class="text-end">
                     <div class="btn-group">

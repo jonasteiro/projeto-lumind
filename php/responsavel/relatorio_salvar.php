@@ -16,8 +16,9 @@ if (!$id_responsavel || $tipo_usuario !== 'ResponsavelLegal') {
 $id_pessoa_tea = intval($_POST['id_pessoa_tea'] ?? 0);
 $data_evento   = $_POST['data_evento'] ?? '';
 $descricao     = trim($_POST['descricao'] ?? '');
-//++Criar variável no PHP que pega do JS (não esquece o nome)
-//$numFloat      = $_POST['numFloat'] ?? '';
+// Usa htmlspecialchars para neutralizar tags HTML/JS maliciosas. 
+// O tipo TEXT usa a mesma regra de sanitização de uma String normal.
+$observacoes_extras = htmlspecialchars($_POST['observacoes_extras'] ?? '', ENT_QUOTES, 'UTF-8');
 
 
 // Trava 2: Validações server-side (espelham o frontend)
@@ -46,9 +47,9 @@ if ($data_evento > $hoje) {
 }
 
 // Inserção no banco
-$sql = "INSERT INTO Relatorio (id_responsavel, id_pessoa_tea, data, descricao /*, numFloat COLOCAR A VARIAVEL AQUI*/) VALUES (?, ?, ?, ?)"; // não esquecer do , ? em values
+$sql = "INSERT INTO Relatorio (id_responsavel, id_pessoa_tea, data, descricao, observacoes_extras) VALUES (?, ?, ?, ?, ?)"; // não esquecer do , ? em values
 $stmt = $conexao->prepare($sql);
-$stmt->bind_param("iiss", $id_responsavel, $id_pessoa_tea, $data_evento, $descricao, /*$numFloat nome da variável de novo */);
+$stmt->bind_param("iisss", $id_responsavel, $id_pessoa_tea, $data_evento, $descricao, $observacoes_extras);
 //++bind_param usa s para strings (text, date), i para int(numero inteiro), e d (float e double)
 //Não esquece de apagar os comentários
 

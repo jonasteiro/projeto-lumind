@@ -136,24 +136,28 @@ function renderizarSubmissoes(submissoes) {
             ? new Date(sub.data_conclusao).toLocaleDateString('pt-BR')
             : 'Não entregue';
 
-        // FIX: Sanitização direta na injeção do comentário e feedback para segurança.
+        // PASSO 10. Sanitiza o valor para evitar injeção de HTML
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
-        //++COLOCAR ABAIXO DE UMA TAG P O NOVO CAMPO
-        //<p style="font-size: 0.9rem; color: #1e293b; margin-bottom: 0.5rem;"><strong>Nota:</strong> ${sanitizarHTML(sub.nota_feedback ?? '--')}</p>
-        //++MUDAR O NOME DA VARIAVEL
+        //PASSO 11: Monta o bloco HTML da nota (só exibe se houver nota) 
+        const notaHTML = sub.nota_feedback 
+        ? `<p style="font-size: 0.9rem; color: #1e293b; margin-bottom: 0.5rem;"><strong>Nota da Atividade:</strong> <span class="badge bg-primary">${sanitizarHTML(sub.nota_feedback)}</span></p>` 
+        : '';
+
+        //PASSO 12: Injeta a nota dentro da caixa de feedback existente
         const feedbackExistente = sub.feedback_profissional
-            ? `
-                <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
-                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
-                    <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
-                        Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
-                    </p>
-                </div>
-            `
-            : '';
+        ? `
+            <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
+                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
+                
+                ${notaHTML} <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                    Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
+                </p>
+            </div>
+        `
+        : '';
 
         // FIX: Incorporação visual garantida da variável de comentário sanitizado.
         card.innerHTML = `
@@ -202,15 +206,15 @@ submitFeedbackBtn.addEventListener('click', async () => {
         return;
     }
 
-    //ADICIONAR O CAMPO NOVO DE FEEDBACK
-    //const notaFeedback = document.getElementById('nota_feedback').value.trim();
+    //PASSO 3: Adicioanr o novo campo no FormData
+    const notaFeedback = document.getElementById('nota_feedback').value.trim();
 
     const formData = new FormData();
     formData.append('id_atividade', idAtividade);
     formData.append('id_pessoa_tea', currentFeedbackData.id_pessoa_tea);
     formData.append('feedback', feedbackText.value);
-    //COLOCAR CAMPO NOVO NO FORMDATA
-    //formData.append('nota_feedback', notaFeedback);
+    //PASSO 4: COLOCAR CAMPO NOVO NO FORMDATA
+    formData.append('nota_feedback', notaFeedback);
 
     try {
         submitFeedbackBtn.disabled = true;

@@ -89,10 +89,14 @@ document.addEventListener("DOMContentLoaded", () => {
             btnSalvar.disabled = true;
 
             try {
+                // 1. Captura o valor digitado e limpa espaços extras nas extremidades com .trim()
+                const observacoesExtras = document.getElementById('observacoes_extras').value.trim();
+
                 const formData = new FormData(); 
                 formData.append('id_pessoa_tea', dependente);
                 formData.append('data_evento', data);
                 formData.append('descricao', descricao);
+                formData.append('observacoes_extras', observacoesExtras);   
                 
 
                 //++Colocar append padrão

@@ -17,8 +17,6 @@
     $data_nascimento = $_POST['data_nascimento'] ?? ''; 
     $tipo_usuario    = htmlspecialchars($_POST['tipo_usuario'] ?? '', ENT_QUOTES, 'UTF-8'); 
     $telefone        = htmlspecialchars($_POST['telefone'] ?? '', ENT_QUOTES, 'UTF-8');
-    // Se o campo vier vazio, salvamos como null. Se vier preenchido, forçamos a ser (int).
-    $ano_emissao = !empty($_POST['ano_emissao']) ? (int) $_POST['ano_emissao'] : null;
     $registro_profissional = htmlspecialchars($_POST['registro_profissional'] ?? '', ENT_QUOTES, 'UTF-8');
     $especialidade         = htmlspecialchars($_POST['especialidade'] ?? '', ENT_QUOTES, 'UTF-8');
     
@@ -86,9 +84,9 @@
         $bin_certificacao = file_get_contents($_FILES['certificacao_profissional']['tmp_name']);
         $bin_identidade   = file_get_contents($_FILES['carteira_identidade_nacional']['tmp_name']);
 
-        $stmt_doc = $conexao->prepare("INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional, ano_emissao) VALUES (?, ?, ?, ?)");
+        $stmt_doc = $conexao->prepare("INSERT INTO Documentacao (id_usuario, certificacao_profissional, carteira_identidade_nacional) VALUES (?, ?, ?)");
         $null = NULL;
-        $stmt_doc->bind_param("ibbi", $id_usuario, $null, $null, $ano_emissao);
+        $stmt_doc->bind_param("ibb", $id_usuario, $null, $null);
         $stmt_doc->send_long_data(1, $bin_certificacao);
         $stmt_doc->send_long_data(2, $bin_identidade);
         $stmt_doc->execute(); $stmt_doc->close();

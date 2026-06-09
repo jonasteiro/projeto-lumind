@@ -29,7 +29,7 @@ function preencherTabela(dados) {
                     <th class="py-3">Nome</th>
                     <th class="py-3">Especialidade</th>
                     <th class="py-3">CRP/CRM</th>
-                    <th class="py-3">Ano Emissão</th>
+                    
                     <th class="py-3">Status Doc.</th>
                     <th class="py-3 text-end">Ações</th>
                 </tr>
@@ -45,7 +45,10 @@ function preencherTabela(dados) {
         else if (prof.status_aprovacao === "Reprovado") statusColor = "text-bg-danger";
 
         // 2. ADICIONADO: Condição para exibir o ano ou "--" caso seja nulo
-        let anoTexto = prof.ano_emissao ? prof.ano_emissao : "--";
+        //let anoTexto = prof.ano_emissao ? prof.ano_emissao : "--";
+
+        //Colocar abaixo de registro profissional
+        //<td class="text-muted fw-semibold">${anoTexto}</td>
 
         // 3. ADICIONADO: A tag <td>${anoTexto}</td> logo após o registro profissional
         html += `
@@ -57,7 +60,7 @@ function preencherTabela(dados) {
                 <td><span class="badge bg-light text-dark border">${prof.especialidade}</span></td>
                 <td class="text-muted">${prof.registro_profissional}</td>
                 
-                <td class="text-muted fw-semibold">${anoTexto}</td>
+                
                 
                 <td><span class="badge ${statusColor}">${statusTexto}</span></td>
                 <td class="text-end">

@@ -22,8 +22,6 @@ $id_atividade = intval($_POST['id_atividade']);
 $id_pessoa_tea = intval($_POST['id_pessoa_tea']);
 $feedback = trim($_POST['feedback']);
 $id_profissional = (int) $_SESSION['usuario']['id_usuario'];
-//PASSO 5: INSERIR VARIAVEL NOVA PRA FEEDBACK
-$nota_feedback = !empty($_POST['nota_feedback']) ? trim($_POST['nota_feedback']) : null;
 
 // Validação básica
 if (empty($feedback) || strlen($feedback) < 5) {
@@ -87,8 +85,7 @@ try {
         UPDATE PessoaTea_Atividade
         SET feedback_profissional = ?,
             data_feedback = NOW(),
-            status_conclusao = 'Avaliada',
-            nota_feedback = ?
+            status_conclusao = 'Avaliada'
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
     //PASSO 7:COLOCAR CAMPO ABAIXO DE STATUS_CONCLUSAO (nao esquecer da virgula depois de 'Avaliada')
@@ -99,7 +96,7 @@ try {
     }
 
     //PASSO 8: COLOCAR NO BINDPARAM O CAMPO
-    $stmt->bind_param("ssii", $feedback, $nota_feedback, $id_atividade, $id_pessoa_tea);
+    $stmt->bind_param("sii", $feedback, $id_atividade, $id_pessoa_tea);
     //COLOCAR CAMPO NO BIND_PARAM
     //text, date = s; int = i; float = d
     

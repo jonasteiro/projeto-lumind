@@ -141,9 +141,7 @@ function renderizarSubmissoes(submissoes) {
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
         //PASSO 11: Monta o bloco HTML da nota (só exibe se houver nota) 
-        const notaHTML = sub.nota_feedback 
-        ? `<p style="font-size: 0.9rem; color: #1e293b; margin-bottom: 0.5rem;"><strong>Nota da Atividade:</strong> <span class="badge bg-primary">${sanitizarHTML(sub.nota_feedback)}</span></p>` 
-        : '';
+        
 
         //PASSO 12: Injeta a nota dentro da caixa de feedback existente
         const feedbackExistente = sub.feedback_profissional
@@ -151,7 +149,7 @@ function renderizarSubmissoes(submissoes) {
             <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
                 <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
                 
-                ${notaHTML} <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
+                <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
                     Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
                 </p>
@@ -207,14 +205,14 @@ submitFeedbackBtn.addEventListener('click', async () => {
     }
 
     //PASSO 3: Adicioanr o novo campo no FormData
-    const notaFeedback = document.getElementById('nota_feedback').value.trim();
+    //const notaFeedback = document.getElementById('nota_feedback').value.trim();
 
     const formData = new FormData();
     formData.append('id_atividade', idAtividade);
     formData.append('id_pessoa_tea', currentFeedbackData.id_pessoa_tea);
     formData.append('feedback', feedbackText.value);
     //PASSO 4: COLOCAR CAMPO NOVO NO FORMDATA
-    formData.append('nota_feedback', notaFeedback);
+    //formData.append('nota_feedback', notaFeedback);
 
     try {
         submitFeedbackBtn.disabled = true;

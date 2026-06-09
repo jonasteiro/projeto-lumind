@@ -117,7 +117,7 @@ Ao injetar o valor no HTML, é ideal formatá-lo como moeda brasileira (R$).
 // Dentro do forEach que monta a tabela...
 
 // 1. Converte a string que veio do banco para Float garantido
-const valorFloat = parseFloat(admin.salario || 0);
+const valorFloat = parseFloat(adm.salario || 0);
 
 // 2. Formata para o padrão R$ 0,00 (duas casas decimais e vírgula)
 const salarioFormatado = `R$ ${valorFloat.toFixed(2).replace('.', ',')}`;

@@ -21,6 +21,7 @@ async function buscarProfissionais() {
 }
 
 function preencherTabela(dados) {
+    //TESTE AUTORIA: adcionar abaixo <th class="py-3">nome_campo</th>
     // 1. ADICIONADO: <th class="py-3">Ano Emissão</th> no cabeçalho
     let html = `
         <table class="table table-hover align-middle">
@@ -51,6 +52,8 @@ function preencherTabela(dados) {
         //<td class="text-muted fw-semibold">${anoTexto}</td>
 
         // 3. ADICIONADO: A tag <td>${anoTexto}</td> logo após o registro profissional
+        //TESTE AUTORIA: adcionar abaixo <td class="text-muted fw-semibold">${prof.nome_campo || "--"}</td>
+        // se for tipo data,  use `.toLocaleDateString('pt-BR')` para formatar a data, exemplo: <td>${prof.exemplo_data ? new Date(prof.exemplo_data).toLocaleDateString('pt-BR') : "--"}</td>
         html += `
             <tr>
                 <td class="fw-bold">

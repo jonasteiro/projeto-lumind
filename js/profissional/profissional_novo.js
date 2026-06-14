@@ -138,6 +138,7 @@ formulario.addEventListener('submit', async function(e) {
         formData.append('data_nascimento', document.getElementById('data_nascimento').value);
         formData.append('senha', document.getElementById('senha').value);
         formData.append('ano_emissao', document.getElementById('ano_emissao').value);
+        //TESTE AUTORIA: adcionar novo campo, exemplo: formData.append('nome_campo', document.getElementById('id_campo').value.trim());
 
         const telInput = document.getElementById('telefone');
         if (telInput && telInput.value) {

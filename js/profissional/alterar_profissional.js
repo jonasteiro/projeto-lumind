@@ -33,6 +33,8 @@ async function buscarProfissional(id) {
             document.getElementById("email").value = prof.email || "";
             document.getElementById("registro_profissional").value = prof.registro_profissional || "";
 
+        //TESTE AUTORIA: INSERIR AQUI NOVO CAMPO, EXEMPLO: document.getElementById("nome_campo").value = prof.nome_campo || "";
+
             if (prof.data_nascimento) {
                 document.getElementById("data_nascimento").value = prof.data_nascimento.split(' ')[0];
             }
@@ -96,7 +98,7 @@ formulario.addEventListener("submit", async (e) => {
     if (!especialidade) { document.getElementById("erroEspecialidade").textContent = "Selecione uma especialidade."; temErro = true; }
     if (senha.length > 0 && senha.length < 6) { Swal.fire('Atenção', 'A nova senha deve ter no mínimo 6 caracteres.', 'warning'); temErro = true; }
 
-    if (temErro) return;
+    if (temErro) return;    
 
     const btn = document.getElementById("btnEnviar");
     btn.disabled = true;
@@ -110,6 +112,7 @@ formulario.addEventListener("submit", async (e) => {
     fd.append("senha", senha);
     fd.append("registro_profissional", registro);
     fd.append("especialidade", especialidade);
+    //TESTE AUTORIA: INSERIR NOVO CAMPO, EXEMPLO: fd.append("nome_campo", valor_campo);
 
     try {
         const retorno = await fetch("../../php/profissional/alterar_profissional.php", {

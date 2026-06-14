@@ -32,7 +32,8 @@
         
         $stmt->bind_param("i", $id);
     } else {
-        $sql = "SELECT 
+            //TESTE DE AUTORIA: Inserir novo campo abaixo, exemplo:  $sql = "SELECT U.id_usuario, U.nome, U.email, U.cpf, P.especialidade, P.nome_campo, P.registro_profissional, 
+       $sql = "SELECT 
             U.id_usuario, U.nome, U.email, U.cpf, 
             P.especialidade, P.registro_profissional,
             (SELECT D.status_aprovacao FROM Documentacao D WHERE D.id_usuario = U.id_usuario ORDER BY D.data_envio DESC LIMIT 1) as status_aprovacao

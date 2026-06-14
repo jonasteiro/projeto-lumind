@@ -21,6 +21,8 @@ $senha           = $_POST['senha'];
 $registro        = trim($_POST['registro_profissional']);
 $especialidade   = $_POST['especialidade'];
 
+//TESTE AUTORIA: INSERIR ACIMA NOVO CAMPO, EXEMPLO: $nome_campo = trim($_POST['nome_campo']);
+
 if (empty($id_usuario) || empty($nome) || empty($email) || empty($registro)) {
     echo json_encode(['status' => 'nok', 'mensagem' => 'Preencha todos os campos obrigatórios.']);
     exit;
@@ -47,10 +49,11 @@ try {
     }
     $stmt->close();
 
+    //TESTE AUTORIA - PROFISSIONAL: Inserir novo campo abaixo, exemplo: $sql_prof = "UPDATE ProfissionalSaude SET registro_profissional=?, especialidade=?, nome_campo=? WHERE id_usuario=?";
     // 2. Atualiza a tabela específica (ProfissionalSaude)
-    $sql_prof = "UPDATE ProfissionalSaude SET registro_profissional=?, especialidade=? WHERE id_usuario=?";
+    $sql_prof = "UPDATE ProfissionalSaude SET registro_profissional=?, especialidade=? WHERE id_usuario=?"; // ESSA LINHA
     $stmt2 = $conexao->prepare($sql_prof);
-    $stmt2->bind_param("ssi", $registro, $especialidade, $id_usuario);
+    $stmt2->bind_param("ssi", $registro, $especialidade, $id_usuario); // ALTERAR AQUI TBM
 
     if (!$stmt2->execute()) {
         throw new Exception("Erro ao atualizar dados profissionais: " . $stmt2->error);

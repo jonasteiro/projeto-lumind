@@ -10,6 +10,7 @@
 
     $id_profissional_logado = $_SESSION['usuario']['id_usuario'] ?? null;
 
+    //TESTE AUTORIA: Inserir novo campo abaixo.
     $nome            = htmlspecialchars($_POST['nome'] ?? '', ENT_QUOTES, 'UTF-8');
     $email           = htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8');
     $cpf             = htmlspecialchars($_POST['cpf'] ?? '', ENT_QUOTES, 'UTF-8'); 
@@ -20,6 +21,10 @@
     $registro_profissional = htmlspecialchars($_POST['registro_profissional'] ?? '', ENT_QUOTES, 'UTF-8');
     $especialidade         = htmlspecialchars($_POST['especialidade'] ?? '', ENT_QUOTES, 'UTF-8');
     
+    // $nome_campo = htmlspecialchars($_POST['nome_campo'] ?? '', ENT_QUOTES, 'UTF-8');
+    // $data_exemplo = $_POST['data_exemplo'] ?? null;
+
+
     $nivel_tea      = htmlspecialchars($_POST['nivel_tea'] ?? '', ENT_QUOTES, 'UTF-8');
     $observacao     = htmlspecialchars($_POST['observacao'] ?? '', ENT_QUOTES, 'UTF-8');
     $cpf_responsavel = htmlspecialchars($_POST['cpf_responsavel'] ?? '', ENT_QUOTES, 'UTF-8'); 
@@ -76,10 +81,14 @@
         $stmt_tel->execute(); $stmt_tel->close();
     }
 
+
+    //TESTE AUTORIA: Atualizar o INSERT, exemplo:  ([...] especialidade, nome_campo) VALUES (?, ?, ?, ?)"); ADCIONAR "?"
+    // E depois do bind_param, adicionar a variável correspondente, exemplo: $stmt_prof->bind_param("isss", $id_usuario, $registro_profissional, $especialidade, $nome_campo);
     if ($tipo_usuario === 'ProfissionalSaude') {
         $stmt_prof = $conexao->prepare("INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) VALUES (?, ?, ?)");
-        $stmt_prof->bind_param("iss", $id_usuario, $registro_profissional, $especialidade);
+        $stmt_prof->bind_param("iss", $id_usuario, $registro_profissional, $especialidade); // ALTERAR AQUI TBM
         $stmt_prof->execute(); $stmt_prof->close();
+
 
         $bin_certificacao = file_get_contents($_FILES['certificacao_profissional']['tmp_name']);
         $bin_identidade   = file_get_contents($_FILES['carteira_identidade_nacional']['tmp_name']);

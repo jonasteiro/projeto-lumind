@@ -286,6 +286,25 @@ ALTER TABLE PessoaTea_Atividade
 ALTER TABLE PessoaTea_Atividade
 ADD COLUMN nota_feedback VARCHAR(50) NULL;
 
+ALTER TABLE PessoaTea_Atividade
+ADD COLUMN observacoes_gerais TEXT NULL,
+ADD COLUMN pontuacao_extra FLOAT NULL DEFAULT 0.00,
+ADD COLUMN tentativas INT NULL,
+ADD COLUMN data_revisao DATE NULL;
+
+SELECT PessoaTea_Atividade.*
+FROM PessoaTea_Atividade;
+
+SELECT Relatorio.*
+FROM Relatorio;
+
+ALTER TABLE Relatorio
+ADD COLUMN titulo_relatorio VARCHAR(150) NULL,
+ADD COLUMN recomendacoes_casa TEXT NULL,
+ADD COLUMN data_proxima_avaliacao DATE NULL,
+ADD COLUMN duracao_minutos INT NULL,
+ADD COLUMN progresso_percentual FLOAT NULL DEFAULT 0.00;
+
 ALTER TABLE Relatorio
 ADD COLUMN observacoes_extras VARCHAR(150) NULL;
 

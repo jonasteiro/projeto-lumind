@@ -3,7 +3,7 @@
 $servidor = "localhost";
 $porta = 3306;
 $usuario  = "root";
-$senha    = "PUC@1234";
+$senha    = "shaine";
 $nome_banco = "lumind_db";
 
 $conexao = new mysqli($servidor, $usuario, $senha, $nome_banco, $porta);

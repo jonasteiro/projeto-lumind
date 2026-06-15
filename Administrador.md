@@ -1,36 +1,66 @@
-# 📖 Guia de Implementação: Novo Campo Decimal (FLOAT) em Administrador
+# 📖 Guia de Implementação: Super Combo (5 Campos) em Administrador
 
-Este guia documenta o ciclo de vida completo para a inserção de um novo atributo numérico com casas decimais (`FLOAT`) na entidade **Administrador**. Utilizaremos a adição do campo **`salario`** como exemplo prático.
-
-O fluxo de dados segue a arquitetura: **Banco de Dados -> HTML -> JavaScript -> PHP**.
+Este guia documenta a inserção simultânea de cinco novos campos na entidade **Administrador**, passando pelo banco de dados, formulário de cadastro, salvamento no PHP e exibição segura na listagem de administradores.
 
 ---
 
 ## 💾 Passo 1: O Banco de Dados (MySQL)
 
-Campos que exigem precisão decimal (como dinheiro, peso ou porcentagem) utilizam o tipo `FLOAT` ou `DECIMAL`.
-
 **Onde posicionar:** Execute este comando diretamente no seu SGBD (ex: phpMyAdmin).
 
 ```sql
--- Adiciona a coluna com um valor padrão de 0.00 para evitar erros em contas matemáticas no futuro
-ALTER TABLE Administrador 
-ADD COLUMN salario FLOAT NULL DEFAULT 0.00;
+ALTER TABLE Administrador
+ADD COLUMN departamento VARCHAR(100) NULL,
+ADD COLUMN observacoes_internas TEXT NULL,
+ADD COLUMN data_contratacao DATE NULL,
+ADD COLUMN nivel_acesso INT NULL DEFAULT 1,
+ADD COLUMN salario_base FLOAT NULL DEFAULT 0.00;
 ```
 
 ---
 
 ## 🖥️ Passo 2: A Interface de Cadastro (HTML)
 
-Precisamos adicionar o campo no formulário onde o administrador é cadastrado ou editado. O segredo para decimais no HTML é o atributo `step="0.01"`.
+Adicione os novos inputs no formulário de criação de um novo Administrador.
 
-**Onde posicionar:** No arquivo de cadastro de admin (ex: `cadastro_admin.html`), dentro da tag `<form>`.
+**Onde posicionar:** No arquivo `cadastro_admin.html`, dentro do seu `<form>` principal.
 
 ```html
-<div class="mb-3">
-    <div class="form-floating">
-        <input type="number" step="0.01" min="0" class="form-control rounded-3 border-light-subtle" id="salario" name="salario" placeholder="Ex: 3500.50">
-        <label for="salario" class="text-muted"><i class="bi bi-currency-dollar me-2"></i>Salário Base (R$)</label>
+<h5 class="mt-4 mb-3 text-primary border-bottom pb-2">Informações Corporativas</h5>
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="form-floating">
+            <input type="text" class="form-control" id="departamento" name="departamento" placeholder="Ex: Financeiro" maxlength="100">
+            <label for="departamento"><i class="bi bi-building me-2"></i> Departamento</label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-floating">
+            <input type="number" step="1" min="1" max="5" class="form-control" id="nivel_acesso" name="nivel_acesso" placeholder="1 a 5">
+            <label for="nivel_acesso"><i class="bi bi-shield-lock me-2"></i> Nível de Acesso (1 a 5)</label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-floating">
+            <input type="date" class="form-control" id="data_contratacao" name="data_contratacao">
+            <label for="data_contratacao"><i class="bi bi-calendar-check me-2"></i> Data de Contratação</label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-floating">
+            <input type="number" step="0.01" min="0" class="form-control" id="salario_base" name="salario_base" placeholder="Ex: 4500.50">
+            <label for="salario_base"><i class="bi bi-currency-dollar me-2"></i> Salário Base (R$)</label>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="form-floating">
+            <textarea class="form-control" id="observacoes_internas" name="observacoes_internas" style="height: 100px;" placeholder="Anotações internas..."></textarea>
+            <label for="observacoes_internas"><i class="bi bi-journal-text me-2"></i> Observações Internas</label>
+        </div>
     </div>
 </div>
 ```
@@ -39,96 +69,143 @@ Precisamos adicionar o campo no formulário onde o administrador é cadastrado o
 
 ## ⚙️ Passo 3: Captura e Envio (JavaScript)
 
-Se você estiver usando o `formData.append` manual no JavaScript (como fizemos no profissional), capture o valor numérico. *(Nota: Se estiver usando `new FormData(form)`, este passo é automático).*
-
-**Onde posicionar:** No arquivo JS de criação (ex: `admin_novo.js`), antes do `fetch()`.
+*(Lembrete: Se o seu arquivo JS de cadastro (`admin_novo.js`) usa `new FormData(form)`, este passo é automático e o JS vai puxar as tags `name="..."` sozinho. Caso você faça manual, adicione as linhas abaixo).*
 
 ```javascript
-// 1. Captura o valor diretamente do input
-const salarioAdmin = document.getElementById('salario').value;
-
-// 2. Anexa ao pacote de envio
-const formData = new FormData();
-// ... (outros campos do form)
-formData.append('salario', salarioAdmin);
+formData.append('departamento', document.getElementById('departamento').value.trim());
+formData.append('observacoes_internas', document.getElementById('observacoes_internas').value.trim());
+formData.append('data_contratacao', document.getElementById('data_contratacao').value);
+formData.append('nivel_acesso', document.getElementById('nivel_acesso').value);
+formData.append('salario_base', document.getElementById('salario_base').value);
 ```
 
 ---
 
 ## 🖧 Passo 4: Recebendo e Salvando (PHP)
 
-O backend recebe o dado e obriga a variável a se tornar um `float` no PHP. No `bind_param` do MySQL, decimais usam a letra **`d`** (Double).
+Protegemos os textos, tratamos a data e forçamos os números para os tipos corretos, convertendo a vírgula para ponto no FLOAT.
 
-**Onde posicionar:** No arquivo PHP que insere o usuário no banco (ex: `usuario_novo.php`).
+**Onde posicionar:** No arquivo `usuario_novo.php` (ou similar que cadastra o Admin).
 
+**Parte A: Captura e Tratamento**
 ```php
-// 1. Captura e converte para float (se vier vazio, assume 0.00)
-$salario = !empty($_POST['salario']) ? (float) $_POST['salario'] : 0.00;
+$departamento = htmlspecialchars($_POST['departamento'] ?? '', ENT_QUOTES, 'UTF-8');
+$observacoes_internas = htmlspecialchars($_POST['observacoes_internas'] ?? '', ENT_QUOTES, 'UTF-8');
+$data_contratacao = !empty($_POST['data_contratacao']) ? $_POST['data_contratacao'] : null;
+$nivel_acesso = !empty($_POST['nivel_acesso']) ? (int) $_POST['nivel_acesso'] : 1;
 
-// ... [código que salva a tabela base Usuario] ...
+// Trata a vírgula do FLOAT
+$salario_bruto = !empty($_POST['salario_base']) ? $_POST['salario_base'] : '0';
+$salario_base = (float) str_replace(',', '.', $salario_bruto);
+```
 
-if ($tipo_usuario === 'Administrador') {
-    
-    // 2. Atualiza a query do Administrador (adicionando a nova coluna)
-    $stmt_adm = $conexao->prepare("INSERT INTO Administrador (id_usuario, status_adm, cargo_administrativo, salario) VALUES (?, TRUE, ?, ?)");
-    
-    // 3. Atualiza o bind_param! 
-    // i = id_usuario (Inteiro)
-    // s = cargo_administrativo (String)
-    // d = salario (Double/Float) -> NOVO
-    // Resultado: "isd"
-    $stmt_adm->bind_param("isd", $id_usuario, $cargo_administrativo, $salario);
-    
-    $stmt_adm->execute(); 
-    $stmt_adm->close();
-}
+**Parte B: Atualizando o INSERT do Administrador**
+```php
+// Localize o bloco `if ($tipo_usuario === 'Administrador') {`
+$stmt_adm = $conexao->prepare("
+    INSERT INTO Administrador (
+        id_usuario, status_adm, cargo_administrativo, 
+        departamento, observacoes_internas, data_contratacao, nivel_acesso, salario_base
+    ) VALUES (?, TRUE, ?, ?, ?, ?, ?, ?)
+");
+
+// Bind Param Original: "is" (id, cargo)
+// Novos tipos: s(depto), s(obs), s(data), i(nivel), d(salario)
+// Resultado: "isssssid"
+$stmt_adm->bind_param("isssssid", 
+    $id_usuario, 
+    $cargo_administrativo, 
+    $departamento, 
+    $observacoes_internas, 
+    $data_contratacao, 
+    $nivel_acesso, 
+    $salario_base
+);
+
+$stmt_adm->execute();
 ```
 
 ---
 
 ## 🖧 Passo 5: Buscando para Exibir (PHP)
 
-Para visualizar esse salário em uma tabela de listagem futura, o PHP precisa buscá-lo.
+Atualize o SELECT para que a listagem consiga enxergar os campos.
 
-**Onde posicionar:** No arquivo PHP que lista os administradores (ex: `listar_admin.php`).
+**Onde posicionar:** No arquivo `administrador_get.php`.
 
 ```sql
--- Adicione A.salario na lista do SELECT
 SELECT 
-    U.id_usuario, 
-    U.nome, 
-    U.email, 
-    A.cargo_administrativo, 
-    A.salario -- NOVO CAMPO ADICIONADO AQUI
+    U.id_usuario, U.nome, U.email, U.cpf, U.data_nascimento, 
+    A.status_adm, A.cargo_administrativo, 
+    A.departamento, A.observacoes_internas, A.data_contratacao, A.nivel_acesso, A.salario_base
 FROM Usuario U
 INNER JOIN Administrador A ON U.id_usuario = A.id_usuario
 WHERE U.tipo_usuario = 'Administrador'
+ORDER BY U.nome ASC
 ```
 
 ---
 
-## 🖥️ Passo 6: Exibindo Formatado na Tela (JavaScript)
+## 🖥️ Passo 6: Exibindo na Tela (JavaScript da Tabela)
 
-Ao injetar o valor no HTML, é ideal formatá-lo como moeda brasileira (R$).
+Vamos enriquecer a tabela (`listar_admin.html`) injetando as novas informações blindadas contra dados vazios.
 
-**Onde posicionar:** No arquivo JS que preenche a tabela (ex: `listar_admin.js`), no momento de montar as linhas (`<tr>`).
+**Onde posicionar:** No arquivo `listar_admin.js`, dentro da sua função `preencherTabela(dados, tbody)`.
 
 ```javascript
-// Dentro do forEach que monta a tabela...
+dados.forEach(adm => {
+    // Tratamento de Status Existente
+    const isAtivo = (adm.status_adm == 1 || adm.status_adm === "1" || adm.status_adm === true);
+    const statusClass = isAtivo ? "bg-success" : "bg-danger";
+    const statusTexto = isAtivo ? "Ativo" : "Inativo";
 
-// 1. Converte a string que veio do banco para Float garantido
-const valorFloat = parseFloat(adm.salario || 0);
+    // 1. FLOAT (Salário)
+    const valorFloat = parseFloat(adm.salario_base || 0);
+    const salarioFormatado = `R$ ${valorFloat.toFixed(2).replace('.', ',')}`;
 
-// 2. Formata para o padrão R$ 0,00 (duas casas decimais e vírgula)
-const salarioFormatado = `R$ ${valorFloat.toFixed(2).replace('.', ',')}`;
+    // 2. DATE (Data de Contratação)
+    const dataContratacaoFormatada = adm.data_contratacao 
+        ? new Date(adm.data_contratacao + 'T00:00:00').toLocaleDateString('pt-BR') 
+        : '--';
 
-// 3. Injeta na montagem do HTML
-html += `
-    <tr>
-        <td class="fw-bold">${admin.nome}</td>
-        <td class="text-muted">${admin.cargo_administrativo || '--'}</td>
-        <td class="text-success fw-semibold">${salarioFormatado}</td> <td>
+    // 3. INT (Nível de Acesso)
+    const nivelBadge = adm.nivel_acesso 
+        ? `<span class="badge bg-secondary">Nv. ${adm.nivel_acesso}</span>` 
+        : '--';
+
+    // 4 e 5. VARCHAR e TEXT
+    const depto = adm.departamento || '--';
+    // Se quiser exibir observações, pode usar a função sanitizarHTML e jogar num botão de Modal ou tooltip!
+
+    // Montando as linhas da tabela (html += `...`)
+    html += `
+        <tr>
+            <td class="ps-3 fw-medium text-dark">
+                ${adm.nome} <br>
+                <small class="text-muted">${adm.email}</small>
             </td>
-    </tr>
-`;
+            <td class="text-muted">
+                <strong>${adm.cargo_administrativo || 'Admin'}</strong><br>
+                <small>${depto}</small>
+            </td>
+            <td class="text-center">${nivelBadge}</td>
+            <td class="text-muted">${dataContratacaoFormatada}</td>
+            <td class="text-success fw-semibold">${salarioFormatado}</td> 
+            <td class="text-center">
+                <span class="badge ${statusClass} rounded-pill px-3 py-2">${statusTexto}</span>
+            </td>
+            <td class="text-end pe-3">
+                <div class="btn-group">
+                    <a href="alterar_admin.html?id=${adm.id_usuario}" class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Editar">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <button onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger rounded-pill" title="Excluir">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+});
 ```
+
+*(Lembre-se de adicionar as colunas `<th>Departamento</th>`, `<th>Acesso</th>`, `<th>Contratação</th>` no seu arquivo `listar_admin.html` para bater certinho com os `<tds>` novos gerados pelo JS!)*

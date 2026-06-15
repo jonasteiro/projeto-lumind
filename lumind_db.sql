@@ -282,6 +282,6 @@ ALTER TABLE PessoaTea_Atividade
     COMMENT 'Data e hora quando o profissional enviou o feedback'
     AFTER feedback_profissional;
     
-
-
-
+-- PASSO DE NÚMERO UM: SQL
+ALTER TABLE PessoaTea_Atividade
+ADD COLUMN nota_feedback VARCHAR(50) NULL;

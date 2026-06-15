@@ -44,11 +44,9 @@ try {
     $atividade = $res->fetch_assoc();
     $check->close();
 
-    // Buscar submissões dos pacientes
-    //++SELECT DO FEEDBACK VEM AQUI, COLOCAR A VARIAVEL ALI
-    //PASSO 9:
+    // PASSO DE NÚMERO OITO: PHP
     $stmt = $conexao->prepare(
-        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback
+        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback, pa.nota_feedback
          FROM PessoaTea_Atividade pa
          JOIN Usuario u ON u.id_usuario = pa.id_pessoa_tea
          WHERE pa.id_atividade = ?"

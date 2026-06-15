@@ -23,6 +23,9 @@ $id_pessoa_tea = intval($_POST['id_pessoa_tea']);
 $feedback = trim($_POST['feedback']);
 $id_profissional = (int) $_SESSION['usuario']['id_usuario'];
 
+// PASSO DE NÚMERO CINCO: PHP
+$nota_feedback = !empty($_POST['nota_feedback']) ? trim($_POST['nota_feedback']) : null;
+
 // Validação básica
 if (empty($feedback) || strlen($feedback) < 5) {
     http_response_code(400);
@@ -79,25 +82,22 @@ try {
         exit;
     }
     
-    //PASSO 6: Atualizar ou inserir feedback + marcar como Avaliada
-    //++COLOCAR O CAMPO DE FEEDBACK NO UPDATE
+    // PASSO DE NÚMERO SEIS: PHP
     $stmt = $conexao->prepare("
         UPDATE PessoaTea_Atividade
         SET feedback_profissional = ?,
             data_feedback = NOW(),
-            status_conclusao = 'Avaliada'
+            status_conclusao = 'Avaliada',
+            nota_feedback = ?
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
-    //PASSO 7:COLOCAR CAMPO ABAIXO DE STATUS_CONCLUSAO (nao esquecer da virgula depois de 'Avaliada')
-    //EX: nota_feedback = ? (Não precisa mais de virgula)
     
     if (!$stmt) {
         throw new Exception("Erro na query de atualização: " . $conexao->error);
     }
 
-    //PASSO 8: COLOCAR NO BINDPARAM O CAMPO
-    $stmt->bind_param("sii", $feedback, $id_atividade, $id_pessoa_tea);
-    //COLOCAR CAMPO NO BIND_PARAM
+    // PASSO DE NÚMERO SETE: PHP
+    $stmt->bind_param("ssii", $feedback, $nota_feedback, $id_atividade, $id_pessoa_tea);
     //text, date = s; int = i; float = d
     
     if (!$stmt->execute()) {

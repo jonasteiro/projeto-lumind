@@ -1,37 +1,60 @@
-# 📖 Guia de Implementação: Novo Campo Longo (TEXT) em Relatórios
+# 📖 Guia de Implementação: Super Combo (5 Campos) em Relatórios
 
-Este guia documenta a implementação ponta a ponta de um novo atributo de texto longo (`TEXT`) no sistema. Utilizaremos como exemplo a adição do campo **`observacoes_extras`** na entidade **Relatorio**.
+Este guia documenta a inserção simultânea de cinco campos de tipos diferentes (`VARCHAR`, `TEXT`, `DATE`, `INT`, `FLOAT`) na entidade **Relatorio**. 
 
-O fluxo completo segue a arquitetura: **Banco de Dados -> HTML -> JavaScript -> PHP**.
+A regra de ouro segue o fluxo: **Banco de Dados -> HTML -> JavaScript -> PHP**.
 
 ---
 
 ## 💾 Passo 1: O Banco de Dados (MySQL)
 
-O tipo `TEXT` é ideal para textos longos, pois não possui um limite de caracteres tão restrito quanto o `VARCHAR(100)`.
+Adicionamos todas as colunas em um único comando `ALTER TABLE`.
 
-**Onde posicionar:** Execute no seu gerenciador de banco de dados.
+**Onde posicionar:** Execute diretamente no seu SGBD (phpMyAdmin, Workbench, etc).
 
 ```sql
--- Adiciona a coluna permitindo valores nulos (opcional para o usuário preencher)
-ALTER TABLE Relatorio 
-ADD COLUMN observacoes_extras TEXT NULL;
+ALTER TABLE Relatorio
+ADD COLUMN titulo_relatorio VARCHAR(150) NULL,
+ADD COLUMN recomendacoes_casa TEXT NULL,
+ADD COLUMN data_proxima_avaliacao DATE NULL,
+ADD COLUMN duracao_minutos INT NULL,
+ADD COLUMN progresso_percentual FLOAT NULL DEFAULT 0.00;
 ```
 
 ---
 
-## 🖥️ Passo 2: A Interface de Cadastro (HTML)
+## 🖥️ Passo 2: A Interface de Criação (HTML)
 
-Para textos longos, a tag HTML correta é o `<textarea>`, que permite ao usuário digitar múltiplas linhas e redimensionar a caixa.
+Adicionamos os 5 inputs no formulário de criação do relatório. 
 
-**Onde posicionar:** No arquivo de criação do relatório (ex: `relatorio_responsavel.html`), dentro do formulário `<form>`, preferencialmente abaixo do campo de descrição principal.
+**Onde posicionar:** No arquivo `relatorio_responsavel.html` (ou similar), dentro da tag `<form>`.
 
 ```html
-<div class="mb-4">
-    <label for="observacoes_extras" class="form-label fw-bold text-muted small text-uppercase">
-        <i class="bi bi-journal-plus me-1"></i> Observações Extras (Opcional)
-    </label>
-    <textarea class="form-control rounded-3 border-light-subtle" id="observacoes_extras" name="observacoes_extras" rows="4" placeholder="Adicione qualquer detalhe adicional aqui..."></textarea>
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <label for="titulo_relatorio" class="form-label fw-bold">Título / Assunto</label>
+        <input type="text" class="form-control" id="titulo_relatorio" name="titulo_relatorio" placeholder="Ex: Avaliação Motora Mensal" maxlength="150">
+    </div>
+
+    <div class="col-md-6">
+        <label for="progresso_percentual" class="form-label fw-bold">Progresso (%)</label>
+        <input type="number" step="0.01" class="form-control" id="progresso_percentual" name="progresso_percentual" placeholder="Ex: 85.5">
+    </div>
+
+    <div class="col-md-6">
+        <label for="data_proxima_avaliacao" class="form-label fw-bold">Próxima Avaliação</label>
+        <input type="date" class="form-control" id="data_proxima_avaliacao" name="data_proxima_avaliacao">
+    </div>
+
+    <div class="col-md-6">
+        <label for="duracao_minutos" class="form-label fw-bold">Duração (Minutos)</label>
+        <input type="number" step="1" min="1" class="form-control" id="duracao_minutos" name="duracao_minutos" placeholder="Ex: 45">
+    </div>
+
+    <div class="col-12">
+        <label for="recomendacoes_casa" class="form-label fw-bold">Recomendações para Casa</label>
+        <textarea class="form-control" id="recomendacoes_casa" name="recomendacoes_casa" rows="4" placeholder="Descreva as atividades para os pais fazerem em casa..."></textarea>
+    </div>
 </div>
 ```
 
@@ -39,48 +62,70 @@ Para textos longos, a tag HTML correta é o `<textarea>`, que permite ao usuári
 
 ## ⚙️ Passo 3: Captura e Envio (JavaScript)
 
-Precisamos capturar o texto dessa nova caixa e enviá-lo junto com os dados que já existiam (data, descrição, preço).
+Se você estiver usando a captura campo a campo no JS, adicione todos eles. Se estiver usando `new FormData(form)`, este passo é **automático** e você pode ignorar.
 
-**Onde posicionar:** No arquivo JS responsável por salvar o relatório (ex: `relatorio_novo.js`), dentro do evento de `submit` ou botão de salvar.
+**Onde posicionar (Se for manual):** No arquivo JS de envio do relatório, antes do `fetch()`.
 
 ```javascript
-// 1. Captura o valor digitado e limpa espaços extras nas extremidades com .trim()
-const observacoesExtras = document.getElementById('observacoes_extras').value.trim();
-
-// 2. Adiciona ao pacote FormData que já contém os outros dados
-const formData = new FormData();
-// ... (seus appends anteriores: id_pessoa_tea, data, descricao, preco, etc.)
-
-// 3. ANEXA O NOVO CAMPO AQUI:
-formData.append('observacoes_extras', observacoesExtras);
+// Captura e anexa os 5 campos ao FormData
+formData.append('titulo_relatorio', document.getElementById('titulo_relatorio').value.trim());
+formData.append('recomendacoes_casa', document.getElementById('recomendacoes_casa').value.trim());
+formData.append('data_proxima_avaliacao', document.getElementById('data_proxima_avaliacao').value);
+formData.append('duracao_minutos', document.getElementById('duracao_minutos').value);
+formData.append('progresso_percentual', document.getElementById('progresso_percentual').value);
 ```
 
 ---
 
 ## 🖧 Passo 4: Recebendo e Salvando (PHP)
 
-Como o usuário tem liberdade para digitar muitas coisas (incluindo quebras de linha e caracteres especiais), a sanitização é **obrigatória** antes de tocar no banco de dados.
+Aqui tratamos a conversão de todos os 5 tipos para garantir segurança máxima antes de salvar no banco. Lembre-se de converter vírgulas para pontos no `FLOAT`!
 
-**Onde posicionar:** No arquivo PHP que recebe o `POST` para salvar (ex: `relatorio_salvar.php`).
+**Onde posicionar:** No arquivo `relatorio_salvar.php`.
 
-**Parte A: Captura e Sanitização (no topo do arquivo)**
+**Parte A: Captura e Tratamento**
 ```php
-// Usa htmlspecialchars para neutralizar tags HTML/JS maliciosas. 
-// O tipo TEXT usa a mesma regra de sanitização de uma String normal.
-$observacoes_extras = htmlspecialchars($_POST['observacoes_extras'] ?? '', ENT_QUOTES, 'UTF-8');
+// TEXT e VARCHAR (Sanitização)
+$titulo_relatorio = htmlspecialchars($_POST['titulo_relatorio'] ?? '', ENT_QUOTES, 'UTF-8');
+$recomendacoes_casa = htmlspecialchars($_POST['recomendacoes_casa'] ?? '', ENT_QUOTES, 'UTF-8');
+
+// DATE (Trata vazio como nulo)
+$data_proxima_avaliacao = !empty($_POST['data_proxima_avaliacao']) ? $_POST['data_proxima_avaliacao'] : null;
+
+// INT (Força tipo inteiro)
+$duracao_minutos = !empty($_POST['duracao_minutos']) ? (int) $_POST['duracao_minutos'] : null;
+
+// FLOAT (Troca vírgula por ponto e força tipo float)
+$progresso_bruto = !empty($_POST['progresso_percentual']) ? $_POST['progresso_percentual'] : '0';
+$progresso_percentual = (float) str_replace(',', '.', $progresso_bruto);
 ```
 
-**Parte B: Inserção no Banco (na query INSERT)**
+**Parte B: Atualizando o Banco de Dados**
 ```php
-// 1. Atualiza a Query adicionando a coluna e mais uma interrogação '?'
-$sql = "INSERT INTO Relatorio (id_responsavel, id_pessoa_tea, data, descricao, preco, observacoes_extras) VALUES (?, ?, ?, ?, ?, ?)";
+// Atualize sua string SQL para incluir os novos campos (Exemplo genérico)
+$sql = "INSERT INTO Relatorio (
+            id_responsavel, id_pessoa_tea, data, descricao, 
+            titulo_relatorio, recomendacoes_casa, data_proxima_avaliacao, duracao_minutos, progresso_percentual
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
 $stmt = $conexao->prepare($sql);
 
-// 2. Atualiza o bind_param
-// Lembrete da ordem hipotética: 
-// id_responsavel (i) + id_pessoa (i) + data (s) + descricao (s) + preco (d) + observacoes_extras (s)
-// Resultado: "iissds" (O 's' no final é a nossa nova variável TEXT)
-$stmt->bind_param("iissds", $id_responsavel, $id_pessoa_tea, $data, $descricao, $preco, $observacoes_extras);
+// Atualização do bind_param
+// id_responsavel (i)
+// id_pessoa_tea (i)
+// data (s)
+// descricao (s)
+// titulo_relatorio (s - VARCHAR)
+// recomendacoes_casa (s - TEXT)
+// data_proxima_avaliacao (s - DATE)
+// duracao_minutos (i - INT)
+// progresso_percentual (d - FLOAT)
+// RESULTADO DA STRING: "iisssssid"
+
+$stmt->bind_param("iisssssid", 
+    $id_responsavel, $id_pessoa_tea, $data, $descricao, 
+    $titulo_relatorio, $recomendacoes_casa, $data_proxima_avaliacao, $duracao_minutos, $progresso_percentual
+);
 
 $stmt->execute();
 ```
@@ -89,46 +134,59 @@ $stmt->execute();
 
 ## 🖧 Passo 5: Buscando para Exibir (PHP)
 
-Para que o modal de detalhes do relatório consiga exibir essa anotação no futuro, precisamos buscá-la.
+Adicione as novas colunas na sua consulta de listagem.
 
-**Onde posicionar:** No arquivo PHP que lista os relatórios (ex: `relatorios_listar.php`).
+**Onde posicionar:** No arquivo `relatorios_listar.php`.
 
 ```sql
--- Adicione a nova coluna na lista do SELECT
 SELECT 
     id_relatorio, 
     data, 
-    descricao, 
-    preco, 
-    observacoes_extras -- NOVO CAMPO ADICIONADO AQUI
+    descricao,
+    titulo_relatorio,
+    recomendacoes_casa,
+    data_proxima_avaliacao,
+    duracao_minutos,
+    progresso_percentual
 FROM Relatorio 
 WHERE id_responsavel = ?
-ORDER BY data DESC
 ```
 
 ---
 
 ## 🖥️ Passo 6: Exibindo no Modal (JavaScript)
 
-Por fim, pegamos a variável que chegou do banco e a injetamos no HTML do Modal de visualização.
+Na hora de exibir no modal, crie os blocos HTML formatando cada tipo de dado adequadamente (O `DATE` vira padrão brasileiro, o `FLOAT` vira porcentagem, etc.).
 
-**Onde posicionar:** 1. No HTML do Modal (`lista_relatorios.html`), crie um espaço vazio para receber o texto: `<div id="modal-observacoes"></div>`.
-2. No JS (`lista_relatorios.js`), dentro da função `abrirModal`.
+**Onde posicionar:** No arquivo JS que preenche o Modal (ex: `lista_relatorios.js`), dentro da função `abrirModal`.
 
 ```javascript
-// Dentro da função window.abrirModal = function(rel) { ... }
+// 1. Puxa os elementos do HTML (certifique-se de que eles existem no seu modalRelatorio)
+const elTitulo = document.getElementById('modal-titulo-relatorio');
+const elRecomendacoes = document.getElementById('modal-recomendacoes');
+const elDataProx = document.getElementById('modal-data-prox');
+const elDuracao = document.getElementById('modal-duracao');
+const elProgresso = document.getElementById('modal-progresso');
 
-// Verifica se o campo veio preenchido do banco de dados
-const observacoesHTML = rel.observacoes_extras 
-    ? `<div class="mt-3 p-3 bg-light border rounded">
-         <h6 class="text-muted small fw-bold text-uppercase"><i class="bi bi-info-circle me-1"></i> Observações Extras</h6>
-         <p class="mb-0 text-dark" style="white-space: pre-wrap;">${rel.observacoes_extras}</p>
-       </div>`
-    : ''; // Se for vazio/nulo, não renderiza nada
+// 2. Preenche formatando
+if (elTitulo) elTitulo.textContent = rel.titulo_relatorio || 'Relatório sem título';
 
-// Injeta no modal (supondo que você criou um espaço com id="modal-observacoes" no HTML)
-const containerObservacoes = document.getElementById('modal-observacoes');
-if (containerObservacoes) {
-    containerObservacoes.innerHTML = observacoesHTML;
+if (elRecomendacoes) {
+    elRecomendacoes.textContent = rel.recomendacoes_casa || 'Nenhuma recomendação registrada.';
+}
+
+if (elDataProx) {
+    elDataProx.textContent = rel.data_proxima_avaliacao 
+        ? new Date(rel.data_proxima_avaliacao + 'T00:00:00').toLocaleDateString('pt-BR') 
+        : '--';
+}
+
+if (elDuracao) {
+    elDuracao.textContent = rel.duracao_minutos ? `${rel.duracao_minutos} min` : '--';
+}
+
+if (elProgresso) {
+    const formatado = parseFloat(rel.progresso_percentual || 0).toFixed(1).replace('.', ',');
+    elProgresso.textContent = `${formatado}%`;
 }
 ```

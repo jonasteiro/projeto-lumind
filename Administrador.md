@@ -1,12 +1,14 @@
 # 📖 Guia de Implementação: Super Combo (5 Campos) em Administrador
 
-Este guia documenta a inserção simultânea de cinco novos campos na entidade **Administrador**, passando pelo banco de dados, formulário de cadastro, salvamento no PHP e exibição segura na listagem de administradores.
+Este guia documenta a inserção simultânea de cinco novos campos (`VARCHAR`, `TEXT`, `DATE`, `INT`, `FLOAT`) na entidade **Administrador**, passando pelo banco de dados, formulário de cadastro, salvamento seguro no PHP e exibição na listagem.
 
 ---
 
 ## 💾 Passo 1: O Banco de Dados (MySQL)
 
-**Onde posicionar:** Execute este comando diretamente no seu SGBD (ex: phpMyAdmin).
+Adicionamos os 5 campos na tabela.
+
+**Onde posicionar:** Execute este comando diretamente no seu SGBD (phpMyAdmin, DBeaver, etc).
 
 ```sql
 ALTER TABLE Administrador
@@ -69,7 +71,9 @@ Adicione os novos inputs no formulário de criação de um novo Administrador.
 
 ## ⚙️ Passo 3: Captura e Envio (JavaScript)
 
-*(Lembrete: Se o seu arquivo JS de cadastro (`admin_novo.js`) usa `new FormData(form)`, este passo é automático e o JS vai puxar as tags `name="..."` sozinho. Caso você faça manual, adicione as linhas abaixo).*
+*(Lembrete: Se o seu arquivo JS de cadastro usa `new FormData(form)`, este passo é automático. Caso você faça o envio manual, adicione as linhas abaixo).*
+
+**Onde posicionar:** No arquivo JS que cadastra o usuário.
 
 ```javascript
 formData.append('departamento', document.getElementById('departamento').value.trim());
@@ -83,9 +87,9 @@ formData.append('salario_base', document.getElementById('salario_base').value);
 
 ## 🖧 Passo 4: Recebendo e Salvando (PHP)
 
-Protegemos os textos, tratamos a data e forçamos os números para os tipos corretos, convertendo a vírgula para ponto no FLOAT.
+Sanitização dos dados e conversão correta de formatos, incluindo a correção precisa do `bind_param`.
 
-**Onde posicionar:** No arquivo `usuario_novo.php` (ou similar que cadastra o Admin).
+**Onde posicionar:** No arquivo `usuario_novo.php`.
 
 **Parte A: Captura e Tratamento**
 ```php
@@ -109,10 +113,10 @@ $stmt_adm = $conexao->prepare("
     ) VALUES (?, TRUE, ?, ?, ?, ?, ?)
 ");
 
-// Bind Param atualizado (sem o cargo_administrativo)
+// Bind Param atualizado (6 Variáveis)
 // i(id), s(depto), s(obs), s(data), i(nivel), d(salario)
-// Resultado: "issssid"
-$stmt_adm->bind_param("issssid", 
+// Resultado: "isssid"
+$stmt_adm->bind_param("isssid", 
     $id_usuario, 
     $departamento, 
     $observacoes_internas, 
@@ -122,6 +126,7 @@ $stmt_adm->bind_param("issssid",
 );
 
 $stmt_adm->execute();
+$stmt_adm->close();
 ```
 
 ---
@@ -147,9 +152,9 @@ ORDER BY U.nome ASC
 
 ## 🖥️ Passo 6: Exibindo na Tela (JavaScript da Tabela)
 
-Vamos enriquecer a tabela (`listar_admin.html`) injetando as novas informações.
+Vamos enriquecer a tabela (`listar_admin.html`) injetando as novas informações blindadas contra dados vazios.
 
-**Onde posicionar:** No arquivo `listar_admin.js`, dentro da sua função `preencherTabela(dados, tbody)`.
+**Onde posicionar:** No arquivo `listar_admin.js`, dentro da sua função `preencherTabela`.
 
 ```javascript
 dados.forEach(adm => {
@@ -206,4 +211,4 @@ dados.forEach(adm => {
 });
 ```
 
-*(Lembre-se de atualizar as tags `<th>` da sua tabela HTML para combinar com essas colunas: Departamento, Nível, Contratação, Salário).*
+*(Lembre-se de atualizar as tags `<th>` da sua tabela HTML `listar_admin.html` para combinar com as novas colunas geradas!)*

@@ -104,17 +104,16 @@ $salario_base = (float) str_replace(',', '.', $salario_bruto);
 // Localize o bloco `if ($tipo_usuario === 'Administrador') {`
 $stmt_adm = $conexao->prepare("
     INSERT INTO Administrador (
-        id_usuario, status_adm, cargo_administrativo, 
+        id_usuario, status_adm, 
         departamento, observacoes_internas, data_contratacao, nivel_acesso, salario_base
-    ) VALUES (?, TRUE, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, TRUE, ?, ?, ?, ?, ?)
 ");
 
-// Bind Param Original: "is" (id, cargo)
-// Novos tipos: s(depto), s(obs), s(data), i(nivel), d(salario)
-// Resultado: "isssssid"
-$stmt_adm->bind_param("isssssid", 
+// Bind Param atualizado (sem o cargo_administrativo)
+// i(id), s(depto), s(obs), s(data), i(nivel), d(salario)
+// Resultado: "issssid"
+$stmt_adm->bind_param("issssid", 
     $id_usuario, 
-    $cargo_administrativo, 
     $departamento, 
     $observacoes_internas, 
     $data_contratacao, 
@@ -136,7 +135,7 @@ Atualize o SELECT para que a listagem consiga enxergar os campos.
 ```sql
 SELECT 
     U.id_usuario, U.nome, U.email, U.cpf, U.data_nascimento, 
-    A.status_adm, A.cargo_administrativo, 
+    A.status_adm, 
     A.departamento, A.observacoes_internas, A.data_contratacao, A.nivel_acesso, A.salario_base
 FROM Usuario U
 INNER JOIN Administrador A ON U.id_usuario = A.id_usuario
@@ -148,7 +147,7 @@ ORDER BY U.nome ASC
 
 ## 🖥️ Passo 6: Exibindo na Tela (JavaScript da Tabela)
 
-Vamos enriquecer a tabela (`listar_admin.html`) injetando as novas informações blindadas contra dados vazios.
+Vamos enriquecer a tabela (`listar_admin.html`) injetando as novas informações.
 
 **Onde posicionar:** No arquivo `listar_admin.js`, dentro da sua função `preencherTabela(dados, tbody)`.
 
@@ -159,7 +158,7 @@ dados.forEach(adm => {
     const statusClass = isAtivo ? "bg-success" : "bg-danger";
     const statusTexto = isAtivo ? "Ativo" : "Inativo";
 
-    // 1. FLOAT (Salário)
+    // 1. FLOAT (Salário formatado com R$)
     const valorFloat = parseFloat(adm.salario_base || 0);
     const salarioFormatado = `R$ ${valorFloat.toFixed(2).replace('.', ',')}`;
 
@@ -173,9 +172,8 @@ dados.forEach(adm => {
         ? `<span class="badge bg-secondary">Nv. ${adm.nivel_acesso}</span>` 
         : '--';
 
-    // 4 e 5. VARCHAR e TEXT
+    // 4. VARCHAR (Departamento)
     const depto = adm.departamento || '--';
-    // Se quiser exibir observações, pode usar a função sanitizarHTML e jogar num botão de Modal ou tooltip!
 
     // Montando as linhas da tabela (html += `...`)
     html += `
@@ -185,7 +183,7 @@ dados.forEach(adm => {
                 <small class="text-muted">${adm.email}</small>
             </td>
             <td class="text-muted">
-                <strong>${adm.cargo_administrativo || 'Admin'}</strong><br>
+                <span class="fw-semibold text-dark">Administrador</span><br>
                 <small>${depto}</small>
             </td>
             <td class="text-center">${nivelBadge}</td>
@@ -208,4 +206,4 @@ dados.forEach(adm => {
 });
 ```
 
-*(Lembre-se de adicionar as colunas `<th>Departamento</th>`, `<th>Acesso</th>`, `<th>Contratação</th>` no seu arquivo `listar_admin.html` para bater certinho com os `<tds>` novos gerados pelo JS!)*
+*(Lembre-se de atualizar as tags `<th>` da sua tabela HTML para combinar com essas colunas: Departamento, Nível, Contratação, Salário).*

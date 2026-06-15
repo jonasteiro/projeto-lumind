@@ -99,6 +99,44 @@
                     </div>
                 </div>
 
+                <h5 class="mt-4 mb-3 text-primary border-bottom pb-2">Informações Clínicas e de Carreira</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="local_atendimento" name="local_atendimento" placeholder="Ex: Clínica Central" maxlength="150">
+                            <label for="local_atendimento"><i class="bi bi-geo-alt me-2"></i> Local de Atendimento</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" step="0.01" min="0" class="form-control" id="valor_consulta" name="valor_consulta" placeholder="Ex: 150.00">
+                            <label for="valor_consulta"><i class="bi bi-currency-dollar me-2"></i> Valor da Consulta (R$)</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="data_formacao" name="data_formacao">
+                            <label for="data_formacao"><i class="bi bi-mortarboard me-2"></i> Data de Formação</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" step="1" min="0" class="form-control" id="anos_experiencia" name="anos_experiencia" placeholder="Ex: 5">
+                            <label for="anos_experiencia"><i class="bi bi-briefcase me-2"></i> Anos de Experiência</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <textarea class="form-control" id="resumo_curriculo" name="resumo_curriculo" style="height: 100px;" placeholder="Resumo profissional..."></textarea>
+                            <label for="resumo_curriculo"><i class="bi bi-file-person me-2"></i> Resumo do Currículo</label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="p-3 bg-light rounded-4 mb-4 border">
                     <h6 class="fw-bold mb-3"><i class="bi bi-shield-check me-2 text-success"></i>Documentação Obrigatória</h6>
                     

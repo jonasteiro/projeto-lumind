@@ -30,7 +30,12 @@ $id_atividade = (int) $_GET['id'];
 try {
     // Verifica se a atividade pertence ao profissional
     //++COLOCAR O NOVO CAMPO ATIVIDADE NO SELECT (antes de TO_BASE64)
-    $check = $conexao->prepare("SELECT id_atividade, titulo, descricao, categoria, data_publicacao, tipo_arquivo, TO_BASE64(arquivo_anexo) AS arquivo_anexo FROM Atividade WHERE id_atividade = ? AND id_profissional = ? LIMIT 1");
+    $check = $conexao->prepare("SELECT 
+        id_atividade, titulo, descricao, categoria, data_publicacao, data_limite, tipo_arquivo, TO_BASE64(arquivo_anexo) AS arquivo_anexo,
+        subtitulo_atividade, objetivos_terapeuticos, data_vencimento, tempo_estimado_minutos, peso_avaliacao
+    FROM Atividade 
+    WHERE id_atividade = ? AND id_profissional = ? 
+    LIMIT 1");
     $check->bind_param('ii', $id_atividade, $id_usuario);
     $check->execute();
     $res = $check->get_result();
@@ -46,10 +51,18 @@ try {
 
     // PASSO DE NÚMERO OITO: PHP
     $stmt = $conexao->prepare(
-        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback, pa.nota_feedback
-         FROM PessoaTea_Atividade pa
-         JOIN Usuario u ON u.id_usuario = pa.id_pessoa_tea
-         WHERE pa.id_atividade = ?"
+        "SELECT 
+            u.id_usuario, 
+            u.nome, 
+            pa.feedback_profissional, 
+            pa.nota_feedback,
+            pa.tentativas,
+            pa.pontuacao_extra,
+            pa.data_revisao,
+            pa.observacoes_gerais
+        FROM PessoaTea_Atividade pa
+        JOIN Usuario u ON u.id_usuario = pa.id_pessoa_tea
+        WHERE pa.id_atividade = ?"
     );
     $stmt->bind_param('i', $id_atividade);
     $stmt->execute();

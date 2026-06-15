@@ -24,6 +24,15 @@ try {
     $categoria = $_POST['categoria'];
     $data_publicacao = $_POST['data_publicacao'];
     $pacientes_ids = $_POST['pacientes_ids'];
+    // Tratamento dos 5 campos novos da Atividade
+    $subtitulo_atividade = htmlspecialchars($_POST['subtitulo_atividade'] ?? '', ENT_QUOTES, 'UTF-8');
+    $objetivos_terapeuticos = htmlspecialchars($_POST['objetivos_terapeuticos'] ?? '', ENT_QUOTES, 'UTF-8');
+    $data_vencimento = !empty($_POST['data_vencimento']) ? $_POST['data_vencimento'] : null;
+    $tempo_estimado_minutos = !empty($_POST['tempo_estimado_minutos']) ? (int) $_POST['tempo_estimado_minutos'] : null;
+
+    // Conversão segura de FLOAT (Substitui vírgula brasileira por ponto decimal)
+    $peso_bruto = !empty($_POST['peso_avaliacao']) ? $_POST['peso_avaliacao'] : '1.00';
+    $peso_avaliacao = (float) str_replace(',', '.', $peso_bruto);
 
     //Adicionar variável
     //$novoCampo     = $_POST['novoCampo'];
@@ -36,10 +45,11 @@ try {
         $tipo_arquivo = $_FILES['arquivo']['type'];
     }
 
-    // ... [código anterior] ...
-    
-    $sql_insert = "INSERT INTO Atividade (id_profissional, titulo, descricao, data_publicacao, categoria, arquivo_anexo, tipo_arquivo) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    $sql_insert = "INSERT INTO Atividade (
+                        id_profissional, titulo, descricao, data_publicacao, categoria, arquivo_anexo, tipo_arquivo, data_limite,
+                        subtitulo_atividade, objetivos_terapeuticos, data_vencimento, tempo_estimado_minutos, peso_avaliacao
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                    
     $stmt = $conexao->prepare($sql_insert);
     
@@ -48,7 +58,10 @@ try {
         throw new Exception("Erro interno do Banco de Dados: " . $conexao->error);
     }
     
-    $stmt->bind_param("issssss", $id_profissional, $titulo, $descricao, $data_publicacao, $categoria, $arquivo_binario, $tipo_arquivo);
+    $stmt->bind_param("issssssssssid", 
+    $id_profissional, $titulo, $descricao, $data_publicacao, $categoria, $arquivo_binario, $tipo_arquivo, $data_limite,
+    $subtitulo_atividade, $objetivos_terapeuticos, $data_vencimento, $tempo_estimado_minutos, $peso_avaliacao
+);
     $stmt->execute();
     //Adicionar s,i ou d e o $nome da variável
     

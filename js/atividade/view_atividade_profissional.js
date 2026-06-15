@@ -83,6 +83,34 @@ function renderizarAtividade(atividade) {
     } else {
         anexoContainer.style.display = 'none';
     }
+// 1. VARCHAR (Subtítulo)
+    const elSubtitulo = document.getElementById('view-subtitulo');
+    if (elSubtitulo) elSubtitulo.textContent = atividade.subtitulo_atividade || '';
+
+    // 2. DATE (Vencimento convertido para o padrão brasileiro)
+    const elVenc = document.getElementById('view-vencimento');
+    if (elVenc) {
+        if (atividade.data_vencimento && atividade.data_vencimento !== '0000-00-00') {
+            elVenc.textContent = new Date(atividade.data_vencimento + 'T00:00:00').toLocaleDateString('pt-BR');
+        } else {
+            elVenc.textContent = 'Não definido';
+        }
+    }
+
+    // 3. INT (Tempo em Minutos)
+    const elTempo = document.getElementById('view-tempo');
+    if (elTempo) elTempo.textContent = atividade.tempo_estimado_minutos ? `${atividade.tempo_estimado_minutos} min` : 'Não estimado';
+
+    // 4. FLOAT (Peso formatado com vírgula)
+    const elPeso = document.getElementById('view-peso');
+    if (elPeso) {
+        const pesoFloat = parseFloat(atividade.peso_avaliacao || 1.00);
+        elPeso.textContent = pesoFloat.toFixed(2).replace('.', ',');
+    }
+
+    // 5. TEXT (Objetivos Terapêuticos)
+    const elObjetivos = document.getElementById('view-objetivos');
+    if (elObjetivos) elObjetivos.textContent = atividade.objetivos_terapeuticos || 'Nenhum objetivo específico listado.';
 }
 
 // Renderizar anexo (imagem ou PDF)
@@ -139,6 +167,11 @@ function renderizarSubmissoes(submissoes) {
 
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
+        
+        const tentHTML = sub.tentativas ? `<li><strong>Tentativas:</strong> ${sub.tentativas}</li>` : '';
+        const pontHTML = sub.pontuacao_extra ? `<li><strong>Bônus:</strong> +${parseFloat(sub.pontuacao_extra).toFixed(2).replace('.', ',')} pts</li>` : '';
+        const dataHTML = sub.data_revisao ? `<li><strong>Revisão em:</strong> ${new Date(sub.data_revisao + 'T00:00:00').toLocaleDateString('pt-BR')}</li>` : '';
+        const obsHTML  = sub.observacoes_gerais ? `<div class="mt-2 text-muted small"><i class="bi bi-info-circle"></i> Obs: ${sanitizarHTML(sub.observacoes_gerais)}</div>` : '';
 
         // PASSO DE NÚMERO NOVE: JS
         const notaHTML = sub.nota_feedback 
@@ -151,15 +184,22 @@ function renderizarSubmissoes(submissoes) {
                 <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
                     <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
                     
-                    ${notaHTML} <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
-                        Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
-                    </p>
+                    ${notaHTML} 
+
+                    <ul style="font-size: 0.85rem; margin-bottom: 10px; padding-left: 20px;">
+                        ${tentHTML}
+                        ${pontHTML}
+                        ${dataHTML}
+                    </ul>
+
+                    <p style="margin: 0; color: #1e293b;">${sanitizarHTML(sub.feedback_profissional)}</p>
+                    ${obsHTML}
                 </div>
             `
             : '';
 
         // FIX: Incorporação visual garantida da variável de comentário sanitizado.
+        // ATENCAO NO BUTTON CLASS
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <div>
@@ -175,7 +215,7 @@ function renderizarSubmissoes(submissoes) {
 
             ${feedbackExistente}
 
-            <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_pessoa_tea}', '${sub.nome.replace(/'/g, "\\'")}')">
+            <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_usuario}', '${sub.nome.replace(/'/g, "\\'")}')">
                 <i class="bi bi-pencil"></i> ${sub.feedback_profissional ? 'Editar Feedback' : 'Dar Feedback'}
             </button>
         `;
@@ -208,6 +248,11 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
     // PASSO DE NÚMERO TRÊS: JS
     const notaFeedback = document.getElementById('nota_feedback').value.trim();
+    const tentativas = document.getElementById('tentativas').value;
+    const pontuacaoExtra = document.getElementById('pontuacao_extra').value;
+    const dataRevisao = document.getElementById('data_revisao').value;
+    const obsGerais = document.getElementById('observacoes_gerais').value.trim();
+
 
     const formData = new FormData();
     formData.append('id_atividade', idAtividade);
@@ -216,6 +261,10 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
     // PASSO DE NÚMERO QUATRO: JS
     formData.append('nota_feedback', notaFeedback);
+    formData.append('tentativas', tentativas);
+    formData.append('pontuacao_extra', pontuacaoExtra);
+    formData.append('data_revisao', dataRevisao);
+    formData.append('observacoes_gerais', obsGerais);
 
     try {
         submitFeedbackBtn.disabled = true;

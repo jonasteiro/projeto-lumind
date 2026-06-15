@@ -25,6 +25,10 @@ $id_profissional = (int) $_SESSION['usuario']['id_usuario'];
 
 // PASSO DE NÚMERO CINCO: PHP
 $nota_feedback = !empty($_POST['nota_feedback']) ? trim($_POST['nota_feedback']) : null;
+$tentativas = !empty($_POST['tentativas']) ? (int) $_POST['tentativas'] : null;
+$pontuacao_extra = !empty($_POST['pontuacao_extra']) ? (float) $_POST['pontuacao_extra'] : 0.00;
+$data_revisao = !empty($_POST['data_revisao']) ? $_POST['data_revisao'] : null;
+$observacoes_gerais = htmlspecialchars($_POST['observacoes_gerais'] ?? '', ENT_QUOTES, 'UTF-8');
 
 // Validação básica
 if (empty($feedback) || strlen($feedback) < 5) {
@@ -88,7 +92,11 @@ try {
         SET feedback_profissional = ?,
             data_feedback = NOW(),
             status_conclusao = 'Avaliada',
-            nota_feedback = ?
+            nota_feedback = ?,
+            tentativas = ?,
+            pontuacao_extra = ?,
+            data_revisao = ?,
+            observacoes_gerais = ?
         WHERE id_atividade = ? AND id_pessoa_tea = ?
     ");
     
@@ -97,7 +105,7 @@ try {
     }
 
     // PASSO DE NÚMERO SETE: PHP
-    $stmt->bind_param("ssii", $feedback, $nota_feedback, $id_atividade, $id_pessoa_tea);
+    $stmt->bind_param("ssidssii", $feedback, $nota_feedback, $tentativas, $pontuacao_extra, $data_revisao, $observacoes_gerais, $id_atividade, $id_pessoa_tea);
     //text, date = s; int = i; float = d
     
     if (!$stmt->execute()) {

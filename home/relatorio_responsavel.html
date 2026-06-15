@@ -143,6 +143,34 @@
                                 <textarea class="form-control rounded-3 border-light-subtle" id="observacoes_extras" name="observacoes_extras" rows="4" placeholder="Adicione qualquer detalhe adicional aqui..."></textarea>
                             </div>
 
+                            <!-- PASSO 2-->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="titulo_relatorio" class="form-label fw-bold">Título / Assunto</label>
+                                    <input type="text" class="form-control" id="titulo_relatorio" name="titulo_relatorio" placeholder="Ex: Avaliação Motora Mensal" maxlength="150">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="progresso_percentual" class="form-label fw-bold">Progresso (%)</label>
+                                    <input type="number" step="0.01" class="form-control" id="progresso_percentual" name="progresso_percentual" placeholder="Ex: 85.5">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="data_proxima_avaliacao" class="form-label fw-bold">Próxima Avaliação</label>
+                                    <input type="date" class="form-control" id="data_proxima_avaliacao" name="data_proxima_avaliacao">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="duracao_minutos" class="form-label fw-bold">Duração (Minutos)</label>
+                                    <input type="number" step="1" min="1" class="form-control" id="duracao_minutos" name="duracao_minutos" placeholder="Ex: 45">
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="recomendacoes_casa" class="form-label fw-bold">Recomendações para Casa</label>
+                                    <textarea class="form-control" id="recomendacoes_casa" name="recomendacoes_casa" rows="4" placeholder="Descreva as atividades para os pais fazerem em casa..."></textarea>
+                                </div>
+                            </div>
+
 
                             <button id="btn-salvar" class="btn btn-primary w-100 fw-bold py-3 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2" style="font-size: 1.05rem; transition: all 0.2s;">
                                 <span id="btn-text" class="d-flex align-items-center"><i class="bi bi-send-fill me-2"></i> ENVIAR RELATÓRIO</span>

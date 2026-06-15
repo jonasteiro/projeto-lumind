@@ -14,15 +14,16 @@ if (!$id_responsavel || $tipo_usuario !== 'ResponsavelLegal') {
 
 // Busca todos os relatórios deste responsável, trazendo o nome do dependente
 $sql = "SELECT 
-            r.id_relatorio,
-            r.data,
-            r.descricao,
-            u.nome AS nome_dependente,
-            r.observacoes_extras
-        FROM Relatorio r
-        INNER JOIN Usuario u ON r.id_pessoa_tea = u.id_usuario
-        WHERE r.id_responsavel = ?
-        ORDER BY r.data DESC";
+            id_relatorio, 
+            data, 
+            descricao,
+            titulo_relatorio,   -- <-- VÍRGULA AQUI!
+            recomendacoes_casa,
+            data_proxima_avaliacao,
+            duracao_minutos,
+            progresso_percentual
+        FROM Relatorio 
+        WHERE id_responsavel = ?";
 
 // r.numFloat, Colocar as variáveis seguido da  virgula, abaixo de "r.descricao,"
 $stmt = $conexao->prepare($sql);

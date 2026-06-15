@@ -108,7 +108,7 @@ function preencherTabela(dados, tbody) {
     if (!dados || dados.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center py-4 text-muted">
+                <td colspan="7" class="text-center py-4 text-muted">
                     Nenhum administrador cadastrado.
                 </td>
             </tr>`;
@@ -118,15 +118,42 @@ function preencherTabela(dados, tbody) {
     let html = '';
 
     dados.forEach(adm => {
+        // Status Existente
         const isAtivo = (adm.status_adm == 1 || adm.status_adm === "1" || adm.status_adm === true);
         const statusClass = isAtivo ? "bg-success" : "bg-danger";
         const statusTexto = isAtivo ? "Ativo" : "Inativo";
 
+        // 1. FLOAT (Salário formatado com R$)
+        const valorFloat = parseFloat(adm.salario_base || 0);
+        const salarioFormatado = `R$ ${valorFloat.toFixed(2).replace('.', ',')}`;
+
+        // 2. DATE (Data de Contratação)
+        const dataContratacaoFormatada = adm.data_contratacao 
+            ? new Date(adm.data_contratacao + 'T00:00:00').toLocaleDateString('pt-BR') 
+            : '--';
+
+        // 3. INT (Nível de Acesso)
+        const nivelBadge = adm.nivel_acesso 
+            ? `<span class="badge bg-secondary">Nv. ${adm.nivel_acesso}</span>` 
+            : '--';
+
+        // 4. VARCHAR (Departamento)
+        const depto = adm.departamento || '--';
+
+        // Montando as 7 colunas HTML
         html += `
             <tr>
-                <td class="ps-3 fw-medium text-dark">${adm.nome}</td>
-                <td class="text-muted">${adm.email}</td>
-                <td class="text-muted">${adm.cpf || '---'}</td>
+                <td class="ps-3 fw-medium text-dark">
+                    ${adm.nome} <br>
+                    <small class="text-muted">${adm.email}</small>
+                </td>
+                <td class="text-muted">
+                    <span class="fw-semibold text-dark">Admin</span><br>
+                    <small>${depto}</small>
+                </td>
+                <td class="text-center">${nivelBadge}</td>
+                <td class="text-muted">${dataContratacaoFormatada}</td>
+                <td class="text-success fw-semibold">${salarioFormatado}</td> 
                 <td class="text-center">
                     <span class="badge ${statusClass} rounded-pill px-3 py-2">${statusTexto}</span>
                 </td>

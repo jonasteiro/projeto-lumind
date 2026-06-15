@@ -91,12 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 // 1. Captura o valor digitado e limpa espaços extras nas extremidades com .trim()
                 const observacoesExtras = document.getElementById('observacoes_extras').value.trim();
+                
 
                 const formData = new FormData(); 
                 formData.append('id_pessoa_tea', dependente);
                 formData.append('data_evento', data);
                 formData.append('descricao', descricao);
-                formData.append('observacoes_extras', observacoesExtras);   
+                formData.append('observacoes_extras', observacoesExtras);  
+                // Captura e anexa os 5 campos ao FormData
+                formData.append('titulo_relatorio', document.getElementById('titulo_relatorio').value.trim());
+                formData.append('recomendacoes_casa', document.getElementById('recomendacoes_casa').value.trim());
+                formData.append('data_proxima_avaliacao', document.getElementById('data_proxima_avaliacao').value);
+                formData.append('duracao_minutos', document.getElementById('duracao_minutos').value);
+                formData.append('progresso_percentual', document.getElementById('progresso_percentual').value); 
                 
 
                 //++Colocar append padrão

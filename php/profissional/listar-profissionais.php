@@ -34,13 +34,13 @@
     } else {
             //TESTE DE AUTORIA: Inserir novo campo abaixo, exemplo:  $sql = "SELECT U.id_usuario, U.nome, U.email, U.cpf, P.especialidade, P.nome_campo, P.registro_profissional, 
        $sql = "SELECT 
-            U.id_usuario, U.nome, U.email, U.cpf, 
-            P.especialidade, P.registro_profissional,
-            (SELECT D.status_aprovacao FROM Documentacao D WHERE D.id_usuario = U.id_usuario ORDER BY D.data_envio DESC LIMIT 1) as status_aprovacao
-        FROM Usuario U
-        INNER JOIN ProfissionalSaude P ON U.id_usuario = P.id_usuario
-        WHERE U.tipo_usuario = 'ProfissionalSaude'
-        ORDER BY U.nome ASC";
+                U.id_usuario, U.nome, U.email, U.telefone, 
+                P.registro_profissional, P.especialidade, 
+                P.local_atendimento, P.resumo_curriculo, P.data_formacao, P.anos_experiencia, P.valor_consulta
+            FROM Usuario U
+            INNER JOIN ProfissionalSaude P ON U.id_usuario = P.id_usuario
+            WHERE U.tipo_usuario = 'ProfissionalSaude'
+            ORDER BY U.nome ASC";
 
         //Colocar embaixo do outro SELECT
         //(SELECT D.ano_emissao FROM Documentacao D WHERE D.id_usuario = U.id_usuario ORDER BY D.data_envio DESC LIMIT 1) as ano_emissao

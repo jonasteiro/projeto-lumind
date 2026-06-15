@@ -282,6 +282,17 @@ ALTER TABLE PessoaTea_Atividade
     COMMENT 'Data e hora quando o profissional enviou o feedback'
     AFTER feedback_profissional;
     
--- PASSO DE NÚMERO UM: SQL
+    -- PASSO DE NÚMERO UM: SQL
 ALTER TABLE PessoaTea_Atividade
 ADD COLUMN nota_feedback VARCHAR(50) NULL;
+
+ALTER TABLE Relatorio
+ADD COLUMN observacoes_extras VARCHAR(150) NULL;
+
+-- PASSO DE NÚMERO UM: SQL
+ALTER TABLE Atividade
+ADD COLUMN subtitulo_atividade VARCHAR(150) NULL,
+ADD COLUMN objetivos_terapeuticos TEXT NULL,
+ADD COLUMN data_vencimento DATE NULL,
+ADD COLUMN tempo_estimado_minutos INT NULL,
+ADD COLUMN peso_avaliacao FLOAT NULL DEFAULT 1.00;

@@ -21,8 +21,14 @@
     $registro_profissional = htmlspecialchars($_POST['registro_profissional'] ?? '', ENT_QUOTES, 'UTF-8');
     $especialidade         = htmlspecialchars($_POST['especialidade'] ?? '', ENT_QUOTES, 'UTF-8');
     
-    // $nome_campo = htmlspecialchars($_POST['nome_campo'] ?? '', ENT_QUOTES, 'UTF-8');
-    // $data_exemplo = $_POST['data_exemplo'] ?? null;
+    $local_atendimento = htmlspecialchars($_POST['local_atendimento'] ?? '', ENT_QUOTES, 'UTF-8');
+    $resumo_curriculo = htmlspecialchars($_POST['resumo_curriculo'] ?? '', ENT_QUOTES, 'UTF-8');
+    $data_formacao = !empty($_POST['data_formacao']) ? $_POST['data_formacao'] : null;
+    $anos_experiencia = !empty($_POST['anos_experiencia']) ? (int) $_POST['anos_experiencia'] : 0;
+
+    // Trata a vírgula do FLOAT
+    $valor_bruto = !empty($_POST['valor_consulta']) ? $_POST['valor_consulta'] : '0';
+    $valor_consulta = (float) str_replace(',', '.', $valor_bruto);
 
 
     $nivel_tea      = htmlspecialchars($_POST['nivel_tea'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -85,8 +91,27 @@
     //TESTE AUTORIA: Atualizar o INSERT, exemplo:  ([...] especialidade, nome_campo) VALUES (?, ?, ?, ?)"); ADCIONAR "?"
     // E depois do bind_param, adicionar a variável correspondente, exemplo: $stmt_prof->bind_param("isss", $id_usuario, $registro_profissional, $especialidade, $nome_campo);
     if ($tipo_usuario === 'ProfissionalSaude') {
-        $stmt_prof = $conexao->prepare("INSERT INTO ProfissionalSaude (id_usuario, registro_profissional, especialidade) VALUES (?, ?, ?)");
-        $stmt_prof->bind_param("iss", $id_usuario, $registro_profissional, $especialidade); // ALTERAR AQUI TBM
+
+        $stmt_prof = $conexao->prepare("INSERT INTO ProfissionalSaude (
+                id_usuario, registro_profissional, especialidade, 
+                local_atendimento, resumo_curriculo, data_formacao, anos_experiencia, valor_consulta
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+
+        // Bind Param: 8 Variáveis
+        // Ordem: i(id), s(reg), s(espec), s(local), s(resumo), s(data), i(anos), d(valor)
+        // Resultado rigoroso: "isssssid"
+        $stmt_prof->bind_param("isssssid", 
+            $id_usuario, 
+            $registro_profissional, 
+            $especialidade, 
+            $local_atendimento, 
+            $resumo_curriculo, 
+            $data_formacao, 
+            $anos_experiencia, 
+            $valor_consulta
+        );
+
         $stmt_prof->execute(); $stmt_prof->close();
 
 

@@ -138,6 +138,11 @@ formulario.addEventListener('submit', async function(e) {
         formData.append('data_nascimento', document.getElementById('data_nascimento').value);
         formData.append('senha', document.getElementById('senha').value);
         formData.append('ano_emissao', document.getElementById('ano_emissao').value);
+        formData.append('local_atendimento', document.getElementById('local_atendimento').value.trim());
+        formData.append('resumo_curriculo', document.getElementById('resumo_curriculo').value.trim());
+        formData.append('data_formacao', document.getElementById('data_formacao').value);
+        formData.append('anos_experiencia', document.getElementById('anos_experiencia').value);
+        formData.append('valor_consulta', document.getElementById('valor_consulta').value);
         //TESTE AUTORIA: adcionar novo campo, exemplo: formData.append('nome_campo', document.getElementById('id_campo').value.trim());
 
         const telInput = document.getElementById('telefone');

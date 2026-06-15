@@ -1,6 +1,6 @@
 # 📖 Guia Definitivo: Super Combo (5 Campos) em Profissional de Saúde
 
-Este guia documenta a inserção simultânea de cinco novos campos (`VARCHAR`, `TEXT`, `DATE`, `INT`, `FLOAT`) na entidade **ProfissionalSaude**, passando pelo banco de dados, formulário de cadastro, salvamento no PHP e exibição na listagem.
+Este guia documenta a inserção simultânea de cinco novos campos (`VARCHAR`, `TEXT`, `DATE`, `INT`, `FLOAT`) na entidade **ProfissionalSaude**, passando pelo banco de dados, formulário de cadastro, salvamento no PHP e exibição dinâmica na listagem gerada via JavaScript.
 
 ---
 
@@ -30,6 +30,7 @@ Adicione os novos inputs no formulário de cadastro do profissional.
 ```html
 <h5 class="mt-4 mb-3 text-primary border-bottom pb-2">Informações Clínicas e de Carreira</h5>
 <div class="row g-3 mb-4">
+    <!-- 1. Campo VARCHAR (Local de Atendimento) -->
     <div class="col-md-6">
         <div class="form-floating">
             <input type="text" class="form-control" id="local_atendimento" name="local_atendimento" placeholder="Ex: Clínica Central" maxlength="150">
@@ -37,6 +38,7 @@ Adicione os novos inputs no formulário de cadastro do profissional.
         </div>
     </div>
 
+    <!-- 2. Campo FLOAT (Valor da Consulta) -->
     <div class="col-md-6">
         <div class="form-floating">
             <input type="number" step="0.01" min="0" class="form-control" id="valor_consulta" name="valor_consulta" placeholder="Ex: 150.00">
@@ -44,6 +46,7 @@ Adicione os novos inputs no formulário de cadastro do profissional.
         </div>
     </div>
 
+    <!-- 3. Campo DATE (Data de Formação) -->
     <div class="col-md-6">
         <div class="form-floating">
             <input type="date" class="form-control" id="data_formacao" name="data_formacao">
@@ -51,6 +54,7 @@ Adicione os novos inputs no formulário de cadastro do profissional.
         </div>
     </div>
 
+    <!-- 4. Campo INT (Anos de Experiência) -->
     <div class="col-md-6">
         <div class="form-floating">
             <input type="number" step="1" min="0" class="form-control" id="anos_experiencia" name="anos_experiencia" placeholder="Ex: 5">
@@ -58,6 +62,7 @@ Adicione os novos inputs no formulário de cadastro do profissional.
         </div>
     </div>
 
+    <!-- 5. Campo TEXT (Resumo do Currículo) -->
     <div class="col-12">
         <div class="form-floating">
             <textarea class="form-control" id="resumo_curriculo" name="resumo_curriculo" style="height: 100px;" placeholder="Resumo profissional..."></textarea>
@@ -141,6 +146,7 @@ Atualize o SELECT para que a listagem consiga enxergar as novas colunas.
 SELECT 
     U.id_usuario, U.nome, U.email, U.telefone, 
     P.registro_profissional, P.especialidade, 
+    P.status_aprovacao, -- (Não esqueça do status de aprovação que já estava lá)
     P.local_atendimento, P.resumo_curriculo, P.data_formacao, P.anos_experiencia, P.valor_consulta
 FROM Usuario U
 INNER JOIN ProfissionalSaude P ON U.id_usuario = P.id_usuario
@@ -150,58 +156,44 @@ ORDER BY U.nome ASC
 
 ---
 
-## 🖥️ Passo 6: Estrutura da Tabela (HTML)
+## ⚙️ Passo 6: Injeção Completa da Tabela (JavaScript)
 
-Prepare a tabela para receber as novas colunas alinhadas.
+Como a sua estrutura HTML utiliza uma `<div id="lista">` para receber a tabela inteira do JS, vamos recriar o cabeçalho (`<thead>`) e o corpo (`<tbody>`) injetando os 5 novos dados.
 
-**Onde posicionar:** No arquivo HTML que lista os profissionais (ex: `listar_profissionais.html`).
-
-```html
-<table class="table table-hover align-middle mb-0">
-    <thead class="table-light">
-        <tr>
-            <th class="text-secondary fw-semibold py-3 ps-3">Profissional</th>
-            <th class="text-secondary fw-semibold py-3">Especialidade</th>
-            <th class="text-secondary fw-semibold py-3">Local / Experiência</th>
-            <th class="text-secondary fw-semibold py-3">Formação</th>
-            <th class="text-secondary fw-semibold py-3">Valor Consulta</th>
-            <th class="text-secondary fw-semibold py-3 text-end pe-3">Ações</th>
-        </tr>
-    </thead>
-    <tbody id="tabela-profissionais-body">
-        <tr>
-            <td colspan="6" class="text-center py-5 text-muted">
-                <div class="spinner-border text-primary mb-2" role="status"></div>
-                <p class="mb-0">Carregando profissionais...</p>
-            </td>
-        </tr>
-    </tbody>
-</table>
-```
-
----
-
-## ⚙️ Passo 7: Injeção dos Dados (JavaScript da Tabela)
-
-Vamos preencher a tabela renderizando os novos campos blindados contra dados nulos.
-
-**Onde posicionar:** No arquivo JS que preenche a tabela (ex: `listar_profissionais.js`), substituindo a função `preencherTabela`.
+**Onde posicionar:** No seu arquivo `listar-profissionais.js`, substitua a sua função `preencherTabela` inteira por esta:
 
 ```javascript
-function preencherTabela(dados, tbody) {
+function preencherTabela(dados) {
     if (!dados || dados.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="text-center py-4 text-muted">
-                    Nenhum profissional cadastrado.
-                </td>
-            </tr>`;
+        document.getElementById("lista").innerHTML = '<div class="text-center py-5 text-muted">Nenhum profissional cadastrado.</div>';
         return;
     }
 
-    let html = '';
+    // Criamos o cabeçalho (thead) com as novas colunas estruturadas
+    let html = `
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="py-3 ps-3">Profissional</th>
+                    <th class="py-3">Especialidade / Registro</th>
+                    <th class="py-3">Local / Experiência</th>
+                    <th class="py-3">Formação</th>
+                    <th class="py-3">Valor Consulta</th>
+                    <th class="py-3 text-center">Status Doc.</th>
+                    <th class="py-3 text-end pe-3">Ações</th>
+                </tr>
+            </thead>
+            <tbody>`;
 
     dados.forEach(prof => {
+        // Status da Documentação
+        let statusColor = "text-bg-secondary";
+        let statusTexto = prof.status_aprovacao || "Sem envio";
+
+        if (prof.status_aprovacao === "Aprovado") statusColor = "text-bg-success";
+        else if (prof.status_aprovacao === "Aguardando") statusColor = "text-bg-warning";
+        else if (prof.status_aprovacao === "Reprovado") statusColor = "text-bg-danger";
+
         // 1. FLOAT (Valor formatado)
         const valorFloat = parseFloat(prof.valor_consulta || 0);
         const valorFormatado = valorFloat > 0 ? `R$ ${valorFloat.toFixed(2).replace('.', ',')}` : '<span class="text-muted small">Sob Consulta</span>';
@@ -214,39 +206,43 @@ function preencherTabela(dados, tbody) {
         // 3. INT (Anos de Experiência)
         const anosTexto = prof.anos_experiencia ? `${prof.anos_experiencia} anos` : 'Iniciante';
 
-        // 4. VARCHAR (Local)
+        // 4. VARCHAR (Local de Atendimento)
         const local = prof.local_atendimento || 'Não informado';
 
-        // Montando as 6 colunas HTML
         html += `
             <tr>
-                <td class="ps-3 fw-medium text-dark">
-                    ${prof.nome} <br>
-                    <small class="text-muted">${prof.email}</small>
+                <td class="ps-3 fw-bold">
+                    ${prof.nome}<br>
+                    <small class="text-muted fw-normal">${prof.email}</small>
                 </td>
-                <td class="text-muted">
-                    <span class="fw-semibold text-dark">${prof.especialidade || 'Geral'}</span><br>
-                    <small>${prof.registro_profissional || '--'}</small>
+                <td>
+                    <span class="badge bg-light text-dark border">${prof.especialidade || 'Geral'}</span><br>
+                    <small class="text-muted">${prof.registro_profissional || '--'}</small>
                 </td>
                 <td class="text-muted">
                     <i class="bi bi-geo-alt small"></i> ${local}<br>
-                    <span class="badge bg-light text-dark border mt-1">${anosTexto}</span>
+                    <span class="badge bg-light text-dark border mt-1"><i class="bi bi-briefcase"></i> ${anosTexto}</span>
                 </td>
                 <td class="text-muted">${dataFormacaoFormatada}</td>
                 <td class="text-success fw-semibold">${valorFormatado}</td> 
+                <td class="text-center"><span class="badge ${statusColor}">${statusTexto}</span></td>
                 <td class="text-end pe-3">
                     <div class="btn-group">
-                        <a href="perfil_profissional.html?id=${prof.id_usuario}" class="btn btn-sm btn-outline-info rounded-pill me-1" title="Ver Perfil">
-                            <i class="bi bi-person-lines-fill"></i>
+                        <a href='analisar_documentacao.html?id=${prof.id_usuario}' class="btn btn-sm btn-outline-info border-0" title="Analisar Documentos">
+                            <i class="bi bi-file-earmark-medical"></i>
                         </a>
-                        <button onclick="excluir(${prof.id_usuario})" class="btn btn-sm btn-outline-danger rounded-pill" title="Excluir">
-                            <i class="bi bi-trash3"></i>
+                        <a href='../profissional/alterar_profissional.html?id=${prof.id_usuario}' class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button onclick="excluir(${prof.id_usuario})" class="btn btn-sm btn-outline-danger border-0">
+                            <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </td>
             </tr>`;
     });
 
-    tbody.innerHTML = html;
+    html += '</tbody></table>';
+    document.getElementById("lista").innerHTML = html;
 }
 ```

@@ -165,15 +165,16 @@ function preencherTabela(dados) {
         return;
     }
 
-    // Criando o cabeçalho (7 colunas)
+    // Criando o cabeçalho agora com 7 colunas (Adicionado a Disponibilidade)
     let html = `
         <table class="table table-hover align-middle">
             <thead class="table-light">
                 <tr>
                     <th class="py-3 ps-3">Responsável</th>
                     <th class="py-3">Profissão</th>
-                    <th class="py-3">Dependentes</th>
+                    <th class="py-3 text-center">Dependentes</th>
                     <th class="py-3">Entrevista</th>
+                    <th class="py-3">Disponibilidade</th> <!-- NOVA COLUNA -->
                     <th class="py-3">Limite de Crédito</th>
                     <th class="py-3 text-end pe-3">Ações</th>
                 </tr>
@@ -193,6 +194,13 @@ function preencherTabela(dados) {
         // 3. INT (Dependentes)
         const dependentes = resp.numero_dependentes || 1;
 
+        // 4. TEXT (Disponibilidade com limite de caracteres para não quebrar a tabela)
+        const disponibilidadeCompleta = resp.disponibilidade_horarios || '--';
+        // Se o texto for maior que 30 caracteres, ele corta e põe "..."
+        const dispResumida = disponibilidadeCompleta.length > 30 
+            ? disponibilidadeCompleta.substring(0, 30) + '...' 
+            : disponibilidadeCompleta;
+
         html += `
             <tr>
                 <td class="ps-3 fw-bold">
@@ -204,10 +212,19 @@ function preencherTabela(dados) {
                     <span class="badge bg-light text-dark border">${dependentes}</span>
                 </td>
                 <td class="text-muted">${dataFormatada}</td>
+                
+                <!-- O texto completo aparece quando põe o mouse em cima (atributo title) -->
+                <td class="text-muted small" title="${disponibilidadeCompleta}">${dispResumida}</td>
+                
                 <td class="text-success fw-semibold">${limiteFormatado}</td>
                 <td class="text-end pe-3">
                     <div class="btn-group">
-                        <button onclick="excluir(${resp.id_usuario})" class="btn btn-sm btn-outline-danger border-0">
+                        <!-- Botão de Editar (Adicione se já tiver a tela) -->
+                        <a href="alterar_responsavel.html?id=${resp.id_usuario}" class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <!-- Botão de Excluir -->
+                        <button onclick="excluir(${resp.id_usuario})" class="btn btn-sm btn-outline-danger border-0" title="Excluir">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

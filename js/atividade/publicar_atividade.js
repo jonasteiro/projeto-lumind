@@ -1,7 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Configura a data de hoje como padrão no input de data
+    // Configura a data de hoje como padrão e BLOQUEIA DATAS FUTURAS
     const inputData = document.getElementById('data_publicacao');
-    if (inputData) inputData.valueAsDate = new Date();
+    if (inputData) {
+        const hoje = new Date();
+        inputData.valueAsDate = hoje;
+
+        // Formata a data para YYYY-MM-DD para o atributo max
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        
+        // Define o limite máximo no calendário HTML
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`);
+    }
 
     // 1. CARREGAR PACIENTES
     carregarPacientes();
@@ -11,42 +22,47 @@ document.addEventListener("DOMContentLoaded", () => {
     // =======================================================
     const form = document.getElementById("formPublicarAtividade");
     
-    // Pegando os inputs e os spans de erro (Certifique-se de ter esses IDs no HTML)
     const inputTitulo = document.getElementById('titulo');
     const erroTitulo = document.getElementById('erroTitulo'); 
     
     const inputDescricao = document.getElementById('descricao');
     const erroDescricao = document.getElementById('erroDescricao'); 
-    
+
+    const inputCategoria = document.getElementById('categoria');
+    const erroCategoria = document.getElementById('erroCategoria');
+
+    const erroData = document.getElementById('erroData');
     const erroMsgPacientes = document.getElementById("erroPacientes");
 
-    // Função validadora genérica
+    // Funções Validadoras
     const ehTextoValido = (val, min) => val.trim().length >= min;
+    const ehSelectValido = (val) => val.trim() !== "";
 
-    // Remove a mensagem de erro assim que o usuário digita o correto
-    function ocultarErroSeValido(input, erroElemento, minLength) {
+    // Remove a mensagem de erro assim que o usuário digita/seleciona o correto
+    function ocultarErroSeValido(input, erroElemento, minLength = null) {
         if (!input || !erroElemento) return;
         const checar = () => {
-            if (ehTextoValido(input.value, minLength)) {
-                erroElemento.classList.add('d-none');
-            }
+            let valido = minLength ? ehTextoValido(input.value, minLength) : ehSelectValido(input.value);
+            if (valido) erroElemento.classList.add('d-none');
         };
         input.addEventListener('input', checar);
+        input.addEventListener('change', checar);
         input.addEventListener('keyup', checar);
     }
 
-    // Mostra a mensagem de erro se o usuário clicar fora do campo (blur) e estiver vazio/curto
+    // Mostra a mensagem de erro se clicar fora (blur) e estiver errado
     function mostrarErroSeInvalido(input, erroElemento, minLength, msgInvalido) {
         if (!input || !erroElemento) return;
         input.addEventListener('blur', () => {
-            if (!ehTextoValido(input.value, minLength)) {
+            let valido = minLength ? ehTextoValido(input.value, minLength) : ehSelectValido(input.value);
+            if (!valido) {
                 erroElemento.textContent = msgInvalido;
                 erroElemento.classList.remove('d-none');
             }
         });
     }
 
-    // Aplicando a lógica de tempo real nos campos (Mínimo de 5 chars pro título e 10 pra descrição)
+    // Vinculando eventos
     if (inputTitulo) {
         ocultarErroSeValido(inputTitulo, erroTitulo, 5);
         mostrarErroSeInvalido(inputTitulo, erroTitulo, 5, 'O título deve ter pelo menos 5 caracteres.');
@@ -57,7 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarErroSeInvalido(inputDescricao, erroDescricao, 10, 'A descrição deve ter pelo menos 10 caracteres.');
     }
 
-    // Ocultar erro de pacientes se o usuário clicar em algum checkbox
+    if (inputCategoria) {
+        ocultarErroSeValido(inputCategoria, erroCategoria);
+        mostrarErroSeInvalido(inputCategoria, erroCategoria, null, 'Selecione uma categoria.');
+    }
+
+    if (inputData) {
+        ocultarErroSeValido(inputData, erroData);
+        mostrarErroSeInvalido(inputData, erroData, null, 'Informe a data de publicação.');
+    }
+
+    // Tira o erro de pacientes na hora que clica no checkbox
     document.addEventListener('change', (e) => {
         if (e.target.name === 'pacientes_ids[]') {
             const selecionados = document.querySelectorAll('input[name="pacientes_ids[]"]:checked');
@@ -68,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =======================================================
-    // 3. INTERCEPTAR O ENVIO DO FORMULÁRIO (Validação Final)
+    // 3. INTERCEPTAR O ENVIO DO FORMULÁRIO
     // =======================================================
     if (form) {
         form.addEventListener("submit", async (event) => {
@@ -76,38 +102,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let temErro = false;
 
-            // Força a checagem do Título
-            if (inputTitulo && !ehTextoValido(inputTitulo.value, 5)) {
-                erroTitulo.textContent = 'O título deve ter pelo menos 5 caracteres.';
-                erroTitulo.classList.remove('d-none');
-                temErro = true;
-            }
+            // Dispara as validações na marra (Força o 'blur')
+            if (inputTitulo) inputTitulo.dispatchEvent(new Event('blur'));
+            if (inputDescricao) inputDescricao.dispatchEvent(new Event('blur'));
+            if (inputCategoria) inputCategoria.dispatchEvent(new Event('blur'));
+            if (inputData) inputData.dispatchEvent(new Event('blur'));
 
-            // Força a checagem da Descrição
-            if (inputDescricao && !ehTextoValido(inputDescricao.value, 10)) {
-                erroDescricao.textContent = 'A descrição deve ter pelo menos 10 caracteres.';
-                erroDescricao.classList.remove('d-none');
-                temErro = true;
-            }
-
-            // Validação de Pacientes (Garante que pelo menos 1 foi escolhido)
+            // Validação de Pacientes
             const pacientesSelecionados = document.querySelectorAll('input[name="pacientes_ids[]"]:checked');
             if (pacientesSelecionados.length === 0) {
                 if (erroMsgPacientes) {
-                    erroMsgPacientes.textContent = 'Você deve selecionar pelo menos um paciente.';
                     erroMsgPacientes.classList.remove("d-none");
                 }
                 temErro = true;
             }
 
-            // Se encontrou erros, bloqueia o envio e sobe a tela suavemente
+            // Verifica se algum span ficou visível
+            if ((erroTitulo && !erroTitulo.classList.contains('d-none')) ||
+                (erroDescricao && !erroDescricao.classList.contains('d-none')) ||
+                (erroCategoria && !erroCategoria.classList.contains('d-none')) ||
+                (erroData && !erroData.classList.contains('d-none'))) {
+                temErro = true;
+            }
+
             if (temErro) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 return; 
             }
 
             // ==================================
-            // ENVIO PARA O SERVIDOR (PHP)
+            // ENVIO PARA O SERVIDOR
             // ==================================
             const formData = new FormData(form);
             const btnSubmit = form.querySelector('button[type="submit"]');
@@ -135,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }).then(() => {
                         window.location.href = '../../home/atividades_painel.html';
                     });
-
                 } else {
                     Swal.fire({
                         title: 'Ops!',

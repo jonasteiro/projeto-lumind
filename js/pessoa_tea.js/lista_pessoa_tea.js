@@ -83,35 +83,66 @@ function preencherTabela(tabela) {
     document.getElementById("lista").innerHTML = html;
 }
 
+// =======================================================
+// EXCLUSÃO COM SWEETALERT2
+// =======================================================
 async function excluir(id) {
-    if (confirm("Deseja realmente excluir este paciente? Esta ação não pode ser desfeita.")) {
-        const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
-        const resposta = await retorno.json();
+    // 1. Modal de Confirmação customizado
+    const confirmacao = await Swal.fire({
+        title: 'Tem certeza?',
+        text: "Deseja realmente excluir este paciente? Todas as atividades e relatórios vinculados a ele serão perdidos.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-trash3"></i> Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    });
+
+    // 2. Se o usuário confirmou, fazemos a exclusão
+    if (confirmacao.isConfirmed) {
         
-        if (resposta.status == "ok") {
-            // Se tiver SweetAlert na página usa, senão usa alert normal
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
+        // Exibe loading enquanto deleta
+        Swal.fire({
+            title: 'Excluindo...',
+            text: 'Removendo o paciente do sistema.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
+            const resposta = await retorno.json();
+            
+            if (resposta.status == "ok") {
+                // Alerta de sucesso e recarrega a página
+                await Swal.fire({
                     icon: 'success',
                     title: 'Excluído!',
                     text: resposta.mensagem,
-                    confirmButtonColor: '#0284c7'
-                }).then(() => window.location.reload());
-            } else {
-                alert(resposta.mensagem);
+                    confirmButtonColor: '#0d6efd'
+                });
                 window.location.reload();
-            }
-        } else {
-            if (typeof Swal !== 'undefined') {
+            } else {
+                // Alerta de erro vindo do PHP
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erro!',
+                    title: 'Atenção!',
                     text: resposta.mensagem,
-                    confirmButtonColor: '#d33'
+                    confirmButtonColor: '#dc3545'
                 });
-            } else {
-                alert(resposta.mensagem);
             }
+        } catch (erro) {
+            console.error("Erro na requisição de exclusão:", erro);
+            // Alerta de falha de conexão
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro de Comunicação',
+                text: 'Não foi possível se conectar com o servidor. Tente novamente mais tarde.',
+                confirmButtonColor: '#dc3545'
+            });
         }
     }
 }

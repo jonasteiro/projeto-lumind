@@ -49,12 +49,7 @@
                         <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
                     </a>
                 </div>
-                
-                
             </div>
-            <div class="user-profile d-flex align-items-center">
-                    <span id="nome-usuario" class="user-name me-3">Carregando...</span>
-                </div>
         </header>
 
         <section class="content p-4 container-xl flex-grow-1 mt-3">
@@ -70,20 +65,27 @@
                     <p class="text-muted mb-4" style="font-size: 0.9rem;">Preencha as informações abaixo para publicar uma nova atividade para seus pacientes.</p>
 
                     <form id="formPublicarAtividade" method="POST">
-                        <div class="form-floating mb-3">
-                            <input type="text" id="titulo" name="titulo" class="form-control rounded-3 border-light-subtle" placeholder="Título" required />
-                            <label for="titulo" class="text-muted"><i class="bi bi-type me-2"></i> Título da Atividade *</label>
+                        
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="text" id="titulo" name="titulo" class="form-control rounded-3 border-light-subtle" placeholder="Título" />
+                                <label for="titulo" class="text-muted"><i class="bi bi-type me-2"></i> Título da Atividade *</label>
+                            </div>
+                            <span id="erroTitulo" class="text-danger d-none ms-2 mt-1" style="font-size: 0.85rem;"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <textarea id="descricao" name="descricao" class="form-control rounded-3 border-light-subtle" placeholder="Descrição" style="height: 140px;" required></textarea>
-                            <label for="descricao" class="text-muted"><i class="bi bi-card-text me-2"></i> Descrição *</label>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <textarea id="descricao" name="descricao" class="form-control rounded-3 border-light-subtle" placeholder="Descrição" style="height: 140px;"></textarea>
+                                <label for="descricao" class="text-muted"><i class="bi bi-card-text me-2"></i> Descrição *</label>
+                            </div>
+                            <span id="erroDescricao" class="text-danger d-none ms-2 mt-1" style="font-size: 0.85rem;"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <select id="categoria" name="categoria" class="form-select rounded-3 border-light-subtle" required>
+                                    <select id="categoria" name="categoria" class="form-select rounded-3 border-light-subtle">
                                         <option value="">Selecione...</option>
                                         <option value="Fonoaudiologia">Fonoaudiologia</option>
                                         <option value="Psicologia">Psicologia</option>
@@ -92,13 +94,15 @@
                                     </select>
                                     <label for="categoria" class="text-muted"><i class="bi bi-tags me-2"></i> Categoria *</label>
                                 </div>
+                                <span id="erroCategoria" class="text-danger d-none ms-2 mt-1" style="font-size: 0.85rem;"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-floating">
-                                    <input type="date" id="data_publicacao" name="data_publicacao" class="form-control rounded-3 border-light-subtle" placeholder="Data" required />
+                                    <input type="date" id="data_publicacao" name="data_publicacao" class="form-control rounded-3 border-light-subtle" placeholder="Data" />
                                     <label for="data_publicacao" class="text-muted"><i class="bi bi-calendar-event me-2"></i> Data de Publicação *</label>
                                 </div>
+                                <span id="erroData" class="text-danger d-none ms-2 mt-1" style="font-size: 0.85rem;"></span>
                             </div>
                         </div>
 
@@ -140,7 +144,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../js/valida_sessao.js"></script>
     <script src="../../js/index.js"></script>
-    
     <script src="../../js/atividade/publicar_atividade.js"></script>
     
     <script>

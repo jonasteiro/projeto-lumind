@@ -1,65 +1,117 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("formCadastroResponsavel");
+    const divErro = document.getElementById('divErro');
 
-    // Funções de validação
-    function validarEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // =======================================================
+    // BLOQUEIO DE DATAS FUTURAS (Trava de Segurança)
+    // =======================================================
+    const inputData = document.getElementById('data_nascimento');
+    if (inputData) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); 
     }
 
-    function validarCPF(cpf) {
-        const apenasNumeros = cpf.replace(/\D/g, ''); 
-        return apenasNumeros.length === 11; 
+    // =======================================================
+    // FUNÇÕES DE VALIDAÇÃO (Regras)
+    // =======================================================
+    const ehNomeValido = (val) => val.trim().length >= 3;
+    const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
+    const validarTelefone = (tel) => tel.replace(/\D/g, '').length >= 10;
+    const ehDataValida = (val) => val.trim() !== "";
+    const ehSenhaValida = (val) => val.length >= 6;
+
+    // =======================================================
+    // EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
+    // =======================================================
+    const inputNome = document.getElementById('nome');
+    const erroNome = document.getElementById('erroNome');
+
+    const inputEmail = document.getElementById('email');
+    const erroEmail = document.getElementById('erroEmail');
+
+    const inputCpf = document.getElementById('cpf');
+    const erroCpf = document.getElementById('erroCpf');
+
+    const inputTelefone = document.getElementById('telefone');
+    const erroTelefone = document.getElementById('erroTelefone');
+
+    const erroData = document.getElementById('erroData');
+
+    const inputSenha = document.getElementById('senha');
+    const erroSenha = document.getElementById('erroSenha');
+
+    // Função que oculta o erro assim que o usuário digita corretamente
+    function ocultarErroSeValido(input, erroElemento, validacaoFn) {
+        if(!input || !erroElemento) return;
+        const checar = () => {
+            if (validacaoFn(input.value)) {
+                erroElemento.classList.add('d-none');
+            }
+        };
+        input.addEventListener('input', checar);
+        input.addEventListener('change', checar);
+        input.addEventListener('keyup', checar);
     }
 
+    // Função que mostra o erro apenas quando o usuário SAI DO CAMPO (blur)
+    function mostrarErroSeInvalido(input, erroElemento, validacaoFn, msgInvalido) {
+        if(!input || !erroElemento) return;
+        input.addEventListener('blur', () => {
+            if (!validacaoFn(input.value)) {
+                erroElemento.textContent = msgInvalido;
+                erroElemento.classList.remove('d-none');
+            }
+        });
+    }
+
+    // Aplicando nos campos
+    ocultarErroSeValido(inputNome, erroNome, ehNomeValido);
+    mostrarErroSeInvalido(inputNome, erroNome, ehNomeValido, 'O nome deve ter pelo menos 3 caracteres.');
+
+    ocultarErroSeValido(inputEmail, erroEmail, validarEmail);
+    mostrarErroSeInvalido(inputEmail, erroEmail, validarEmail, 'Insira um formato de e-mail válido.');
+
+    if(inputCpf) inputCpf.addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 11); });
+    ocultarErroSeValido(inputCpf, erroCpf, validarCPF);
+    mostrarErroSeInvalido(inputCpf, erroCpf, validarCPF, 'O CPF deve ter exatamente 11 números.');
+
+    if(inputTelefone) inputTelefone.addEventListener('input', function() { this.value = this.value.replace(/\D/g, '').slice(0, 15); });
+    ocultarErroSeValido(inputTelefone, erroTelefone, validarTelefone);
+    mostrarErroSeInvalido(inputTelefone, erroTelefone, validarTelefone, 'Telefone inválido (inclua DDD).');
+
+    ocultarErroSeValido(inputData, erroData, ehDataValida);
+    mostrarErroSeInvalido(inputData, erroData, ehDataValida, 'A data de nascimento é obrigatória.');
+
+    ocultarErroSeValido(inputSenha, erroSenha, ehSenhaValida);
+    mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaValida, 'A senha deve ter no mínimo 6 caracteres.');
+
+    // =======================================================
+    // ENVIO DO FORMULÁRIO (Trava Final e POST)
+    // =======================================================
     if (form) {
         form.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Impede o envio padrão e o recarregamento da página
+            e.preventDefault();
 
-            // Limpa as mensagens de erro anteriores da tela
-            const camposErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroTelefone', 'erroData', 'erroSenha'];
-            camposErro.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) el.textContent = '';
-            });
+            // Dispara o evento de 'blur' em todos os inputs para forçar mensagens a aparecerem (caso envie em branco)
+            if(inputNome) inputNome.dispatchEvent(new Event('blur'));
+            if(inputEmail) inputEmail.dispatchEvent(new Event('blur'));
+            if(inputCpf) inputCpf.dispatchEvent(new Event('blur'));
+            if(inputTelefone) inputTelefone.dispatchEvent(new Event('blur'));
+            if(inputData) inputData.dispatchEvent(new Event('blur'));
+            if(inputSenha) inputSenha.dispatchEvent(new Event('blur'));
 
-            // Captura os valores
-            const nome = document.getElementById("nome").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const cpf = document.getElementById("cpf").value.trim();
-            const telefone = document.getElementById("telefone").value.trim();
-            const dataNascimento = document.getElementById("data_nascimento").value;
-            const senha = document.getElementById("senha").value;
+            // Checa se algum Span de erro está aparecendo (não tem a classe d-none)
+            const algumErroNaTela = [erroNome, erroEmail, erroCpf, erroTelefone, erroData, erroSenha]
+                                    .some(span => span && !span.classList.contains('d-none'));
 
-            let temErro = false;
-
-            // Validações
-            if (nome.length < 3) {
-                document.getElementById("erroNome").textContent = "Nome muito curto.";
-                temErro = true;
+            if (algumErroNaTela) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return; // Bloqueia o envio
             }
-            if (!validarEmail(email)) {
-                document.getElementById("erroEmail").textContent = "Email inválido.";
-                temErro = true;
-            }
-            if (!validarCPF(cpf)) {
-                document.getElementById("erroCpf").textContent = "CPF inválido (11 dígitos).";
-                temErro = true;
-            }
-            if (telefone.replace(/\D/g, '').length < 10) {
-                document.getElementById("erroTelefone").textContent = "Telefone inválido (inclua DDD).";
-                temErro = true;
-            }
-            if (!dataNascimento) {
-                document.getElementById("erroData").textContent = "Data obrigatória.";
-                temErro = true;
-            }
-            if (senha.length < 6) {
-                document.getElementById("erroSenha").textContent = "Mínimo 6 caracteres.";
-                temErro = true;
-            }
-
-            // Se houver algum erro, para a execução aqui
-            if (temErro) return;
 
             // Altera o estado do botão para "Cadastrando..."
             const btn = document.querySelector('button[type="submit"]');
@@ -70,16 +122,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Monta os dados para o envio
             const fd = new FormData();
-            fd.append('nome', nome);
-            fd.append('email', email);
-            fd.append('cpf', cpf.replace(/\D/g, '')); // Envia só os números
-            fd.append('telefone', telefone.replace(/\D/g, '')); // Envia só os números
-            fd.append('data_nascimento', dataNascimento);
-            fd.append('senha', senha);
-            fd.append('tipo_usuario', 'ResponsavelLegal'); // Identificador para o backend
+            fd.append('nome', inputNome.value.trim());
+            fd.append('email', inputEmail.value.trim());
+            fd.append('cpf', inputCpf.value.replace(/\D/g, ''));
+            fd.append('telefone', inputTelefone.value.replace(/\D/g, ''));
+            fd.append('data_nascimento', inputData.value);
+            fd.append('senha', inputSenha.value);
+            fd.append('tipo_usuario', 'ResponsavelLegal'); 
 
             try {
-                // Realiza a requisição ao backend PHP
                 const resposta = await fetch('../php/usuario_novo.php', {
                     method: 'POST',
                     body: fd
@@ -88,18 +139,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dados = await resposta.json();
 
                 if (dados.status === 'ok' || dados.status === 'sucesso') {
-                    // Exibe o SweetAlert de Sucesso
                     Swal.fire({
                         icon: 'success',
                         title: 'Sucesso!',
                         text: 'Responsável cadastrado com sucesso!',
                         confirmButtonColor: '#0284c7'
                     }).then(() => {
-                        // Redireciona APÓS o usuário clicar no OK do alerta
                         window.location.href = 'lista_responsavel.html';
                     });
                 } else {
-                    // Exibe o SweetAlert de Erro (ex: CPF já existe)
                     Swal.fire({
                         icon: 'error',
                         title: 'Erro no Cadastro',
@@ -116,27 +164,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     confirmButtonColor: '#d33'
                 });
             } finally {
-                // Restaura o botão caso dê erro e a pessoa precise tentar de novo
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-person-check-fill me-1"></i> Cadastrar Responsável';
                 }
             }
-        });
-    }
-
-    // Impede a digitação de letras nos campos de CPF e Telefone (apenas números)
-    const inputCpf = document.getElementById('cpf');
-    if (inputCpf) {
-        inputCpf.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').slice(0, 11);
-        });
-    }
-
-    const inputTelefone = document.getElementById('telefone');
-    if (inputTelefone) {
-        inputTelefone.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').slice(0, 15);
         });
     }
 });

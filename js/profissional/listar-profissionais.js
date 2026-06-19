@@ -71,15 +71,58 @@ function preencherTabela(dados) {
     document.getElementById("lista").innerHTML = html;
 }
 
+// =======================================================
+// EXCLUSÃO COM SWEETALERT2
+// =======================================================
 async function excluir(id) {
-    if (confirm("Deseja realmente remover este profissional do sistema? A exclusão removerá o acesso dele.")) {
-        const retorno = await fetch("../../php/usuario_excluir.php?id=" + id);
-        const resposta = await retorno.json();
-        alert(resposta.mensagem);
-        if (resposta.status === "ok") window.location.reload();
+    // 1. Exibe o alerta de confirmação customizado
+    const confirmacao = await Swal.fire({
+        title: 'Tem certeza?',
+        text: "Deseja realmente remover este profissional do sistema? A exclusão removerá o acesso dele.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-trash3"></i> Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    });
+
+    // 2. Executa a deleção caso o usuário confirme
+    if (confirmacao.isConfirmed) {
+        try {
+            const retorno = await fetch("../../php/usuario_excluir.php?id=" + id);
+            const resposta = await retorno.json();
+            
+            if (resposta.status === "ok") {
+                // Alerta de sucesso
+                await Swal.fire({
+                    title: 'Excluído!',
+                    text: resposta.mensagem,
+                    icon: 'success',
+                    confirmButtonColor: '#0d6efd'
+                });
+                window.location.reload();
+            } else {
+                // Alerta de erro do servidor
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: resposta.mensagem,
+                    icon: 'error',
+                    confirmButtonColor: '#0d6efd'
+                });
+            }
+        } catch (erro) {
+            console.error("Erro ao excluir:", erro);
+            // Alerta de erro de conexão
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro de comunicação ao tentar excluir.',
+                icon: 'error',
+                confirmButtonColor: '#0d6efd'
+            });
+        }
     }
 }
-
 
 const btnLogoff = document.getElementById("logoff");
 

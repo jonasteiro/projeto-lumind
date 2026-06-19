@@ -29,6 +29,14 @@
             // 6. Excluir os Responsáveis Legais vinculados ao profissional
             $conexao->query("DELETE FROM ResponsavelLegal WHERE id_profissional = $id");
 
+            // ====================================================================
+            // CORREÇÃO DO ERRO DA CAPTURA DE TELA (FOREIGN KEY id_admin_revisor)
+            // ====================================================================
+            // Antes de excluir o administrador, desvinculamos ele de todas as 
+            // documentações que ele revisou, setando o campo revisor para NULL.
+            $conexao->query("UPDATE Documentacao SET id_admin_revisor = NULL WHERE id_admin_revisor = $id");
+            // ====================================================================
+
             // 7. Limpar tabelas genéricas que usam id_usuario (Documentos, Telefones e Perfis)
             $tabelas_filhas = ['Documentacao', 'Telefone', 'Administrador', 'ProfissionalSaude'];
             foreach ($tabelas_filhas as $tabela) {
@@ -66,7 +74,6 @@
     $conexao->close();
     ob_clean();
     
-    // Corrigido um pequeno erro de sintaxe no charset (de : para =)
     header("Content-type:application/json;charset=utf-8");
     echo json_encode($retorno);
 ?>

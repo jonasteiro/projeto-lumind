@@ -281,7 +281,3 @@ ALTER TABLE PessoaTea_Atividade
     ADD COLUMN data_feedback DATETIME NULL
     COMMENT 'Data e hora quando o profissional enviou o feedback'
     AFTER feedback_profissional;
-    
-
-
-

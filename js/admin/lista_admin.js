@@ -146,20 +146,57 @@ function preencherTabela(dados, tbody) {
     tbody.innerHTML = html;
 }
 
+// =======================================================
+// EXCLUSÃO COM SWEETALERT2
+// =======================================================
 async function excluir(id) {
-    if (confirm("Deseja realmente remover este administrador?")) {
+    // 1. Exibe a confirmação visual personalizada
+    const confirmacao = await Swal.fire({
+        title: 'Tem certeza?',
+        text: "Deseja realmente remover este administrador? Essa ação não pode ser desfeita.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-trash3"></i> Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    });
+
+    // 2. Se o usuário confirmar, faz a requisição PHP
+    if (confirmacao.isConfirmed) {
         try {
             const retorno = await fetch("../php/usuario_excluir.php?id=" + id);
             const resposta = await retorno.json();
             
-            alert(resposta.mensagem); 
-            
             if (resposta.status === "ok") {
+                // Mensagem de sucesso aguardando o usuário clicar em "OK"
+                await Swal.fire({
+                    title: 'Excluído!',
+                    text: resposta.mensagem,
+                    icon: 'success',
+                    confirmButtonColor: '#0d6efd'
+                });
+                
+                // Recarrega a página após a confirmação
                 window.location.reload();
+            } else {
+                // Mensagem de erro do backend
+                Swal.fire({
+                    title: 'Atenção!',
+                    text: resposta.mensagem,
+                    icon: 'error',
+                    confirmButtonColor: '#0d6efd'
+                });
             }
         } catch (erro) {
             console.error("Erro ao excluir:", erro);
-            alert("Erro de comunicação ao tentar excluir.");
+            // Mensagem de erro de conexão/fetch
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro de comunicação ao tentar excluir.',
+                icon: 'error',
+                confirmButtonColor: '#0d6efd'
+            });
         }
     }
 }

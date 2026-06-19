@@ -2,83 +2,145 @@ const formulario = document.getElementById('formCadastroAdm');
 const divErro = document.getElementById('divErro');
 const divSucesso = document.getElementById('divSucesso');
 
-function validarEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+const inputNome = document.getElementById('nome');
+const erroNome = document.getElementById('erroNome');
+
+const inputEmail = document.getElementById('email');
+const erroEmail = document.getElementById('erroEmail');
+
+const inputCpf = document.getElementById('cpf');
+const erroCpf = document.getElementById('erroCpf');
+
+const inputData = document.getElementById('data_nascimento');
+const erroData = document.getElementById('erroData');
+
+const inputSenha = document.getElementById('senha');
+const erroSenha = document.getElementById('erroSenha');
+
+// ==========================================
+// 1. BLOQUEIO DE DATAS FUTURAS
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    if (inputData) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        
+        // Impede de clicar em dias além de "hoje" no calendário HTML
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`);
+    }
+});
+
+// ==========================================
+// 2. FUNÇÕES DE VALIDAÇÃO (Regras)
+// ==========================================
+const ehNomeValido = (val) => val.trim().length >= 3;
+const ehEmailValido = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+const ehCpfValido = (val) => val.replace(/\D/g, '').length === 11;
+const ehSenhaForte = (val) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val);
+const ehMaiorDeIdade = (val) => {
+    if (!val) return false;
+    const dataNasc = new Date(val);
+    const hoje = new Date();
+    let idade = hoje.getFullYear() - dataNasc.getFullYear();
+    
+    const mesAtual = hoje.getMonth();
+    const diaAtual = hoje.getDate();
+    const mesNasc = dataNasc.getMonth();
+    const diaNasc = dataNasc.getDate();
+
+    if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+        idade--;
+    }
+    return idade >= 18;
+};
+
+// ==========================================
+// 3. EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
+// ==========================================
+
+// Função que ESCUTA O TECLADO e oculta o erro assim que o dado fica correto
+function ocultarErroSeValido(input, erroElemento, validacaoFn) {
+    const checar = () => {
+        if (validacaoFn(input.value)) {
+            erroElemento.classList.remove('show');
+            if (divErro) divErro.classList.remove('show'); // Limpa a faixa vermelha global tbm
+        }
+    };
+    input.addEventListener('input', checar);
+    input.addEventListener('change', checar);
+    input.addEventListener('keyup', checar); // Garante que a digitação apague o erro
 }
 
-function validarCPF(cpf) {
-    const apenasNumeros = cpf.replace(/\D/g, '');
-    return apenasNumeros.length === 11;
+// Função que mostra o erro apenas quando o usuário SAI DO CAMPO (blur) e deixou errado
+function mostrarErroSeInvalido(input, erroElemento, validacaoFn, msgInvalido, msgVazio = 'Campo obrigatório') {
+    input.addEventListener('blur', () => {
+        if (input.value.trim().length > 0 && !validacaoFn(input.value)) {
+            erroElemento.textContent = msgInvalido;
+            erroElemento.classList.add('show');
+        } else if (input.value.trim().length === 0) {
+            erroElemento.textContent = msgVazio;
+            erroElemento.classList.add('show');
+        }
+    });
 }
 
-// CORREÇÃO: Nova função baseada em Regex para senha forte
-function validarSenhaForte(senha) {
-    // Exige: mín 8 chars, 1 maiúscula, 1 minúscula, 1 número e 1 caractere especial
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    return regex.test(senha);
-}
+// --- Aplicando nos campos ---
+ocultarErroSeValido(inputNome, erroNome, ehNomeValido);
+mostrarErroSeInvalido(inputNome, erroNome, ehNomeValido, 'O nome deve ter pelo menos 3 caracteres');
 
-function mostrarErro(mensagem) {
-    divErro.textContent = mensagem;
-    divErro.classList.add('show');
-    divSucesso.classList.remove('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+ocultarErroSeValido(inputEmail, erroEmail, ehEmailValido);
+mostrarErroSeInvalido(inputEmail, erroEmail, ehEmailValido, 'Formato de e-mail inválido');
 
-function validarCampos() {
-    const nome = document.getElementById('nome').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const cpf = document.getElementById('cpf').value.trim();
-    const dataNascimento = document.getElementById('data_nascimento').value;
-    const senha = document.getElementById('senha').value;
+inputCpf.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, ''); // Força apenas números no CPF
+});
+ocultarErroSeValido(inputCpf, erroCpf, ehCpfValido);
+mostrarErroSeInvalido(inputCpf, erroCpf, ehCpfValido, 'O CPF deve ter exatamente 11 números');
 
+ocultarErroSeValido(inputData, erroData, ehMaiorDeIdade);
+mostrarErroSeInvalido(inputData, erroData, ehMaiorDeIdade, 'O administrador deve ter no mínimo 18 anos', 'A data de nascimento é obrigatória');
+
+ocultarErroSeValido(inputSenha, erroSenha, ehSenhaForte);
+mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaForte, 'A senha deve ter mín 8 chars, 1 maiúscula, 1 número e 1 caractere especial');
+
+
+// ==========================================
+// 4. VALIDAÇÃO FINAL NO SUBMIT
+// ==========================================
+function validarCamposSubmit() {
     let temErro = false;
 
-    document.getElementById('erroNome').classList.remove('show');
-    document.getElementById('erroEmail').classList.remove('show');
-    document.getElementById('erroCpf').classList.remove('show');
-    document.getElementById('erroData').classList.remove('show');
-    document.getElementById('erroSenha').classList.remove('show');
+    // Dispara manualmente o blur em todos os campos para forçar as mensagens de erro aparecerem caso ele tente enviar tudo em branco
+    inputNome.dispatchEvent(new Event('blur'));
+    inputEmail.dispatchEvent(new Event('blur'));
+    inputCpf.dispatchEvent(new Event('blur'));
+    inputData.dispatchEvent(new Event('blur'));
+    inputSenha.dispatchEvent(new Event('blur'));
 
-    if (nome.length < 3) {
-        document.getElementById('erroNome').textContent = 'Nome deve ter pelo menos 3 caracteres';
-        document.getElementById('erroNome').classList.add('show');
-        temErro = true;
-    }
-
-    if (!validarEmail(email)) {
-        document.getElementById('erroEmail').textContent = 'Email inválido';
-        document.getElementById('erroEmail').classList.add('show');
-        temErro = true;
-    }
-
-    if (!validarCPF(cpf)) {
-        document.getElementById('erroCpf').textContent = 'O CPF deve ter exatamente 11 números';
-        document.getElementById('erroCpf').classList.add('show');
-        temErro = true;
-    }
-
-    if (!dataNascimento) {
-        document.getElementById('erroData').textContent = 'Data de nascimento obrigatória';
-        document.getElementById('erroData').classList.add('show');
-        temErro = true;
-    }
-
-    // CORREÇÃO: Substituindo a validação antiga pela validação da senha forte
-    if (!validarSenhaForte(senha)) {
-        document.getElementById('erroSenha').textContent = 'A senha não atende aos requisitos de segurança.';
-        document.getElementById('erroSenha').classList.add('show');
+    if (erroNome.classList.contains('show') || 
+        erroEmail.classList.contains('show') || 
+        erroCpf.classList.contains('show') || 
+        erroData.classList.contains('show') || 
+        erroSenha.classList.contains('show')) {
         temErro = true;
     }
 
     return !temErro;
 }
 
+function mostrarErroGeral(mensagem) {
+    divErro.textContent = mensagem;
+    divErro.classList.add('show');
+    divSucesso.classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    if (!validarCampos()) {
+    if (!validarCamposSubmit()) {
         return;
     }
 
@@ -88,12 +150,11 @@ formulario.addEventListener('submit', async function(e) {
 
     try {
         const formData = new FormData();
-
-        formData.append('nome', document.getElementById('nome').value.trim());
-        formData.append('email', document.getElementById('email').value.trim());
-        formData.append('cpf', document.getElementById('cpf').value);
-        formData.append('data_nascimento', document.getElementById('data_nascimento').value);
-        formData.append('senha', document.getElementById('senha').value);
+        formData.append('nome', inputNome.value.trim());
+        formData.append('email', inputEmail.value.trim());
+        formData.append('cpf', inputCpf.value);
+        formData.append('data_nascimento', inputData.value);
+        formData.append('senha', inputSenha.value);
         formData.append('tipo_usuario', 'Administrador');
 
         const resposta = await fetch('../php/usuario_novo.php', {
@@ -114,59 +175,35 @@ formulario.addEventListener('submit', async function(e) {
                 window.location.href = '../home/lista_administrador.html';
             });
         } else {
-            mostrarErro(' Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
+            mostrarErroGeral(' Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
         }
     } catch (erro) {
-        mostrarErro(' Erro de conexão: ' + erro.message);
+        mostrarErroGeral(' Erro de conexão: ' + erro.message);
     } finally {
         botao.disabled = false;
         botao.textContent = '💾 Criar Administrador';
     }
 });
 
-function limparFormulario() {
+// ==========================================
+// 5. FUNÇÕES DISPONÍVEIS GLOBALMENTE (Botões HTML)
+// ==========================================
+
+// Expomos a função globalmente (window.) para que o onclick="limparFormulario()" do botão consiga acessá-la.
+window.limparFormulario = function() {
     formulario.reset();
-    document.getElementById('erroNome').classList.remove('show');
-    document.getElementById('erroEmail').classList.remove('show');
-    document.getElementById('erroCpf').classList.remove('show');
-    document.getElementById('erroData').classList.remove('show');
-    document.getElementById('erroSenha').classList.remove('show');
+    
+    // Garante remoção rigorosa de TODOS os erros visuais
+    erroNome.classList.remove('show');
+    erroEmail.classList.remove('show');
+    erroCpf.classList.remove('show');
+    erroData.classList.remove('show');
+    erroSenha.classList.remove('show');
+    
     divErro.classList.remove('show');
     divSucesso.classList.remove('show');
-}
+};
 
-function voltarPerfis() {
+window.voltarPerfis = function() {
     window.location.href = '../home/lista_administrador.html';
-}
-
-document.getElementById('nome').addEventListener('input', function() {
-    if (this.value.length >= 3) {
-        document.getElementById('erroNome').classList.remove('show');
-    }
-});
-
-document.getElementById('email').addEventListener('input', function() {
-    if (validarEmail(this.value)) {
-        document.getElementById('erroEmail').classList.remove('show');
-    }
-});
-
-document.getElementById('cpf').addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
-    if (validarCPF(this.value)) {
-        document.getElementById('erroCpf').classList.remove('show');
-    }
-});
-
-document.getElementById('data_nascimento').addEventListener('change', function() {
-    if (this.value) {
-        document.getElementById('erroData').classList.remove('show');
-    }
-});
-
-// CORREÇÃO: O erro só some em tempo real quando o usuário atende à regex
-document.getElementById('senha').addEventListener('input', function() {
-    if (validarSenhaForte(this.value)) {
-        document.getElementById('erroSenha').classList.remove('show');
-    }
-});
+};

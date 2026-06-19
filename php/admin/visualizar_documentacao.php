@@ -14,18 +14,19 @@ if ($id > 0 && ($tipo == 'cert' || $tipo == 'iden')) {
     $stmt->fetch();
     $stmt->close();
 
-    if ($binario) {
+    if (!empty($binario)) {
         
         // ==============================================================
-        // PROTEÇÃO: TRATAMENTO PARA DADOS DE TESTE (MOCK DATA) DO SQL
+        // PROTEÇÃO: TRATAMENTO PARA DADOS DE TESTE (MOCK DATA)
         // ==============================================================
         $dados_falsos = ['blob_cert_novo', 'blob_rg_novo', 'blob_cert', 'blob_rg', 'blob_cert_borrado', 'blob_rg_vencido'];
         
         if (in_array($binario, $dados_falsos)) {
-            echo "<div style='font-family: Inter, Arial, sans-serif; text-align: center; padding: 60px 20px; color: #334155; background-color: #f8fcff; height: 100vh; margin: 0; box-sizing: border-box;'>";
-            echo "<h2 style='color: #0284c7; margin-bottom: 10px;'>Modo de Teste</h2>";
-            echo "<p style='font-size: 1.1rem;'>O banco de dados retornou o texto fictício: <strong style='background: #e0f2fe; padding: 4px 8px; border-radius: 4px; color: #0369a1;'>" . htmlspecialchars($binario) . "</strong></p>";
-            echo "<p style='color: #64748b; font-size: 0.9rem; mt-3'>Para ver um documento real, faça o upload de um PDF ou Imagem pelo sistema.</p>";
+            // Nova tela amigável para dados de teste
+            echo "<div style='font-family: Inter, Arial, sans-serif; text-align: center; padding: 40px 20px; color: #64748b; background-color: #f8fafc; height: 100vh; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;'>";
+            echo "<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50' fill='currentColor' style='color: #94a3b8; margin-bottom: 15px;' viewBox='0 0 16 16'><path d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/><path d='M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z'/></svg>";
+            echo "<h3 style='color: #334155; margin-bottom: 8px; font-weight: 600;'>Perfil de Demonstração</h3>";
+            echo "<p style='font-size: 0.95rem; max-width: 320px; line-height: 1.5;'>Este profissional foi gerado para testes e não possui um documento real anexado.</p>";
             echo "</div>";
             exit;
         }
@@ -45,7 +46,10 @@ if ($id > 0 && ($tipo == 'cert' || $tipo == 'iden')) {
     }
 }
 
-echo "<div style='font-family: Inter, Arial, sans-serif; text-align: center; padding: 60px 20px; color: #dc3545; background-color: #fff5f5; height: 100vh; margin: 0;'>";
-echo "<h3>Documento não localizado no banco de dados.</h3>";
+// MENSAGEM AMIGÁVEL CASO O ARQUIVO NÃO EXISTA (NULL/VAZIO)
+echo "<div style='font-family: Inter, Arial, sans-serif; text-align: center; padding: 40px 20px; color: #64748b; background-color: #f8fafc; height: 100vh; margin: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;'>";
+echo "<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' fill='currentColor' style='color: #cbd5e1; margin-bottom: 15px;' viewBox='0 0 16 16'><path d='M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM4.118 10.536a.5.5 0 1 0-.824.568l3 4.5a.5.5 0 0 0 .824-.568l-3-4.5zM11.5 10a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h6a.5.5 0 0 0 .5-.5z'/></svg>";
+echo "<h3 style='color: #334155; margin-bottom: 8px; font-weight: 600;'>Documento Indisponível</h3>";
+echo "<p style='font-size: 0.95rem; max-width: 300px; line-height: 1.5;'>O profissional ainda não enviou este arquivo ou o upload falhou.</p>";
 echo "</div>";
 ?>

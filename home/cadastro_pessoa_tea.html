@@ -60,40 +60,40 @@
                         
                         <div class="mb-3">
                             <div class="form-floating">
-                                <input type="text" class="form-control rounded-3 border-light-subtle" id="nome" name="nome" placeholder="Nome completo" required maxlength="100">
+                                <input type="text" class="form-control rounded-3 border-light-subtle" id="nome" name="nome" placeholder="Nome completo" maxlength="100">
                                 <label for="nome" class="text-muted"><i class="bi bi-person me-2"></i>Nome Completo *</label>
                             </div>
-                            <span class="text-danger small" id="erroNome"></span>
+                            <span class="text-danger small d-none ms-2 mt-1" id="erroNome"></span>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="email" class="form-control rounded-3 border-light-subtle" id="email" name="email" placeholder="Email" required maxlength="100">
+                                    <input type="email" class="form-control rounded-3 border-light-subtle" id="email" name="email" placeholder="Email" maxlength="100">
                                     <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email (Login) *</label>
                                 </div>
-                                <span class="text-danger small" id="erroEmail"></span>
+                                <span class="text-danger small d-none ms-2 mt-1" id="erroEmail"></span>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf" name="cpf" placeholder="CPF" required maxlength="14">
+                                    <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf" name="cpf" placeholder="CPF" maxlength="14">
                                     <label for="cpf" class="text-muted"><i class="bi bi-card-text me-2"></i>CPF *</label>
                                 </div>
-                                <span class="text-danger small" id="erroCpf"></span>
+                                <span class="text-danger small d-none ms-2 mt-1" id="erroCpf"></span>
                             </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control rounded-3 border-light-subtle" id="data_nascimento" name="data_nascimento" required>
+                                    <input type="date" class="form-control rounded-3 border-light-subtle" id="data_nascimento" name="data_nascimento">
                                     <label for="data_nascimento" class="text-muted"><i class="bi bi-calendar-event me-2"></i>Data de Nascimento *</label>
                                 </div>
-                                <span class="text-danger small" id="erroData"></span>
+                                <span class="text-danger small d-none ms-2 mt-1" id="erroData"></span>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <select id="nivel_tea" name="nivel_tea" class="form-select rounded-3 border-light-subtle" required>
+                                    <select id="nivel_tea" name="nivel_tea" class="form-select rounded-3 border-light-subtle">
                                         <option value="">Selecione o nível</option>
                                         <option value="Nível 1 - Suporte Leve">Nível 1 - Suporte Leve</option>
                                         <option value="Nível 2 - Suporte Moderado">Nível 2 - Suporte Moderado</option>
@@ -101,7 +101,7 @@
                                     </select>
                                     <label for="nivel_tea" class="text-muted"><i class="bi bi-bar-chart me-2"></i>Nível de Suporte (TEA) *</label>
                                 </div>
-                                <span class="text-danger small" id="erroNivel"></span>
+                                <span class="text-danger small d-none ms-2 mt-1" id="erroNivel"></span>
                             </div>
                         </div>
 
@@ -121,21 +121,20 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" name="senha" placeholder="Senha" required minlength="6">
+                                    <input type="password" class="form-control rounded-3 border-light-subtle" id="senha" name="senha" placeholder="Senha" minlength="6">
                                     <label for="senha" class="text-muted"><i class="bi bi-lock me-2"></i>Senha de Acesso *</label>
                                 </div>
-                                <small class="text-muted ms-2" style="font-size: 0.75rem;">Mínimo 6 caracteres.</small>
-                                <span class="text-danger small d-block" id="erroSenha"></span>
+                                <span class="text-danger small d-none ms-2 mt-1" id="erroSenha"></span>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <div class="form-floating">
-                                <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf_responsavel" name="cpf_responsavel" placeholder="CPF do Responsável" required maxlength="14">
+                                <input type="text" class="form-control rounded-3 border-light-subtle" id="cpf_responsavel" name="cpf_responsavel" placeholder="CPF do Responsável" maxlength="14">
                                 <label for="cpf_responsavel" class="text-muted"><i class="bi bi-person-badge me-2"></i>CPF do Responsável Legal *</label>
                             </div>
-                            <small class="text-muted ms-2 d-block" style="font-size: 0.75rem;">O responsável já deve estar cadastrado no sistema.</small>
-                            <span class="text-danger small" id="erroCpfResponsavel"></span>
+                            <small class="text-muted ms-2 mt-1 d-block" style="font-size: 0.75rem;">O responsável já deve estar cadastrado no sistema.</small>
+                            <span class="text-danger small d-none ms-2" id="erroCpfResponsavel"></span>
                         </div>
 
                         <div id="divErro" class="alert alert-danger d-none py-2 mt-3" style="font-size: 0.85rem;"></div>
@@ -158,58 +157,9 @@
         </section>
     </main>
 
-<<<<<<< HEAD
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-=======
-                <div class="form-group">
-                    <label for="observacao">Observações Clínicas / Comportamentais</label>
-                    <textarea id="observacao" name="observacao" rows="3" placeholder="Detalhes importantes sobre o paciente..."></textarea>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="telefone">Telefone (Opcional)</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="DDD + Número">
-                    </div>
-                    <div class="form-group">
-                        <label for="senha">Senha de Acesso *</label>
-                        <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
-                        <span class="form-error" id="erroSenha"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="cpf_responsavel">CPF do Responsável Legal *</label>
-                    <input type="text" id="cpf_responsavel" name="cpf_responsavel" placeholder="Apenas números" required maxlength="14">
-                    <span class="form-error" id="erroCpfResponsavel"></span>
-                </div>
-
-                <!-- 
-                COLOCAR AQUI TRATAMENTO DE EXCEÇÃO 
-                <div class="form-group">
-                    <label for="email_exercicio">E-mail do Exercício *</label>
-                    <input type="text" id="email_exercicio" placeholder="Digite para testar o @">
-                    
-                    COLOCAR AQUI ERRO E ID
-                    <p id="erro_exercicio"></p>
-                </div>
-                -->
-
-                <div id="divErro" class="alert alert-error"></div>
-                <div id="divSucesso" class="alert alert-success"></div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Cadastrar Paciente</button>
-                    <button type="button" class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
-                </div>
-            </form>
-        </main>
-    </div>
-    
-    <script src="../js/pessoa_tea.js/pessoa_tea_novo.js"></script>
->>>>>>> 4ce98d976a9f942a2228f0b20e70203491591c82
-    <script src="../js/valida_sessao.js"></script>
-    <script src="../js/index.js"></script>
+    <script src="../../js/valida_sessao.js"></script>
+    <script src="../../js/index.js"></script>
     <script src="../js/pessoa_tea.js/pessoa_tea_novo.js"></script>
     <script>
         if (typeof validarAcesso === "function") {

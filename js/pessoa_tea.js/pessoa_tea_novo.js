@@ -1,124 +1,127 @@
-// js/pessoa_tea.js/pessoa_tea_novo.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const formulario = document.getElementById('formCadastroPessoaTea');
     const divErro = document.getElementById('divErro');
-    const divSucesso = document.getElementById('divSucesso');
-
-    function validarEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    
+    // =======================================================
+    // BLOQUEIO DE DATAS FUTURAS (Trava de Segurança)
+    // =======================================================
+    const inputData = document.getElementById('data_nascimento');
+    if (inputData) {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); // Bloqueia calendário HTML
     }
 
-    // CPF
-    function validarCPF(cpf) {
-        const apenasNumeros = cpf.replace(/\D/g, ''); 
-        return apenasNumeros.length === 11; 
+    // =======================================================
+    // FUNÇÕES DE VALIDAÇÃO (Regras)
+    // =======================================================
+    const ehNomeValido = (val) => val.trim().length >= 3;
+    const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
+    const ehDataValida = (val) => val.trim() !== "";
+    const ehNivelValido = (val) => val.trim() !== "";
+    const ehSenhaValida = (val) => val.length >= 6;
+
+    // =======================================================
+    // EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
+    // =======================================================
+    const inputNome = document.getElementById('nome');
+    const erroNome = document.getElementById('erroNome');
+
+    const inputEmail = document.getElementById('email');
+    const erroEmail = document.getElementById('erroEmail');
+
+    const inputCpf = document.getElementById('cpf');
+    const erroCpf = document.getElementById('erroCpf');
+
+    const erroData = document.getElementById('erroData');
+    
+    const inputNivel = document.getElementById('nivel_tea');
+    const erroNivel = document.getElementById('erroNivel');
+
+    const inputSenha = document.getElementById('senha');
+    const erroSenha = document.getElementById('erroSenha');
+
+    const inputCpfResp = document.getElementById('cpf_responsavel');
+    const erroCpfResp = document.getElementById('erroCpfResponsavel');
+
+    // Função que oculta o erro assim que o usuário digita corretamente
+    function ocultarErroSeValido(input, erroElemento, validacaoFn) {
+        if(!input || !erroElemento) return;
+        const checar = () => {
+            if (validacaoFn(input.value)) {
+                erroElemento.classList.add('d-none');
+            }
+        };
+        input.addEventListener('input', checar);
+        input.addEventListener('change', checar);
+        input.addEventListener('keyup', checar);
     }
 
-    function mostrarErro(mensagem) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Erro no Cadastro',
-                text: mensagem,
-                confirmButtonColor: '#d33'
-            });
-        } else if (divErro) {
-            divErro.textContent = mensagem;
-            divErro.classList.remove('d-none');
-            divSucesso.classList.add('d-none');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }
-
-    function mostrarSucesso(mensagem) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Sucesso!',
-                text: mensagem,
-                confirmButtonColor: '#0284c7'
-            }).then(() => {
-                voltarPerfis();
-            });
-        } else if (divSucesso) {
-            divSucesso.textContent = mensagem;
-            divSucesso.classList.remove('d-none');
-            divErro.classList.add('d-none');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => { voltarPerfis(); }, 2000);
-        }
-    }
-
-    //Função para validar os campos de acordo com as regras estabelecidas
-    function validarCampos() {
-        const nome = document.getElementById('nome').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const cpf = document.getElementById('cpf').value.trim();
-        const dataNascimento = document.getElementById('data_nascimento').value;
-        const nivelTea = document.getElementById('nivel_tea').value;
-        const senha = document.getElementById('senha').value;
-        
-        // NOVO: Pega o CPF do Responsável
-        const cpfResponsavel = document.getElementById('cpf_responsavel').value.trim(); 
-
-        let temErro = false;
-        
-        // Limpar mensagens de erro anteriores (com as novas classes de CSS do Bootstrap)
-        const camposErro = ['erroNome', 'erroEmail', 'erroCpf', 'erroCpfResponsavel', 'erroData', 'erroNivel', 'erroSenha'];
-        camposErro.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.textContent = '';
+    // Função que mostra o erro apenas quando o usuário SAI DO CAMPO (blur)
+    function mostrarErroSeInvalido(input, erroElemento, validacaoFn, msgInvalido) {
+        if(!input || !erroElemento) return;
+        input.addEventListener('blur', () => {
+            if (!validacaoFn(input.value)) {
+                erroElemento.textContent = msgInvalido;
+                erroElemento.classList.remove('d-none');
+            }
         });
-
-        if (nome.length < 3) {
-            const el = document.getElementById('erroNome');
-            if(el) el.textContent = 'Nome muito curto'; 
-            temErro = true; 
-        }
-        if (!validarEmail(email)) {
-            const el = document.getElementById('erroEmail');
-            if(el) el.textContent = 'Email inválido';
-            temErro = true;
-        }
-        if (!validarCPF(cpf)) {
-            const el = document.getElementById('erroCpf');
-            if(el) el.textContent = 'CPF inválido (11 dígitos)';
-            temErro = true;
-        }
-        
-        // NOVO: Valida o CPF do Responsável
-        if (!validarCPF(cpfResponsavel)) {
-            const el = document.getElementById('erroCpfResponsavel');
-            if(el) el.textContent = 'CPF inválido (11 dígitos)';
-            temErro = true;
-        }
-
-        if (!dataNascimento) {
-            const el = document.getElementById('erroData');
-            if(el) el.textContent = 'Data obrigatória';
-            temErro = true;
-        }
-        if (!nivelTea) {
-            const el = document.getElementById('erroNivel');
-            if(el) el.textContent = 'Selecione o nível de suporte';
-            temErro = true;
-        }
-        if (senha.length < 6) {
-            const el = document.getElementById('erroSenha');
-            if(el) el.textContent = 'Mínimo 6 caracteres';
-            temErro = true;
-        }
-
-        return !temErro;
     }
 
+    // Aplicando nos campos
+    ocultarErroSeValido(inputNome, erroNome, ehNomeValido);
+    mostrarErroSeInvalido(inputNome, erroNome, ehNomeValido, 'O nome deve ter pelo menos 3 caracteres.');
+
+    ocultarErroSeValido(inputEmail, erroEmail, validarEmail);
+    mostrarErroSeInvalido(inputEmail, erroEmail, validarEmail, 'Insira um formato de e-mail válido.');
+
+    if(inputCpf) inputCpf.addEventListener('input', function() { this.value = this.value.replace(/\D/g, ''); });
+    ocultarErroSeValido(inputCpf, erroCpf, validarCPF);
+    mostrarErroSeInvalido(inputCpf, erroCpf, validarCPF, 'O CPF deve ter exatamente 11 números.');
+
+    ocultarErroSeValido(inputData, erroData, ehDataValida);
+    mostrarErroSeInvalido(inputData, erroData, ehDataValida, 'A data de nascimento é obrigatória.');
+
+    ocultarErroSeValido(inputNivel, erroNivel, ehNivelValido);
+    mostrarErroSeInvalido(inputNivel, erroNivel, ehNivelValido, 'Selecione o nível de suporte do paciente.');
+
+    ocultarErroSeValido(inputSenha, erroSenha, ehSenhaValida);
+    mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaValida, 'A senha deve ter no mínimo 6 caracteres.');
+
+    if(inputCpfResp) inputCpfResp.addEventListener('input', function() { this.value = this.value.replace(/\D/g, ''); });
+    ocultarErroSeValido(inputCpfResp, erroCpfResp, validarCPF);
+    mostrarErroSeInvalido(inputCpfResp, erroCpfResp, validarCPF, 'O CPF do responsável deve ter 11 números.');
+
+
+    // =======================================================
+    // ENVIO DO FORMULÁRIO (Trava Final e POST)
+    // =======================================================
     if (formulario) {
         formulario.addEventListener('submit', async function(e) { 
             e.preventDefault();
 
-            if (!validarCampos()) return;
+            // Dispara o evento de 'blur' em todos os inputs para forçar as mensagens a aparecerem caso o usuário tente enviar em branco
+            if(inputNome) inputNome.dispatchEvent(new Event('blur'));
+            if(inputEmail) inputEmail.dispatchEvent(new Event('blur'));
+            if(inputCpf) inputCpf.dispatchEvent(new Event('blur'));
+            if(inputData) inputData.dispatchEvent(new Event('blur'));
+            if(inputNivel) inputNivel.dispatchEvent(new Event('blur'));
+            if(inputSenha) inputSenha.dispatchEvent(new Event('blur'));
+            if(inputCpfResp) inputCpfResp.dispatchEvent(new Event('blur'));
 
+            // Checa se algum Span de erro está aparecendo (não tem a classe d-none)
+            const algumErroNaTela = [erroNome, erroEmail, erroCpf, erroData, erroNivel, erroSenha, erroCpfResp]
+                                    .some(span => span && !span.classList.contains('d-none'));
+
+            if (algumErroNaTela) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return; // Bloqueia o envio
+            }
+
+            // Preparação do envio
             const botao = document.querySelector('button[type="submit"]');
             if(botao) {
                 botao.disabled = true;
@@ -128,16 +131,14 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const formData = new FormData(); 
                 
-                formData.append('nome', document.getElementById('nome').value.trim());
-                formData.append('email', document.getElementById('email').value.trim());
-                formData.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
-                formData.append('senha', document.getElementById('senha').value);
-                formData.append('data_nascimento', document.getElementById('data_nascimento').value);
+                formData.append('nome', inputNome.value.trim());
+                formData.append('email', inputEmail.value.trim());
+                formData.append('cpf', inputCpf.value.replace(/\D/g, ''));
+                formData.append('senha', inputSenha.value);
+                formData.append('data_nascimento', inputData.value);
                 formData.append('tipo_usuario', 'PessoaTea'); 
-                formData.append('nivel_tea', document.getElementById('nivel_tea').value);
-                
-                // NOVO: Envia o CPF do responsável (apenas números)
-                formData.append('cpf_responsavel', document.getElementById('cpf_responsavel').value.replace(/\D/g, ''));
+                formData.append('nivel_tea', inputNivel.value);
+                formData.append('cpf_responsavel', inputCpfResp.value.replace(/\D/g, ''));
 
                 const valTelefone = document.getElementById('telefone');
                 if(valTelefone && valTelefone.value) {
@@ -157,38 +158,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dados = await resposta.json();
 
                 if (dados.status === 'sucesso' || dados.status === 'ok') {
-                    mostrarSucesso('Paciente (TEA) cadastrado com sucesso!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: 'Paciente (TEA) cadastrado com sucesso!',
+                        confirmButtonColor: '#0284c7'
+                    }).then(() => {
+                        window.location.href = 'lista_pessoa_tea.html';
+                    });
                 } else {
-                    mostrarErro(dados.mensagem || 'Erro ao cadastrar.'); 
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Atenção',
+                        text: dados.mensagem || 'Erro ao cadastrar paciente.',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             } catch (erro) {
-                mostrarErro('Erro de conexão com o servidor.');
                 console.error(erro);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro de Conexão',
+                    text: 'Falha ao comunicar com o servidor. Tente novamente.',
+                    confirmButtonColor: '#d33'
+                });
             } finally {
                 if(botao) {
                     botao.disabled = false;
                     botao.innerHTML = '<i class="bi bi-person-check-fill me-1"></i> Cadastrar Paciente';
                 }
             }
-        });
-    }
-
-    function voltarPerfis() {
-        window.location.href = 'lista_pessoa_tea.html';
-    }
-
-    // Formatação ao vivo para os dois campos de CPF
-    const inputCpf = document.getElementById('cpf');
-    if (inputCpf) {
-        inputCpf.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '');
-        });
-    }
-    
-    const inputCpfResp = document.getElementById('cpf_responsavel');
-    if (inputCpfResp) {
-        inputCpfResp.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '');
         });
     }
 });

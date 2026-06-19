@@ -25,20 +25,16 @@
                 <div class="d-flex align-items-center">
                     
                     <a href="../atividades_paciente.html"
+                       id="link-back"
                        class="d-inline-flex align-items-center justify-content-center rounded-circle text-decoration-none me-3"
                        style="width: 44px; height: 44px; background-color: #bce2f9; color: #1474a8; transition: all 0.2s;"
                        onmouseover="this.style.backgroundColor='#a8d6f5'"
                        onmouseout="this.style.backgroundColor='#bce2f9'">
-
                         <i class="bi bi-arrow-left fs-4"></i>
-
                     </a>
 
-                    <h2 class="fs-4 mb-0 fw-bold"
-                        style="color: #167ebc; letter-spacing: 0.5px;">
-
+                    <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">
                         REALIZAR ATIVIDADE
-
                     </h2>
 
                 </div>
@@ -50,8 +46,8 @@
                             --
                         </div>
                         <div class="d-none d-sm-block text-end">
-                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="sidebarNome">Carregando...</span>
-                            <small class="text-muted" style="font-size: 0.8rem;">Paciente</small>
+                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="nome-usuario">Carregando...</span>
+                            <small class="text-muted" style="font-size: 0.8rem;">Paciente / Responsável</small>
                         </div>
                     </div>
 
@@ -59,11 +55,7 @@
                        id="logoff"
                        class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm"
                        style="transition: all 0.2s;">
-
-                        <i class="bi bi-box-arrow-right me-2 fs-5"></i>
-
-                        SAIR
-
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
                     </a>
 
                 </div>
@@ -153,6 +145,7 @@
 
     <script src="../../js/valida_sessao.js"></script>
     <script src="../../js/atividade/tela_atividade.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Aceita tanto PessoaTea quanto ResponsavelLegal
         if (typeof validarAcesso === "function") {

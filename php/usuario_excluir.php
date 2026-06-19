@@ -8,88 +8,92 @@
         $id = intval($_GET['id']);
 
         try {
-            // Inicia uma transação: ou apaga TUDO, ou não apaga NADA.
             $conexao->begin_transaction();
 
             // ====================================================================
-            // 1. DESCOBRIR QUE TIPO DE PESSOA ESTAMOS EXCLUINDO
+            // 1. DESCOBRIR O TIPO EXATO DE USUÁRIO
             // ====================================================================
             $tipo_usuario = 'Desconhecido';
             
-            // Verifica se é um Paciente (PessoaTea)
-            $checaPaciente = $conexao->query("SELECT id_usuario FROM PessoaTea WHERE id_usuario = $id");
-            if ($checaPaciente->num_rows > 0) {
+            if ($conexao->query("SELECT id_usuario FROM Administrador WHERE id_usuario = $id")->num_rows > 0) {
+                $tipo_usuario = 'Administrador';
+            } elseif ($conexao->query("SELECT id_usuario FROM ProfissionalSaude WHERE id_usuario = $id")->num_rows > 0) {
+                $tipo_usuario = 'Profissional';
+            } elseif ($conexao->query("SELECT id_usuario FROM ResponsavelLegal WHERE id_usuario = $id")->num_rows > 0) {
+                $tipo_usuario = 'Responsavel';
+            } elseif ($conexao->query("SELECT id_usuario FROM PessoaTea WHERE id_usuario = $id")->num_rows > 0) {
                 $tipo_usuario = 'Paciente';
-            } else {
-                // Verifica se é um Usuário Pai (Profissional, Responsavel ou Admin)
-                $checaUsuarioPai = $conexao->query("SELECT id_usuario FROM Usuario WHERE id_usuario = $id");
-                if ($checaUsuarioPai->num_rows > 0) {
-                    $tipo_usuario = 'UsuarioPai';
-                }
             }
 
             // ====================================================================
-            // 2. FLUXO DE EXCLUSÃO DE PACIENTE (TEA)
+            // 2. FLUXO DE EXCLUSÃO DE PACIENTE (PessoaTea)
             // ====================================================================
             if ($tipo_usuario === 'Paciente') {
-                
-                // 1. Deleta os vínculos do Paciente com as Atividades
                 $conexao->query("DELETE FROM PessoaTea_Atividade WHERE id_pessoa_tea = $id");
-                
-                // 2. Deleta os vínculos do Paciente com Eventos
                 $conexao->query("DELETE FROM PessoaTea_Evento WHERE id_pessoa_tea = $id");
-                
-                // 3. Deleta os Relatórios do Paciente
                 $conexao->query("DELETE FROM Relatorio WHERE id_pessoa_tea = $id");
-                
-                // 4. Deleta o Paciente
-                $stmt = $conexao->prepare("DELETE FROM PessoaTea WHERE id_usuario = ?");
-                $stmt->bind_param("i", $id);
-                $stmt->execute();
-                $linhas_afetadas = $stmt->affected_rows;
-                $stmt->close();
-
-                if ($linhas_afetadas > 0) {
-                    $conexao->commit();
-                    $retorno = ['status' => 'ok', 'mensagem' => 'Paciente e seus históricos foram excluídos com sucesso!'];
-                } else {
-                    $conexao->rollback();
-                    $retorno['mensagem'] = 'Paciente não encontrado ou já excluído.';
-                }
+                $conexao->query("DELETE FROM PessoaTea WHERE id_usuario = $id");
             }
+            
             // ====================================================================
-            // 3. FLUXO DE EXCLUSÃO DE USUÁRIO PAI (PROFISSIONAL OU ADMIN)
+            // 3. FLUXO DE EXCLUSÃO DE RESPONSÁVEL LEGAL
             // ====================================================================
-            else if ($tipo_usuario === 'UsuarioPai') {
+            elseif ($tipo_usuario === 'Responsavel') {
+                // CORREÇÃO DO ERRO: Limpa os pacientes "órfãos" que dependiam desse responsável
+                $pacientes = $conexao->query("SELECT id_usuario FROM PessoaTea WHERE id_responsavel = $id");
+                while ($pac = $pacientes->fetch_assoc()) {
+                    $id_pac = $pac['id_usuario'];
+                    $conexao->query("DELETE FROM PessoaTea_Atividade WHERE id_pessoa_tea = $id_pac");
+                    $conexao->query("DELETE FROM PessoaTea_Evento WHERE id_pessoa_tea = $id_pac");
+                    $conexao->query("DELETE FROM Relatorio WHERE id_pessoa_tea = $id_pac");
+                }
                 
-                // Limpar vínculos de Atividades com Pacientes (Netos)
+                // Agora que o histórico acabou, apaga o paciente e em seguida o responsável
+                $conexao->query("DELETE FROM PessoaTea WHERE id_responsavel = $id");
+                $conexao->query("DELETE FROM ResponsavelLegal WHERE id_usuario = $id");
+            }
+            
+            // ====================================================================
+            // 4. FLUXO DE EXCLUSÃO DE PROFISSIONAL DE SAÚDE
+            // ====================================================================
+            elseif ($tipo_usuario === 'Profissional') {
+                // Limpa as atividades geradas por esse profissional
                 $conexao->query("DELETE FROM PessoaTea_Atividade WHERE id_atividade IN (SELECT id_atividade FROM Atividade WHERE id_profissional = $id)");
-
-                // Limpar as Atividades do Profissional (Filhos)
                 $conexao->query("DELETE FROM Atividade WHERE id_profissional = $id");
 
-                // Limpar Relatórios dos pacientes vinculados a esse profissional
-                $conexao->query("DELETE FROM Relatorio WHERE id_pessoa_tea IN (SELECT id_usuario FROM PessoaTea WHERE id_profissional = $id)");
-
-                // Limpar vínculos de Eventos dos pacientes do profissional
-                $conexao->query("DELETE FROM PessoaTea_Evento WHERE id_pessoa_tea IN (SELECT id_usuario FROM PessoaTea WHERE id_profissional = $id)");
-
-                // Excluir os Pacientes (PessoaTea) atrelados a este profissional
-                $conexao->query("DELETE FROM PessoaTea WHERE id_profissional = $id");
-
-                // Excluir os Responsáveis Legais vinculados ao profissional
-                $conexao->query("DELETE FROM ResponsavelLegal WHERE id_profissional = $id");
-
-                // Antes de excluir o administrador, setar a revisão como NULL para manter o histórico da documentação
-                $conexao->query("UPDATE Documentacao SET id_admin_revisor = NULL WHERE id_admin_revisor = $id");
-
-                // Limpar tabelas genéricas que usam id_usuario
-                $tabelas_filhas = ['Documentacao', 'Telefone', 'Administrador', 'ProfissionalSaude'];
-                foreach ($tabelas_filhas as $tabela) {
-                    $conexao->query("DELETE FROM $tabela WHERE id_usuario = $id");
+                // Limpa os pacientes amarrados ao profissional
+                $pacientes = $conexao->query("SELECT id_usuario FROM PessoaTea WHERE id_profissional = $id");
+                while ($pac = $pacientes->fetch_assoc()) {
+                    $id_pac = $pac['id_usuario'];
+                    $conexao->query("DELETE FROM PessoaTea_Atividade WHERE id_pessoa_tea = $id_pac");
+                    $conexao->query("DELETE FROM PessoaTea_Evento WHERE id_pessoa_tea = $id_pac");
+                    $conexao->query("DELETE FROM Relatorio WHERE id_pessoa_tea = $id_pac");
                 }
+                
+                // Apaga os registros atrelados
+                $conexao->query("DELETE FROM PessoaTea WHERE id_profissional = $id");
+                $conexao->query("DELETE FROM ResponsavelLegal WHERE id_profissional = $id");
+                $conexao->query("DELETE FROM ProfissionalSaude WHERE id_usuario = $id");
+            }
+            
+            // ====================================================================
+            // 5. FLUXO DE EXCLUSÃO DE ADMINISTRADOR
+            // ====================================================================
+            elseif ($tipo_usuario === 'Administrador') {
+                $conexao->query("UPDATE Documentacao SET id_admin_revisor = NULL WHERE id_admin_revisor = $id");
+                $conexao->query("DELETE FROM Administrador WHERE id_usuario = $id");
+            }
 
-                // Por fim, excluir o Usuário Mestre (O Pai de todos)
+            // ====================================================================
+            // 6. LIMPEZA FINAL (GENÉRICA PARA TODOS OS USUÁRIOS)
+            // ====================================================================
+            if ($tipo_usuario !== 'Desconhecido') {
+                
+                // Limpa os dados de apoio do sistema
+                $conexao->query("DELETE FROM Documentacao WHERE id_usuario = $id");
+                $conexao->query("DELETE FROM Telefone WHERE id_usuario = $id");
+
+                // O Grand Finale: Apaga o "Usuário Pai"
                 $stmt = $conexao->prepare("DELETE FROM Usuario WHERE id_usuario = ?");
                 $stmt->bind_param("i", $id);
                 $stmt->execute();
@@ -98,7 +102,7 @@
 
                 if ($linhas_afetadas > 0) {
                     $conexao->commit();
-                    $retorno = ['status' => 'ok', 'mensagem' => 'Usuário e todos os seus vínculos foram excluídos com sucesso!'];
+                    $retorno = ['status' => 'ok', 'mensagem' => 'O usuário e todos os seus vínculos foram excluídos com sucesso!'];
                 } else {
                     $conexao->rollback();
                     $retorno['mensagem'] = 'Registro não encontrado ou já excluído.';
@@ -108,11 +112,12 @@
                 $retorno['mensagem'] = 'Tipo de usuário não identificado para exclusão.';
             }
 
-        } catch (Exception $e) {
-            // Se o banco barrar alguma coisa, desfazemos tudo e avisamos
+        } catch (mysqli_sql_exception $e) {
             $conexao->rollback();
-            $retorno['mensagem'] = 'O banco de dados impediu a exclusão porque este cadastro possui históricos importantes vinculados.';
-            // Opcional para debug: $retorno['mensagem'] = $e->getMessage();
+            $retorno['mensagem'] = 'ERRO DO BANCO: ' . $e->getMessage();
+        } catch (Exception $e) {
+            $conexao->rollback();
+            $retorno['mensagem'] = 'ERRO GERAL: ' . $e->getMessage();
         }
     } else {
         $retorno['mensagem'] = 'ID não fornecido.';

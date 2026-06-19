@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="../css/tela_responsavel.css">
 
     <style>
+        /* Ajustes de layout para tela sem sidebar */
+        body { background: #f8fcff; }
+        .main-panel-full { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+        
         /* Ajustes específicos do formulário de relatório */
         #alerta-descricao {
             display: none;
@@ -27,13 +31,8 @@
             transition: color 0.3s ease;
         }
         
-        #contador-chars.valido {
-            color: #059669; /* Verde esmeralda suave */
-        }
-        
-        #contador-chars.invalido {
-            color: #ef4444; /* Vermelho suave */
-        }
+        #contador-chars.valido { color: #059669; }
+        #contador-chars.invalido { color: #ef4444; }
         
         .form-control:focus, .form-select:focus {
             box-shadow: 0 0 0 0.25rem rgba(77, 159, 231, 0.25);
@@ -42,34 +41,34 @@
     </style>
 </head>
 <body>
-    <div class="tela-responsavel">
-        <aside class="sidebar">
-            <div class="brand-container text-center py-4 border-bottom border-info border-opacity-25">
-                <img src="../css/logo-lumind.png" alt="Lumind" class="img-fluid" style="width: 120px; height: auto;" onerror="this.style.display='none'">
-            </div>
-            <nav class="nav flex-column p-3">
-                <a href="tela_responsavel.html" class="nav-link"><i class="bi bi-house-door-fill"></i> INICIAL</a>
-                <a href="atividades_responsavel.html" class="nav-link"><i class="bi bi-clipboard-check"></i> ATIVIDADES</a>
-                <a href="#" class="nav-link active"><i class="bi bi-journal-text"></i> RELATÓRIOS</a>
-                <a href="#" id="logoff" class="nav-link"><i class="bi bi-box-arrow-right"></i> SAIR</a>
-            </nav>
-            <div class="sidebar-footer text-center p-3">
-                <small>Versão 1.0</small>
-            </div>
-        </aside>
-
-        <main class="main-panel">
-            <header class="topbar d-flex justify-content-between align-items-center p-4">
+    <div class="main-panel-full">
+        <header class="topbar d-flex justify-content-center align-items-center p-4 border-bottom shadow-sm" style="background-color: #d5efff;">
+            <div class="d-flex justify-content-between align-items-center container-xl w-100 px-0">
+                
                 <div class="d-flex align-items-center">
                     <a href="lista_relatorios_responsavel.html" class="d-inline-flex align-items-center justify-content-center rounded-circle text-decoration-none me-3" style="width: 44px; height: 44px; background-color: #bce2f9; color: #1474a8; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#a8d6f5'" onmouseout="this.style.backgroundColor='#bce2f9'">
                         <i class="bi bi-arrow-left fs-4"></i>
                     </a>
                     <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">NOVO RELATÓRIO</h2>
                 </div>
-                <div class="d-flex align-items-center">
-                    <span id="nome-usuario" class="me-3 fw-semibold">Carregando...</span>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center border-end border-info pe-3">
+                        <div class="d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
+                            --
+                        </div>
+                        <div class="d-none d-sm-block text-end">
+                            <span class="d-block fw-bold" style="color: #1f6389; font-size: 0.95rem; line-height: 1.1;" id="nome-usuario">Carregando...</span>
+                            <small class="text-muted" style="font-size: 0.8rem;">Responsável Legal</small>
+                        </div>
+                    </div>
+
+                    <a href="#" id="logoff" class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
+                    </a>
                 </div>
-            </header>
+            </div>
+        </header>
 
         <section class="content p-4 container-xl flex-grow-1 mt-3">
             <div class="row justify-content-center">
@@ -135,12 +134,11 @@
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/valida_sessao.js"></script>
     <script src="../js/index.js"></script> 
-
 
     <script src="../js/responsavel/relatorio.js?v=2"></script>
     <script>

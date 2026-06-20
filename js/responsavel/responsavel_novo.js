@@ -3,14 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const divErro = document.getElementById('divErro');
 
     // =======================================================
-    // BLOQUEIO DE DATAS FUTURAS (Trava de Segurança)
+    // BLOQUEIO DE DATAS (Obrigatório ser Maior de 18 Anos)
     // =======================================================
     const inputData = document.getElementById('data_nascimento');
     if (inputData) {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoje.getDate()).padStart(2, '0');
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - 18); // Subtrai 18 anos da data de hoje
+        
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Define o máximo que o calendário permite selecionar
         inputData.setAttribute('max', `${ano}-${mes}-${dia}`); 
     }
 
@@ -21,8 +25,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
     const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
     const validarTelefone = (tel) => tel.replace(/\D/g, '').length >= 10;
-    const ehDataValida = (val) => val.trim() !== "";
     const ehSenhaValida = (val) => val.length >= 6;
+    
+    // Nova regra rigorosa de idade
+    const ehMaiorDeIdade = (val) => {
+        if (!val.trim()) return false;
+        const dataNasc = new Date(val);
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - 18);
+        return dataNasc <= dataLimite;
+    };
 
     // =======================================================
     // EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
@@ -83,8 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ocultarErroSeValido(inputTelefone, erroTelefone, validarTelefone);
     mostrarErroSeInvalido(inputTelefone, erroTelefone, validarTelefone, 'Telefone inválido (inclua DDD).');
 
-    ocultarErroSeValido(inputData, erroData, ehDataValida);
-    mostrarErroSeInvalido(inputData, erroData, ehDataValida, 'A data de nascimento é obrigatória.');
+    // Aplicando a validação de maioridade
+    ocultarErroSeValido(inputData, erroData, ehMaiorDeIdade);
+    mostrarErroSeInvalido(inputData, erroData, ehMaiorDeIdade, 'O responsável deve ter no mínimo 18 anos.');
 
     ocultarErroSeValido(inputSenha, erroSenha, ehSenhaValida);
     mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaValida, 'A senha deve ter no mínimo 6 caracteres.');

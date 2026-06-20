@@ -15,7 +15,7 @@ const modalPatientName = document.getElementById('modal-patient-name');
 
 let currentFeedbackData = {};
 
-// FIX: Adicionada função rigorosa de sanitização para bloquear injeção de script por comentários do paciente
+// Função rigorosa de sanitização para bloquear injeção de script
 function sanitizarHTML(texto) {
     if (!texto) return '';
     const div = document.createElement('div');
@@ -23,13 +23,17 @@ function sanitizarHTML(texto) {
     return div.innerHTML;
 }
 
-// FIX: Removida a função carregarNomeUsuario() baseada em localStorage. Responsabilidade devolvida ao valida_sessao.js.
-
 // Buscar detalhes da atividade e submissões
 async function carregarAtividadeComSubmissoes() {
     if (!idAtividade) {
-        alert('ID da atividade não fornecido');
-        window.history.back();
+        Swal.fire({
+            title: 'Atenção!',
+            text: 'ID da atividade não fornecido.',
+            icon: 'warning',
+            confirmButtonColor: '#0284c7'
+        }).then(() => {
+            window.history.back();
+        });
         return;
     }
 
@@ -38,8 +42,14 @@ async function carregarAtividadeComSubmissoes() {
         const data = await response.json();
 
         if (data.status !== 'ok') {
-            alert('Erro ao carregar atividade: ' + (data.mensagem || 'Erro desconhecido'));
-            window.history.back();
+            Swal.fire({
+                title: 'Erro ao carregar',
+                text: data.mensagem || 'Ocorreu um erro desconhecido ao carregar a atividade.',
+                icon: 'error',
+                confirmButtonColor: '#dc3545'
+            }).then(() => {
+                window.history.back();
+            });
             return;
         }
 
@@ -48,7 +58,12 @@ async function carregarAtividadeComSubmissoes() {
 
     } catch (error) {
         console.error('Erro ao buscar atividade:', error);
-        alert('Erro ao carregar dados da atividade');
+        Swal.fire({
+            title: 'Erro de Comunicação',
+            text: 'Não foi possível carregar os dados da atividade. Verifique sua conexão.',
+            icon: 'error',
+            confirmButtonColor: '#dc3545'
+        });
     }
 }
 
@@ -57,7 +72,6 @@ function renderizarAtividade(atividade) {
     tituloElement.textContent = atividade.titulo || 'Sem título';
     categoriaElement.textContent = atividade.categoria || 'Geral';
     
-    // FIX: Aplicada a mesma lógica de formatação de quebra de linhas usada na tela do paciente
     if (atividade.descricao && atividade.descricao.includes('\n')) {
         descricaoElement.innerHTML = atividade.descricao
             .split('\n')
@@ -121,9 +135,12 @@ function renderizarSubmissoes(submissoes) {
             padding: 1.25rem;
             margin-bottom: 1rem;
             border-left: 4px solid #0284c7;
+            overflow: hidden; /* Adicionado para evitar que o conteudo vaze do card geral */
         `;
 
-        const statusBadge = (sub.status_conclusao === 'Concluída' || sub.status_conclusao === 'Avaliada')
+        const estaConcluida = (sub.status_conclusao === 'Concluída' || sub.status_conclusao === 'Avaliada');
+
+        const statusBadge = estaConcluida
             ? '<span class="badge-status concluida">✓ Concluída</span>'
             : '<span class="badge-status pendente">⏱ Pendente</span>';
 
@@ -131,15 +148,15 @@ function renderizarSubmissoes(submissoes) {
             ? new Date(sub.data_conclusao).toLocaleDateString('pt-BR')
             : 'Não entregue';
 
-        // FIX: Sanitização direta na injeção do comentário e feedback para segurança.
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
+        // CORREÇÃO VISUAL: Inserido "word-wrap: break-word; overflow-wrap: anywhere;" nos textos
         const feedbackExistente = sub.feedback_profissional
             ? `
                 <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
                     <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.5rem;"><strong>Seu Feedback:</strong></p>
-                    <p style="margin: 0; color: #1e293b;">${feedbackSanitizado}</p>
+                    <p style="margin: 0; color: #1e293b; word-wrap: break-word; overflow-wrap: anywhere;">${feedbackSanitizado}</p>
                     <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
                         Enviado em ${new Date(sub.data_feedback).toLocaleDateString('pt-BR')}
                     </p>
@@ -147,7 +164,22 @@ function renderizarSubmissoes(submissoes) {
             `
             : '';
 
-        // FIX: Incorporação visual garantida da variável de comentário sanitizado.
+        let btnAcaoHTML = '';
+        if (estaConcluida) {
+            btnAcaoHTML = `
+                <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_pessoa_tea}', '${sub.nome.replace(/'/g, "\\'")}')">
+                    <i class="bi bi-pencil"></i> ${sub.feedback_profissional ? 'Editar Feedback' : 'Dar Feedback'}
+                </button>
+            `;
+        } else {
+            btnAcaoHTML = `
+                <button class="btn btn-sm btn-secondary" style="margin-top: 0; opacity: 0.6; cursor: not-allowed;" disabled title="Aguardando a resposta do paciente.">
+                    <i class="bi bi-lock"></i> Aguardando Resposta
+                </button>
+            `;
+        }
+
+        // CORREÇÃO VISUAL: Inserido "word-wrap: break-word; overflow-wrap: anywhere;" no comentário do paciente
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <div>
@@ -158,14 +190,11 @@ function renderizarSubmissoes(submissoes) {
 
             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
                 <p style="margin: 0.25rem 0;"><strong>Data de entrega:</strong> ${dataEntrega}</p>
-                ${sub.comentario_paciente ? `<p style="margin: 0.25rem 0; padding: 0.5rem; background: #fff; border-radius: 4px; border: 1px solid #e2e8f0;"><strong>Comentário do Paciente/Responsável:</strong><br/> ${comentarioSanitizado}</p>` : ''}
+                ${sub.comentario_paciente ? `<p style="margin: 0.25rem 0; padding: 0.5rem; background: #fff; border-radius: 4px; border: 1px solid #e2e8f0; word-wrap: break-word; overflow-wrap: anywhere;"><strong>Comentário do Paciente/Responsável:</strong><br/> ${comentarioSanitizado}</p>` : ''}
             </div>
 
             ${feedbackExistente}
-
-            <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_pessoa_tea}', '${sub.nome.replace(/'/g, "\\'")}')">
-                <i class="bi bi-pencil"></i> ${sub.feedback_profissional ? 'Editar Feedback' : 'Dar Feedback'}
-            </button>
+            ${btnAcaoHTML}
         `;
 
         submissoesElement.appendChild(card);
@@ -189,7 +218,12 @@ feedbackText.addEventListener('input', (e) => {
 // Enviar feedback
 submitFeedbackBtn.addEventListener('click', async () => {
     if (!feedbackText.value.trim()) {
-        alert('Por favor, escreva um feedback');
+        Swal.fire({
+            title: 'Atenção!',
+            text: 'Por favor, escreva um feedback antes de enviar.',
+            icon: 'warning',
+            confirmButtonColor: '#f59e0b' 
+        });
         return;
     }
 
@@ -200,7 +234,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
     try {
         submitFeedbackBtn.disabled = true;
-        submitFeedbackBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando...';
+        submitFeedbackBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i> Enviando...';
 
         const response = await fetch('../../php/atividades/salvar_feedback.php', {
             method: 'POST',
@@ -209,23 +243,42 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
         const data = await response.json();
 
-        if (data.status === 'sucesso') {
-            alert('Feedback enviado com sucesso!');
+        if (data.status === 'sucesso' || data.status === 'ok') {
+            
             feedbackModal.hide();
-            carregarAtividadeComSubmissoes(); 
+
+            Swal.fire({
+                title: 'Sucesso!',
+                text: 'Feedback enviado com sucesso!',
+                icon: 'success',
+                confirmButtonColor: '#059669',
+                timer: 2000,
+                showConfirmButton: false 
+            }).then(() => {
+                carregarAtividadeComSubmissoes(); 
+            });
+
         } else {
-            alert('Erro: ' + data.mensagem);
+            Swal.fire({
+                title: 'Ops!',
+                text: data.mensagem || 'Não foi possível salvar o feedback.',
+                icon: 'error',
+                confirmButtonColor: '#dc3545'
+            });
         }
     } catch (error) {
         console.error('Erro ao enviar feedback:', error);
-        alert('Erro ao enviar feedback');
+        Swal.fire({
+            title: 'Erro de Comunicação',
+            text: 'Não foi possível conectar ao servidor para enviar o feedback.',
+            icon: 'error',
+            confirmButtonColor: '#dc3545'
+        });
     } finally {
         submitFeedbackBtn.disabled = false;
         submitFeedbackBtn.innerHTML = '<i class="bi bi-check-lg"></i> Enviar Feedback';
     }
 });
-
-// FIX: Removido o event listener de #logoff redundante daqui. 
 
 // Inicializar página
 carregarAtividadeComSubmissoes();

@@ -5,12 +5,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const divErro = document.getElementById("divErro");
     const divSucesso = document.getElementById("divSucesso");
 
+    const IDADE_MINIMA = 3;
+
+    // =======================================================
+    // BLOQUEIO DE DATAS NO CALENDÁRIO (Mínimo 3 Anos)
+    // =======================================================
+    const inputData = document.getElementById("data_nascimento");
+    if (inputData) {
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - IDADE_MINIMA);
+        
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Impede de selecionar no calendário uma data que resulte em menos de 3 anos
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); 
+    }
+
     const url = new URLSearchParams(window.location.search);
     const id = url.get("id");
     if (id) buscar(id);
 
     function validarEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-    // Removemos a validação de CPF pois o campo é readonly
 
     function mostrarMensagem(tipo, msg) {
         if (typeof Swal !== 'undefined') {
@@ -68,13 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 3. Seleção inteligente do Nível TEA
                 const selectNivel = document.getElementById("nivel_tea");
                 if (p.nivel_tea) {
-                    // Tenta a seleção direta primeiro (se a string for exatamente igual)
+                    // Tenta a seleção direta primeiro
                     selectNivel.value = p.nivel_tea;
                     
-                    // Se não tiver selecionado nada (selectedIndex === 0 ou -1), faz uma busca por aproximação
+                    // Se não tiver selecionado nada, faz uma busca por aproximação
                     if (selectNivel.selectedIndex <= 0) {
                         for (let i = 0; i < selectNivel.options.length; i++) {
-                            // Se a opção contiver o texto do banco ou o texto do banco contiver a opção
                             if (selectNivel.options[i].value.includes(p.nivel_tea) || p.nivel_tea.includes(selectNivel.options[i].value)) {
                                 selectNivel.selectedIndex = i;
                                 break;
@@ -146,10 +162,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (el) el.textContent = "Selecione um nível."; 
                 temErro = true; 
             }
+            
+            // Validação rigorosa de Data de Nascimento (Idade Mínima)
             if (!data) { 
                 const el = document.getElementById("erroData");
                 if (el) el.textContent = "Data obrigatória."; 
                 temErro = true; 
+            } else {
+                const dataNasc = new Date(data);
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+                const mesAtual = hoje.getMonth();
+                const diaAtual = hoje.getDate();
+                const mesNasc = dataNasc.getMonth();
+                const diaNasc = dataNasc.getDate();
+
+                if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+                    idade--;
+                }
+
+                if (idade < IDADE_MINIMA) {
+                    const el = document.getElementById("erroData");
+                    if (el) el.textContent = `O paciente deve ter no mínimo ${IDADE_MINIMA} anos de idade.`; 
+                    temErro = true;
+                }
             }
 
             if (temErro) return;
@@ -163,9 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const fd = new FormData();
             fd.append("nome", nome);
             fd.append("email", email);
-
             fd.append("cpf", document.getElementById("cpf").value.replace(/\D/g, ''));
-            
             fd.append("nivel_tea", nivel);
             fd.append("observacao", document.getElementById("observacao").value);
             fd.append("data_nascimento", data);

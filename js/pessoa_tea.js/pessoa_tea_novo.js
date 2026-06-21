@@ -2,16 +2,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const formulario = document.getElementById('formCadastroPessoaTea');
     const divErro = document.getElementById('divErro');
     
+    const IDADE_MINIMA = 3;
+
     // =======================================================
-    // BLOQUEIO DE DATAS FUTURAS (Trava de Segurança)
+    // BLOQUEIO DE DATAS NO CALENDÁRIO (Mínimo 3 Anos)
     // =======================================================
     const inputData = document.getElementById('data_nascimento');
     if (inputData) {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); // Bloqueia calendário HTML
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - IDADE_MINIMA);
+        
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Impede selecionar no calendário uma data que resulte em menos de 3 anos
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); 
     }
 
     // =======================================================
@@ -20,9 +26,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const ehNomeValido = (val) => val.trim().length >= 3;
     const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
     const validarCPF = (cpf) => cpf.replace(/\D/g, '').length === 11;
-    const ehDataValida = (val) => val.trim() !== "";
     const ehNivelValido = (val) => val.trim() !== "";
     const ehSenhaValida = (val) => val.length >= 6;
+
+    // Regra rigorosa de idade para Paciente (Mínimo 3 anos)
+    const ehIdadeValidaPaciente = (val) => {
+        if (!val.trim()) return false;
+        const dataNasc = new Date(val);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+        const mesAtual = hoje.getMonth();
+        const diaAtual = hoje.getDate();
+        const mesNasc = dataNasc.getMonth();
+        const diaNasc = dataNasc.getDate();
+
+        // Se o mês atual for menor que o mês de nascimento, ou se for o mesmo mês mas o dia ainda não chegou, não fez aniversário esse ano
+        if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+            idade--;
+        }
+        return idade >= IDADE_MINIMA;
+    };
 
     // =======================================================
     // EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
@@ -82,8 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ocultarErroSeValido(inputCpf, erroCpf, validarCPF);
     mostrarErroSeInvalido(inputCpf, erroCpf, validarCPF, 'O CPF deve ter exatamente 11 números.');
 
-    ocultarErroSeValido(inputData, erroData, ehDataValida);
-    mostrarErroSeInvalido(inputData, erroData, ehDataValida, 'A data de nascimento é obrigatória.');
+    // Aplicando validação de idade mínima de 3 anos
+    ocultarErroSeValido(inputData, erroData, ehIdadeValidaPaciente);
+    mostrarErroSeInvalido(inputData, erroData, ehIdadeValidaPaciente, `O paciente deve ter no mínimo ${IDADE_MINIMA} anos de idade.`);
 
     ocultarErroSeValido(inputNivel, erroNivel, ehNivelValido);
     mostrarErroSeInvalido(inputNivel, erroNivel, ehNivelValido, 'Selecione o nível de suporte do paciente.');
@@ -103,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formulario.addEventListener('submit', async function(e) { 
             e.preventDefault();
 
-            // Dispara o evento de 'blur' em todos os inputs para forçar as mensagens a aparecerem caso o usuário tente enviar em branco
+            // Dispara o evento de 'blur' em todos os inputs para forçar as mensagens a aparecerem
             if(inputNome) inputNome.dispatchEvent(new Event('blur'));
             if(inputEmail) inputEmail.dispatchEvent(new Event('blur'));
             if(inputCpf) inputCpf.dispatchEvent(new Event('blur'));

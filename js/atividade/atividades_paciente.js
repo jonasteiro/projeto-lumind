@@ -4,7 +4,7 @@
  * CORRIGIDO:
  * - Nome exibido via validarAcesso (sessão real) e não localStorage
  * - Link "COMEÇAR" aponta para atividades/tela_atividade.html?id=
- * - Busca de status_conclusao exibida no card
+ * - Busca de status_conclusao exibida no card (Agora suporta o status "Avaliada")
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -25,10 +25,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         lista.forEach(atv => {
-            const concluida = atv.status_conclusao === 'Concluída';
-            const statusBadge = concluida
-                ? '<span class="badge rounded-pill bg-success">✅ Concluída</span>'
-                : '<span class="badge rounded-pill bg-warning text-dark">⏳ Pendente</span>';
+            
+            // ==========================================
+            // LÓGICA DE BADGE DE STATUS ATUALIZADA
+            // ==========================================
+            let statusBadge = '';
+            let btnTexto = '<i class="bi bi-play-fill me-1"></i> COMEÇAR';
+            let btnClasse = 'btn-primary';
+
+            if (atv.status_conclusao === 'Avaliada') {
+                statusBadge = '<span class="badge rounded-pill bg-info text-dark border border-info shadow-sm" style="background-color: #cff4fc !important;">⭐ Avaliada</span>';
+                btnTexto = '<i class="bi bi-eye-fill me-1"></i> VER AVALIAÇÃO';
+                btnClasse = 'btn-outline-info text-dark fw-bold border-2';
+            } else if (atv.status_conclusao === 'Concluída') {
+                statusBadge = '<span class="badge rounded-pill bg-success shadow-sm">✅ Concluída</span>';
+                btnTexto = '<i class="bi bi-pencil-square me-1"></i> ALTERAR RESPOSTA';
+                btnClasse = 'btn-success';
+            } else {
+                statusBadge = '<span class="badge rounded-pill bg-warning text-dark shadow-sm">⏳ Pendente</span>';
+            }
 
             const dataFormatada = atv.data_publicacao
                 ? new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR')
@@ -36,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             container.innerHTML += `
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card-atividade h-100">
+                    <div class="card-atividade h-100 position-relative">
                         <div class="card-atividade-topo d-flex justify-content-between align-items-start mb-2">
                             <span class="badge-cat">${atv.categoria}</span>
                             ${statusBadge}
@@ -46,8 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <i class="bi bi-calendar-check me-1"></i>${dataFormatada}
                         </p>
                         <a href="atividades/tela_atividade.html?id=${atv.id_atividade}"
-                           class="btn btn-primary w-100 fw-bold rounded-pill py-2 shadow-sm mt-auto">
-                            <i class="bi bi-play-fill me-1"></i> COMEÇAR
+                           class="btn ${btnClasse} w-100 fw-bold rounded-pill py-2 shadow-sm mt-auto">
+                            ${btnTexto}
                         </a>
                     </div>
                 </div>`;

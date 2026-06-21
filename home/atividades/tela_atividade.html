@@ -23,7 +23,6 @@
             <div class="d-flex justify-content-between align-items-center container-xl w-100 px-0">
                 
                 <div class="d-flex align-items-center">
-                    
                     <a href="../atividades_paciente.html"
                        id="link-back"
                        class="d-inline-flex align-items-center justify-content-center rounded-circle text-decoration-none me-3"
@@ -36,11 +35,9 @@
                     <h2 class="fs-4 mb-0 fw-bold" style="color: #167ebc; letter-spacing: 0.5px;">
                         REALIZAR ATIVIDADE
                     </h2>
-
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-
                     <div class="d-flex align-items-center border-end border-info pe-3">
                         <div class="d-flex justify-content-center align-items-center rounded-circle text-white shadow-sm" style="width: 42px; height: 42px; background: linear-gradient(145deg, #2f91e7 0%, #2a72b6 100%); font-weight: 700; font-size: 1.05rem; margin-right: 12px;" id="sidebarAvatar">
                             --
@@ -51,17 +48,12 @@
                         </div>
                     </div>
 
-                    <a href="#"
-                       id="logoff"
-                       class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm"
-                       style="transition: all 0.2s;">
+                    <a href="#" id="logoff" class="btn btn-outline-danger fw-bold rounded-pill px-4 d-flex align-items-center shadow-sm" style="transition: all 0.2s;">
                         <i class="bi bi-box-arrow-right me-2 fs-5"></i> SAIR
                     </a>
-
                 </div>
                 
             </div>
-
         </header>
 
         <section class="content p-4 container-xl flex-grow-1 mt-3">
@@ -102,15 +94,12 @@
                     </div>
 
                     <div id="container-imagem" class="d-none text-center">
-                        <img id="imagem-anexo" src="" alt="Material de apoio"
-                             class="img-fluid rounded-3 shadow-sm imagem-atividade">
+                        <img id="imagem-anexo" src="" alt="Material de apoio" class="img-fluid rounded-3 shadow-sm imagem-atividade">
                     </div>
 
                     <div id="container-pdf" class="d-none">
-                        <a id="link-pdf" href="#" target="_blank" rel="noopener noreferrer"
-                           class="btn-pdf w-100 btn btn-outline-primary fw-bold py-2">
-                            <i class="bi bi-file-earmark-pdf-fill me-2"></i>
-                            Abrir / Baixar Material de Apoio (PDF)
+                        <a id="link-pdf" href="#" target="_blank" rel="noopener noreferrer" class="btn-pdf w-100 btn btn-outline-primary fw-bold py-2">
+                            <i class="bi bi-file-earmark-pdf-fill me-2"></i> Abrir / Baixar Material de Apoio (PDF)
                         </a>
                     </div>
                 </div>
@@ -120,20 +109,41 @@
                         <i class="bi bi-pencil-square me-2"></i>Minha Resposta
                     </div>
 
-                    <label for="comentario-paciente" class="form-label fw-semibold text-muted small">
-                        Comentário sobre a atividade <span class="text-muted fw-normal">(opcional)</span>
-                    </label>
-                    <textarea
-                        id="comentario-paciente"
-                        class="form-control textarea-resposta rounded-3 bg-light"
-                        rows="5"
-                        placeholder="Conte como foi realizar essa atividade, se teve alguma dificuldade, o que achou..."></textarea>
+                    <div class="alert alert-info py-2" style="font-size: 0.85rem; border-left: 4px solid #0dcaf0;">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Para concluir a atividade, <strong>escreva um comentário ou envie um arquivo</strong> (foto, desenho, documento).
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="arquivo-resposta" class="form-label fw-semibold text-dark small">
+                            <i class="bi bi-cloud-upload me-1"></i> Anexar Arquivo de Resposta
+                        </label>
+                        <input type="file" id="arquivo-resposta" class="form-control bg-light border-secondary-subtle" accept=".pdf, image/jpeg, image/png">
+                        <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">Você pode enviar uma foto da atividade feita no papel ou um PDF.</small>
+                        
+                        <div id="preview-resposta-container" class="mt-3 d-none position-relative bg-white border rounded-3 p-3 text-center shadow-sm">
+                            <button type="button" id="btn-remover-resposta" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Remover anexo"></button>
+                            <div id="preview-resposta-content" class="d-flex justify-content-center align-items-center"></div>
+                            <p id="preview-resposta-filename" class="text-muted small mt-2 mb-0 fw-semibold text-truncate"></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="comentario-paciente" class="form-label fw-semibold text-dark small">
+                            <i class="bi bi-chat-text me-1"></i> Seu Comentário
+                        </label>
+                        <textarea
+                            id="comentario-paciente"
+                            class="form-control textarea-resposta rounded-3 bg-light"
+                            rows="4"
+                            placeholder="Escreva aqui como foi realizar essa atividade, se teve alguma dificuldade, o que achou..."></textarea>
+                    </div>
 
                     <div id="feedback-msg" class="feedback-msg d-none mt-3 p-3 rounded-3 bg-light border"></div>
 
-                    <button id="btn-concluir" class="btn-concluir mt-4 w-100 btn btn-success fw-bold py-3 rounded-pill shadow-sm">
+                    <button id="btn-concluir" class="btn-concluir mt-3 w-100 btn btn-success fw-bold py-3 rounded-pill shadow-sm">
                         <i class="bi bi-check-circle-fill me-2"></i>
-                        <span id="btn-concluir-texto">Marcar como Concluída</span>
+                        <span id="btn-concluir-texto">Enviar Resposta e Concluir</span>
                     </button>
                 </div>
 
@@ -147,7 +157,6 @@
     <script src="../../js/atividade/tela_atividade.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Aceita tanto PessoaTea quanto ResponsavelLegal
         if (typeof validarAcesso === "function") {
             validarAcesso(['PessoaTea', 'ResponsavelLegal']);
         }

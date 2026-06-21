@@ -17,17 +17,21 @@ const erroData = document.getElementById('erroData');
 const inputSenha = document.getElementById('senha');
 const erroSenha = document.getElementById('erroSenha');
 
+const IDADE_MINIMA = 21;
+
 // ==========================================
-// 1. BLOQUEIO DE DATAS FUTURAS
+// 1. BLOQUEIO DE DATAS (Mínimo 21 anos)
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     if (inputData) {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoje.getDate()).padStart(2, '0');
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - IDADE_MINIMA);
         
-        // Impede de clicar em dias além de "hoje" no calendário HTML
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Impede de clicar em datas que tornem o usuário menor de 21 anos
         inputData.setAttribute('max', `${ano}-${mes}-${dia}`);
     }
 });
@@ -39,7 +43,8 @@ const ehNomeValido = (val) => val.trim().length >= 3;
 const ehEmailValido = (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
 const ehCpfValido = (val) => val.replace(/\D/g, '').length === 11;
 const ehSenhaForte = (val) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(val);
-const ehMaiorDeIdade = (val) => {
+
+const ehIdadeValidaAdmin = (val) => {
     if (!val) return false;
     const dataNasc = new Date(val);
     const hoje = new Date();
@@ -53,7 +58,7 @@ const ehMaiorDeIdade = (val) => {
     if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
         idade--;
     }
-    return idade >= 18;
+    return idade >= IDADE_MINIMA;
 };
 
 // ==========================================
@@ -65,12 +70,12 @@ function ocultarErroSeValido(input, erroElemento, validacaoFn) {
     const checar = () => {
         if (validacaoFn(input.value)) {
             erroElemento.classList.remove('show');
-            if (divErro) divErro.classList.remove('show'); // Limpa a faixa vermelha global tbm
+            if (divErro) divErro.classList.remove('show'); 
         }
     };
     input.addEventListener('input', checar);
     input.addEventListener('change', checar);
-    input.addEventListener('keyup', checar); // Garante que a digitação apague o erro
+    input.addEventListener('keyup', checar); 
 }
 
 // Função que mostra o erro apenas quando o usuário SAI DO CAMPO (blur) e deixou errado
@@ -94,13 +99,13 @@ ocultarErroSeValido(inputEmail, erroEmail, ehEmailValido);
 mostrarErroSeInvalido(inputEmail, erroEmail, ehEmailValido, 'Formato de e-mail inválido');
 
 inputCpf.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, ''); // Força apenas números no CPF
+    this.value = this.value.replace(/\D/g, ''); 
 });
 ocultarErroSeValido(inputCpf, erroCpf, ehCpfValido);
 mostrarErroSeInvalido(inputCpf, erroCpf, ehCpfValido, 'O CPF deve ter exatamente 11 números');
 
-ocultarErroSeValido(inputData, erroData, ehMaiorDeIdade);
-mostrarErroSeInvalido(inputData, erroData, ehMaiorDeIdade, 'O administrador deve ter no mínimo 18 anos', 'A data de nascimento é obrigatória');
+ocultarErroSeValido(inputData, erroData, ehIdadeValidaAdmin);
+mostrarErroSeInvalido(inputData, erroData, ehIdadeValidaAdmin, `O administrador deve ter no mínimo ${IDADE_MINIMA} anos`, 'A data de nascimento é obrigatória');
 
 ocultarErroSeValido(inputSenha, erroSenha, ehSenhaForte);
 mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaForte, 'A senha deve ter mín 8 chars, 1 maiúscula, 1 número e 1 caractere especial');
@@ -112,7 +117,7 @@ mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaForte, 'A senha deve ter mí
 function validarCamposSubmit() {
     let temErro = false;
 
-    // Dispara manualmente o blur em todos os campos para forçar as mensagens de erro aparecerem caso ele tente enviar tudo em branco
+    // Dispara manualmente o blur
     inputNome.dispatchEvent(new Event('blur'));
     inputEmail.dispatchEvent(new Event('blur'));
     inputCpf.dispatchEvent(new Event('blur'));
@@ -130,23 +135,17 @@ function validarCamposSubmit() {
     return !temErro;
 }
 
-function mostrarErroGeral(mensagem) {
-    divErro.textContent = mensagem;
-    divErro.classList.add('show');
-    divSucesso.classList.remove('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 formulario.addEventListener('submit', async function(e) {
     e.preventDefault();
 
     if (!validarCamposSubmit()) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     }
 
     const botao = document.querySelector('button[type="submit"]');
     botao.disabled = true;
-    botao.textContent = '⏳ Cadastrando...';
+    botao.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Cadastrando...';
 
     try {
         const formData = new FormData();
@@ -164,7 +163,7 @@ formulario.addEventListener('submit', async function(e) {
 
         const dados = await resposta.json();
 
-        if (dados.status === 'sucesso') {
+        if (dados.status === 'sucesso' || dados.status === 'ok') {
             Swal.fire({
                 icon: 'success',
                 title: 'Sucesso!',
@@ -175,13 +174,24 @@ formulario.addEventListener('submit', async function(e) {
                 window.location.href = '../home/lista_administrador.html';
             });
         } else {
-            mostrarErroGeral(' Erro: ' + (dados.mensagem || 'Erro ao cadastrar administrador'));
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro no Cadastro',
+                text: dados.mensagem || 'Verifique os dados e tente novamente.',
+                confirmButtonColor: '#dc3545'
+            });
         }
     } catch (erro) {
-        mostrarErroGeral(' Erro de conexão: ' + erro.message);
+        console.error("Erro: ", erro);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro de Conexão',
+            text: 'Não foi possível conectar ao servidor no momento.',
+            confirmButtonColor: '#dc3545'
+        });
     } finally {
         botao.disabled = false;
-        botao.textContent = '💾 Criar Administrador';
+        botao.innerHTML = '<i class="bi bi-shield-lock-fill me-1"></i> Criar Administrador';
     }
 });
 
@@ -189,19 +199,17 @@ formulario.addEventListener('submit', async function(e) {
 // 5. FUNÇÕES DISPONÍVEIS GLOBALMENTE (Botões HTML)
 // ==========================================
 
-// Expomos a função globalmente (window.) para que o onclick="limparFormulario()" do botão consiga acessá-la.
 window.limparFormulario = function() {
     formulario.reset();
     
-    // Garante remoção rigorosa de TODOS os erros visuais
     erroNome.classList.remove('show');
     erroEmail.classList.remove('show');
     erroCpf.classList.remove('show');
     erroData.classList.remove('show');
     erroSenha.classList.remove('show');
     
-    divErro.classList.remove('show');
-    divSucesso.classList.remove('show');
+    if(divErro) divErro.classList.remove('show');
+    if(divSucesso) divSucesso.classList.remove('show');
 };
 
 window.voltarPerfis = function() {

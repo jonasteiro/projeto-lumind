@@ -2,10 +2,9 @@
 /**
  * concluir_atividade.php
  * POST /php/atividades/concluir_atividade.php
- * Body JSON: { "id_atividade": 5, "comentario_paciente": "..." }
  *
- * CORRIGIDO: ResponsavelLegal agora resolve o id_pessoa_tea via
- * primeiro paciente vinculado à atividade (fallback sem tabela de vínculo).
+ * ATUALIZADO: Agora recebe Multipart FormData ($_POST e $_FILES)
+ * para suportar anexos (fotos/pdf) enviados pelo paciente.
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -34,22 +33,32 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$body = json_decode(file_get_contents('php://input'), true);
-if (json_last_error() !== JSON_ERROR_NONE || !isset($body['id_atividade'])) {
+// Verifica se o ID da atividade foi enviado via POST (FormData)
+if (!isset($_POST['id_atividade'])) {
     http_response_code(400);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'Body inválido.']);
+    echo json_encode(['status' => 'nok', 'mensagem' => 'ID da atividade não fornecido.']);
     exit;
 }
 
-$id_atividade        = (int) $body['id_atividade'];
-$comentario_paciente = (isset($body['comentario_paciente']) && $body['comentario_paciente'] !== '')
-                       ? trim($body['comentario_paciente'])
+$id_atividade        = (int) $_POST['id_atividade'];
+$comentario_paciente = (isset($_POST['comentario_paciente']) && $_POST['comentario_paciente'] !== '')
+                       ? trim($_POST['comentario_paciente'])
                        : null;
 
 if ($id_atividade <= 0) {
     http_response_code(400);
     echo json_encode(['status' => 'nok', 'mensagem' => 'id_atividade inválido.']);
     exit;
+}
+
+// Processamento do Arquivo Anexo (se houver)
+$arquivo_resposta = null;
+$tipo_arquivo_resposta = null;
+
+if (isset($_FILES['arquivo_resposta']) && $_FILES['arquivo_resposta']['error'] === UPLOAD_ERR_OK) {
+    $tipo_arquivo_resposta = $_FILES['arquivo_resposta']['type'];
+    // Converte o arquivo para Base64 para salvar no banco (mesmo padrão usado no profissional)
+    $arquivo_resposta = base64_encode(file_get_contents($_FILES['arquivo_resposta']['tmp_name']));
 }
 
 try {
@@ -59,9 +68,7 @@ try {
     } else {
         // ResponsavelLegal: usa o primeiro paciente vinculado à atividade
         $id_pessoa_tea = null;
-        $q = $conexao->prepare(
-            "SELECT id_pessoa_tea FROM PessoaTea_Atividade WHERE id_atividade = ? LIMIT 1"
-        );
+        $q = $conexao->prepare("SELECT id_pessoa_tea FROM PessoaTea_Atividade WHERE id_atividade = ? LIMIT 1");
         if ($q) {
             $q->bind_param('i', $id_atividade);
             $q->execute();
@@ -80,31 +87,45 @@ try {
         }
     }
 
-    $sql = "
-        UPDATE PessoaTea_Atividade
-        SET
-            status_conclusao    = 'Concluída',
-            comentario_paciente = ?,
-            data_conclusao      = NOW()
-        WHERE id_atividade  = ?
-          AND id_pessoa_tea  = ?
-          AND status_conclusao != 'Avaliada'
-    ";
-
-    $stmt = $conexao->prepare($sql);
-    if (!$stmt) {
-        throw new Exception('Erro ao preparar query: ' . $conexao->error);
+    // Prepara a query dinamicamente (se tem arquivo ou não)
+    if ($arquivo_resposta !== null) {
+        $sql = "
+            UPDATE PessoaTea_Atividade
+            SET
+                status_conclusao      = 'Concluída',
+                comentario_paciente   = ?,
+                arquivo_resposta      = ?,
+                tipo_arquivo_resposta = ?,
+                data_conclusao        = NOW()
+            WHERE id_atividade  = ?
+              AND id_pessoa_tea = ?
+              AND status_conclusao != 'Avaliada'
+        ";
+        $stmt = $conexao->prepare($sql);
+        if (!$stmt) throw new Exception('Erro ao preparar query: ' . $conexao->error);
+        $stmt->bind_param('sssii', $comentario_paciente, $arquivo_resposta, $tipo_arquivo_resposta, $id_atividade, $id_pessoa_tea);
+    } else {
+        $sql = "
+            UPDATE PessoaTea_Atividade
+            SET
+                status_conclusao    = 'Concluída',
+                comentario_paciente = ?,
+                data_conclusao      = NOW()
+            WHERE id_atividade  = ?
+              AND id_pessoa_tea = ?
+              AND status_conclusao != 'Avaliada'
+        ";
+        $stmt = $conexao->prepare($sql);
+        if (!$stmt) throw new Exception('Erro ao preparar query: ' . $conexao->error);
+        $stmt->bind_param('sii', $comentario_paciente, $id_atividade, $id_pessoa_tea);
     }
 
-    $stmt->bind_param('sii', $comentario_paciente, $id_atividade, $id_pessoa_tea);
     $stmt->execute();
 
     if ($stmt->affected_rows === 0) {
         $stmt->close();
-        // Verifica se o bloqueio foi por status 'Avaliada' ou por IDOR
-        $check = $conexao->prepare(
-            "SELECT status_conclusao FROM PessoaTea_Atividade WHERE id_atividade = ? AND id_pessoa_tea = ? LIMIT 1"
-        );
+        // Verifica se o bloqueio foi por status 'Avaliada' ou acesso indevido
+        $check = $conexao->prepare("SELECT status_conclusao FROM PessoaTea_Atividade WHERE id_atividade = ? AND id_pessoa_tea = ? LIMIT 1");
         $check->bind_param('ii', $id_atividade, $id_pessoa_tea);
         $check->execute();
         $res_check = $check->get_result();
@@ -127,7 +148,7 @@ try {
             exit;
         }
 
-        // Dados idênticos, sem erro real
+        // Se chegou aqui, os dados enviados são idênticos aos que já estavam no banco
         echo json_encode(['status' => 'ok', 'mensagem' => 'Envio registrado!']);
         $conexao->close();
         exit;
@@ -138,7 +159,7 @@ try {
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['status' => 'nok', 'mensagem' => 'Erro: ' . $e->getMessage()]);
+    echo json_encode(['status' => 'nok', 'mensagem' => 'Erro interno: ' . $e->getMessage()]);
 } finally {
     if (isset($conexao) && $conexao->ping()) {
         $conexao->close();

@@ -2,14 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const formulario = document.getElementById('form-cadastro-prof');
 
     // =======================================================
-    // BLOQUEIO DE DATAS FUTURAS NO CALENDÁRIO
+    // BLOQUEIO DE DATAS NO CALENDÁRIO (Mínimo 21 anos)
     // =======================================================
     const inputData = document.getElementById('data_nascimento');
+    const IDADE_MINIMA = 21;
+
     if (inputData) {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoje.getDate()).padStart(2, '0');
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - IDADE_MINIMA);
+        
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Impede selecionar no calendário uma data que resulte em menos de 21 anos
         inputData.setAttribute('max', `${ano}-${mes}-${dia}`);
     }
 
@@ -39,6 +45,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const ehTextoValido = (val) => val.trim() !== "";
     const ehSenhaValida = (val) => val.length >= 6;
 
+    // Regra rigorosa de idade para Profissional (21 anos)
+    const ehIdadeValidaProf = (val) => {
+        if (!val.trim()) return false;
+        const dataNasc = new Date(val);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+        const mesAtual = hoje.getMonth();
+        const diaAtual = hoje.getDate();
+        const mesNasc = dataNasc.getMonth();
+        const diaNasc = dataNasc.getDate();
+
+        if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+            idade--;
+        }
+        return idade >= IDADE_MINIMA;
+    };
+
     // =======================================================
     // EVENTOS: MOSTRAR E ESCONDER ERROS EM TEMPO REAL
     // =======================================================
@@ -66,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const checar = () => {
             if (validacaoFn(input.value)) {
                 erroElemento.classList.add('d-none');
-                erroElemento.classList.remove('show'); // Mantido por compatibilidade com seu CSS antigo
+                erroElemento.classList.remove('show'); 
             }
         };
         input.addEventListener('input', checar);
@@ -102,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ocultarErroSeValido(inputEspecialidade, erroEspecialidade, ehTextoValido);
     mostrarErroSeInvalido(inputEspecialidade, erroEspecialidade, ehTextoValido, 'A especialidade é obrigatória.');
 
-    ocultarErroSeValido(inputData, erroData, ehTextoValido);
-    mostrarErroSeInvalido(inputData, erroData, ehTextoValido, 'A data de nascimento é obrigatória.');
+    // Aplicando a nova validação de Idade Mínima
+    ocultarErroSeValido(inputData, erroData, ehIdadeValidaProf);
+    mostrarErroSeInvalido(inputData, erroData, ehIdadeValidaProf, `O profissional deve ter no mínimo ${IDADE_MINIMA} anos.`);
 
     ocultarErroSeValido(inputSenha, erroSenha, ehSenhaValida);
     mostrarErroSeInvalido(inputSenha, erroSenha, ehSenhaValida, 'A senha deve ter no mínimo 6 caracteres.');

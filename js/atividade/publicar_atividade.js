@@ -18,6 +18,66 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarPacientes();
 
     // =======================================================
+    // PREVIEW DE ANEXO (Nova Funcionalidade)
+    // =======================================================
+    const inputArquivo = document.getElementById('arquivo');
+    const previewContainer = document.getElementById('preview-container');
+    const previewContent = document.getElementById('preview-content');
+    const previewFilename = document.getElementById('preview-filename');
+    const btnRemoverAnexo = document.getElementById('btn-remover-anexo');
+
+    function esconderPreview() {
+        if (inputArquivo) inputArquivo.value = ''; // Limpa o input
+        if (previewContainer) previewContainer.classList.add('d-none');
+        if (previewContent) previewContent.innerHTML = '';
+        if (previewFilename) previewFilename.textContent = '';
+    }
+
+    if (inputArquivo) {
+        inputArquivo.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            // Se o usuário cancelou a seleção, esconde o preview
+            if (!file) {
+                esconderPreview();
+                return;
+            }
+
+            // Mostra o contêiner e o nome do arquivo
+            previewFilename.textContent = file.name;
+            previewContainer.classList.remove('d-none');
+
+            // Verifica o tipo do arquivo para renderizar
+            if (file.type.startsWith('image/')) {
+                // Se for imagem, usa o FileReader para mostrar a miniatura
+                const reader = new FileReader();
+                reader.onload = function(evento) {
+                    previewContent.innerHTML = `<img src="${evento.target.result}" alt="Preview do Anexo" class="img-fluid rounded border shadow-sm" style="max-height: 250px; object-fit: contain;">`;
+                }
+                reader.readAsDataURL(file);
+                
+            } else if (file.type === 'application/pdf') {
+                // Se for PDF, cria uma URL temporária para abrir o documento real na tela
+                const fileURL = URL.createObjectURL(file);
+                
+                // Usamos a tag <embed> para mostrar o visualizador de PDF nativo do navegador
+                // O "#toolbar=0" ajuda a esconder a barra de ferramentas do PDF para ficar mais limpo
+                previewContent.innerHTML = `
+                    <embed src="${fileURL}#toolbar=0" type="application/pdf" width="100%" height="300px" class="rounded border shadow-sm">
+                `;
+                
+            } else {
+                // Formato genérico (fallback) caso ele burle o accept do HTML
+                previewContent.innerHTML = `<i class="bi bi-file-earmark-fill text-secondary" style="font-size: 5rem;"></i>`;
+            }
+        });
+    }
+
+    if (btnRemoverAnexo) {
+        btnRemoverAnexo.addEventListener('click', esconderPreview);
+    }
+
+    // =======================================================
     // 2. VALIDAÇÃO EM TEMPO REAL (Estilo Admin)
     // =======================================================
     const form = document.getElementById("formPublicarAtividade");
@@ -138,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 if (btnSubmit) {
-                    btnSubmit.textContent = "Publicando...";
+                    btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Publicando...';
                     btnSubmit.disabled = true;
                 }
 
@@ -154,8 +214,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         title: 'Sucesso!',
                         text: 'Atividade publicada com sucesso!',
                         icon: 'success',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#0d6efd'
+                        confirmButtonText: 'Ver Atividades',
+                        confirmButtonColor: '#0284c7'
                     }).then(() => {
                         window.location.href = '../../home/atividades_painel.html';
                     });
@@ -165,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         text: resultado.mensagem,
                         icon: 'error',
                         confirmButtonText: 'Tentar Novamente',
-                        confirmButtonColor: '#0d6efd'
+                        confirmButtonColor: '#dc3545'
                     });
                 }
 
@@ -180,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             } finally {
                 if (btnSubmit) {
-                    btnSubmit.textContent = "Publicar Atividade";
+                    btnSubmit.innerHTML = '<i class="bi bi-send-fill me-1"></i> Publicar Atividade';
                     btnSubmit.disabled = false;
                 }
             }
@@ -201,21 +261,22 @@ async function carregarPacientes() {
 
         container.innerHTML = ""; 
         if (pacientes.length === 0) {
-            container.innerHTML = "<span class='text-muted'>Nenhum paciente encontrado.</span>";
+            container.innerHTML = `<span class="text-muted"><i class="bi bi-info-circle me-1"></i>Nenhum paciente encontrado.</span>`;
             return;
         }
 
         pacientes.forEach(paciente => {
             const label = document.createElement("label");
-            label.className = "paciente-item d-block mb-2";
+            label.className = "paciente-item d-block mb-2 p-2 border rounded bg-white shadow-sm";
+            label.style.cursor = "pointer";
             label.innerHTML = `
-                <input type="checkbox" name="pacientes_ids[]" value="${paciente.id_usuario}" class="form-check-input me-2">
-                ${paciente.nome}
+                <input type="checkbox" name="pacientes_ids[]" value="${paciente.id_usuario}" class="form-check-input me-2" style="cursor: pointer;">
+                <span class="fw-medium text-dark">${paciente.nome}</span>
             `;
             container.appendChild(label);
         });
     } catch (erro) {
         console.error("Erro ao buscar pacientes:", erro);
-        container.innerHTML = "<span class='text-danger'>Erro ao carregar lista de pacientes.</span>";
+        container.innerHTML = "<span class='text-danger'><i class='bi bi-exclamation-triangle me-1'></i> Erro ao carregar lista de pacientes.</span>";
     }
 }

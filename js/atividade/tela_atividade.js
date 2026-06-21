@@ -2,10 +2,9 @@
  * tela_atividade.js
  * Realiza a atividade — PBI 04 + PBI 05
  * Funciona para PessoaTea e ResponsavelLegal.
- * CORRIGIDO: Fim do loading infinito, alerta com SweetAlert2 e rotas dinâmicas!
+ * ATUALIZAÇÃO: Carrega os dados (texto e anexo) de respostas anteriores e exibe alerta de reenvio!
  */
 
-// Variável global para armazenar o tipo do usuário e saber pra qual tela voltar
 let tipoUsuarioLogado = 'PessoaTea';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -34,11 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const usuario = data.usuario;
         tipoUsuarioLogado = usuario.tipo_usuario;
 
-        // Preenche nome no topbar
         const nomeEl = document.getElementById('nome-usuario');
         if (nomeEl) nomeEl.textContent = usuario.nome;
 
-        // Ajusta links de retorno conforme perfil (Agora funciona, pois o ID existe no HTML)
         const linkBack        = document.getElementById('link-back');
         const linkSidebarHome = document.getElementById('sidebar-home');
 
@@ -46,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (linkBack)        linkBack.href        = '../atividades_responsavel.html';
             if (linkSidebarHome) linkSidebarHome.href = '../tela_responsavel.html';
         } else {
-            // PessoaTea (padrão)
             if (linkBack)        linkBack.href        = '../atividades_paciente.html';
             if (linkSidebarHome) linkSidebarHome.href = '../tela_pessoa_tea.html';
         }
@@ -75,17 +71,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ── Carrega os dados ──────────────────────────────────────────────────
     await carregarAtividade(idAtividade);
 
-    // ── Configura o botão de conclusão ────────────────────────────────────
+    // ── Configura o Botão de Conclusão ────────────────────────────────────
     const btnConcluir = document.getElementById('btn-concluir');
     if (btnConcluir) {
         btnConcluir.addEventListener('click', () => concluirAtividade(idAtividade));
     }
+
+    // ── Configura o Preview de Arquivo do Paciente ────────────────────────
+    configurarPreviewResposta();
 });
 
 
 /* =========================================================================
    FUNÇÕES PRINCIPAIS
    ========================================================================= */
+
+function configurarPreviewResposta() {
+    const inputArquivoResposta = document.getElementById('arquivo-resposta');
+    const previewContainer = document.getElementById('preview-resposta-container');
+    const previewContent = document.getElementById('preview-resposta-content');
+    const previewFilename = document.getElementById('preview-resposta-filename');
+    const btnRemover = document.getElementById('btn-remover-resposta');
+
+    function esconderPreview() {
+        if (inputArquivoResposta) inputArquivoResposta.value = '';
+        if (previewContainer) previewContainer.classList.add('d-none');
+        if (previewContent) previewContent.innerHTML = '';
+        if (previewFilename) previewFilename.textContent = '';
+    }
+
+    if (inputArquivoResposta) {
+        inputArquivoResposta.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (!file) {
+                esconderPreview();
+                return;
+            }
+
+            previewFilename.textContent = file.name;
+            previewContainer.classList.remove('d-none');
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(evento) {
+                    previewContent.innerHTML = `<img src="${evento.target.result}" alt="Preview" class="img-fluid rounded border shadow-sm" style="max-height: 200px; object-fit: contain;">`;
+                }
+                reader.readAsDataURL(file);
+            } else if (file.type === 'application/pdf') {
+                const fileURL = URL.createObjectURL(file);
+                previewContent.innerHTML = `<embed src="${fileURL}#toolbar=0" type="application/pdf" width="100%" height="250px" class="rounded border shadow-sm">`;
+            } else {
+                previewContent.innerHTML = `<i class="bi bi-file-earmark-fill text-secondary" style="font-size: 5rem;"></i>`;
+            }
+        });
+    }
+
+    if (btnRemover) {
+        btnRemover.addEventListener('click', esconderPreview);
+    }
+}
 
 async function carregarAtividade(idAtividade) {
     try {
@@ -98,13 +143,11 @@ async function carregarAtividade(idAtividade) {
 
         const dados = await resposta.json();
         
-        // Trava de segurança: Garante que existem dados
         if (dados.status === 'nok' || !dados.data) {
             mostrarErro(dados.mensagem || 'Erro ao buscar a atividade.');
             return;
         }
 
-        // Trava de segurança contra arrays: se o PHP devolver [ {dados} ], extraímos o {dados}
         const atv = Array.isArray(dados.data) ? dados.data[0] : dados.data;
 
         if (!atv) {
@@ -121,27 +164,22 @@ async function carregarAtividade(idAtividade) {
 }
 
 function renderizarAtividade(atv) {
-    // Some com o loading e mostra o card
     const estadoLoading = document.getElementById('estado-loading');
     const corpoAtividade = document.getElementById('corpo-atividade');
     
     if (estadoLoading) estadoLoading.classList.add('d-none');
     if (corpoAtividade) corpoAtividade.classList.remove('d-none');
 
-    // Título
     document.getElementById('titulo-atividade').textContent = atv.titulo || 'Atividade sem título';
 
-    // Data
     const dataFormatada = atv.data_publicacao
         ? new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR')
         : '—';
     document.getElementById('data-publicacao').innerHTML =
         `<i class="bi bi-calendar-check me-1"></i>Publicado em: ${dataFormatada}`;
 
-    // Categoria
     document.getElementById('badge-categoria').textContent = atv.categoria || 'Sem categoria';
 
-    // Status
     const badgeStatus    = document.getElementById('badge-status');
     const estaAvaliada   = atv.status_conclusao === 'Avaliada';
     const estaConcluida  = atv.status_conclusao === 'Concluída' || estaAvaliada;
@@ -159,7 +197,6 @@ function renderizarAtividade(atv) {
         }
     }
 
-    // Descrição
     const descricaoEl = document.getElementById('descricao-atividade');
     if (descricaoEl) {
         if (atv.descricao && atv.descricao.includes('\n')) {
@@ -173,7 +210,7 @@ function renderizarAtividade(atv) {
         }
     }
 
-    // Arquivo Anexo
+    // Material de Apoio (do Profissional)
     if (atv.arquivo_anexo && atv.tipo_arquivo) {
         document.getElementById('card-anexo').classList.remove('d-none');
 
@@ -183,21 +220,66 @@ function renderizarAtividade(atv) {
             imgEl.src = `data:${atv.tipo_arquivo};base64,${atv.arquivo_anexo}`;
             imgEl.alt = `Material de apoio: ${atv.titulo}`;
 
-        } else if (atv.tipo_arquivo === 'application/pdf') {
-            document.getElementById('container-pdf').classList.remove('d-none');
-            const linkPdf   = document.getElementById('link-pdf');
-            linkPdf.href    = `data:application/pdf;base64,${atv.arquivo_anexo}`;
-            linkPdf.download = `material-${(atv.titulo || 'apoio').replace(/\s+/g, '-').toLowerCase()}.pdf`;
+        } else {
+            const containerPdf = document.getElementById('container-pdf');
+            containerPdf.classList.remove('d-none');
+            
+            containerPdf.innerHTML = `
+                <embed src="data:application/pdf;base64,${atv.arquivo_anexo}#toolbar=0" type="application/pdf" width="100%" height="400px" class="rounded border shadow-sm mb-3">
+                <a href="data:application/pdf;base64,${atv.arquivo_anexo}" download="material-${(atv.titulo || 'apoio').replace(/\s+/g, '-').toLowerCase()}.pdf" class="btn-pdf w-100 btn btn-outline-primary fw-bold py-2">
+                    <i class="bi bi-download me-2"></i> Baixar Material de Apoio (Opcional)
+                </a>
+            `;
         }
     }
 
-    // Pré-preenche comentário se já concluída ou avaliada
+    // ==============================================================
+    // RESPOSTA DO PACIENTE (Preenchimento de Texto e Anexo Anterior)
+    // ==============================================================
     const comentarioEl = document.getElementById('comentario-paciente');
-    if (estaConcluida && atv.comentario_paciente && comentarioEl) {
-        comentarioEl.value = atv.comentario_paciente;
+    
+    if (estaConcluida) {
+        // 1. Preenche o texto
+        if (atv.comentario_paciente && comentarioEl) {
+            comentarioEl.value = atv.comentario_paciente;
+        }
+
+        // 2. Preenche a imagem/pdf que já foi enviado
+        if (atv.arquivo_resposta && atv.tipo_arquivo_resposta) {
+            const previewContainer = document.getElementById('preview-resposta-container');
+            const previewContent = document.getElementById('preview-resposta-content');
+            const previewFilename = document.getElementById('preview-resposta-filename');
+            
+            previewContainer.classList.remove('d-none');
+            previewFilename.textContent = "Arquivo enviado anteriormente";
+
+            if (atv.tipo_arquivo_resposta.startsWith('image/')) {
+                previewContent.innerHTML = `<img src="data:${atv.tipo_arquivo_resposta};base64,${atv.arquivo_resposta}" alt="Resposta Anterior" class="img-fluid rounded border shadow-sm" style="max-height: 200px; object-fit: contain;">`;
+            } else {
+                previewContent.innerHTML = `
+                    <div class="alert alert-secondary mb-0 w-100 text-center">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger fs-3 d-block mb-2"></i>
+                        <strong>PDF Anexado Anteriormente</strong><br>
+                        <a href="data:${atv.tipo_arquivo_resposta};base64,${atv.arquivo_resposta}" download="minha_resposta_anterior.pdf" class="btn btn-sm btn-outline-primary mt-2">
+                            <i class="bi bi-download me-1"></i> Baixar para visualizar
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        // 3. Alerta na tela avisando que pode ser editado
+        if (!estaAvaliada) {
+            Swal.fire({
+                title: 'Atividade já enviada!',
+                text: 'Os dados do seu envio anterior foram carregados. Você pode alterar o texto ou anexar um novo arquivo para atualizar a resposta.',
+                icon: 'info',
+                confirmButtonText: 'Entendi',
+                confirmButtonColor: '#0284c7'
+            });
+        }
     }
 
-    // ── Feedback do profissional ──────────────────────────────────────────
     if (estaAvaliada && atv.feedback_profissional) {
         renderizarFeedbackProfissional(atv.feedback_profissional, atv.data_feedback);
     } else if (estaConcluida && !atv.feedback_profissional) {
@@ -209,20 +291,49 @@ function renderizarAtividade(atv) {
 
 async function concluirAtividade(idAtividade) {
     const btnConcluir = document.getElementById('btn-concluir');
-    const comentario  = document.getElementById('comentario-paciente') ? document.getElementById('comentario-paciente').value.trim() : '';
+    const txtAreaComentario = document.getElementById('comentario-paciente');
+    const inputArquivo = document.getElementById('arquivo-resposta');
+    const previewContainer = document.getElementById('preview-resposta-container');
+    
+    const comentario = txtAreaComentario ? txtAreaComentario.value.trim() : '';
+    const arquivo = (inputArquivo && inputArquivo.files.length > 0) ? inputArquivo.files[0] : null;
+
+    // Se o preview está visível, significa que ele já tem um arquivo salvo no banco 
+    // OU acabou de selecionar um novo. Se não tem nenhum dos dois e não tem texto, bloqueia.
+    const temArquivoAnterior = !previewContainer.classList.contains('d-none');
+
+    if (!comentario && !arquivo && !temArquivoAnterior) {
+        Swal.fire({
+            title: 'Atividade Incompleta!',
+            text: 'Para enviar, você precisa escrever um comentário ou anexar uma foto/arquivo da sua resposta.',
+            icon: 'warning',
+            confirmButtonText: 'Entendi',
+            confirmButtonColor: '#f59e0b'
+        }).then(() => {
+            if (txtAreaComentario) txtAreaComentario.focus();
+        });
+        return; 
+    }
 
     btnConcluir.disabled = true;
     const textoOriginal  = document.getElementById('btn-concluir-texto').textContent;
     document.getElementById('btn-concluir-texto').textContent = 'Enviando...';
     
     try {
+        const formData = new FormData();
+        formData.append('id_atividade', parseInt(idAtividade));
+        
+        if (comentario) {
+            formData.append('comentario_paciente', comentario);
+        }
+        
+        if (arquivo) {
+            formData.append('arquivo_resposta', arquivo);
+        }
+
         const resposta = await fetch('../../php/atividades/concluir_atividade.php', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
-                id_atividade:        parseInt(idAtividade),
-                comentario_paciente: comentario || null
-            })
+            method: 'POST',
+            body: formData 
         });
 
         const resultado = await resposta.json();
@@ -235,15 +346,14 @@ async function concluirAtividade(idAtividade) {
             }
             ajustarBotaoConclusao('Concluída');
 
-            // Redirecionamento Dinâmico Inteligente
             let destinoRedirecionamento = '../atividades_paciente.html';
             if (tipoUsuarioLogado === 'ResponsavelLegal') {
                 destinoRedirecionamento = '../atividades_responsavel.html';
             }
 
             Swal.fire({
-                title: 'Parabéns!',
-                text: 'Sua atividade foi enviada e registrada com sucesso!',
+                title: 'Sucesso!',
+                text: 'Sua resposta foi salva e atualizada com sucesso!',
                 icon: 'success',
                 confirmButtonText: 'Voltar para Atividades',
                 confirmButtonColor: '#0284c7'
@@ -300,6 +410,8 @@ function ajustarBotaoConclusao(statusConclusao) {
     const texto = document.getElementById('btn-concluir-texto');
     const icone = btn.querySelector('i');
     const comentarioTextarea = document.getElementById('comentario-paciente');
+    const inputArquivo = document.getElementById('arquivo-resposta');
+    const btnRemover = document.getElementById('btn-remover-resposta');
 
     if (statusConclusao === 'Avaliada') {
         btn.disabled = true;
@@ -310,25 +422,26 @@ function ajustarBotaoConclusao(statusConclusao) {
         if (texto) texto.textContent = 'Atividade Avaliada';
         if (icone) icone.className = 'bi bi-lock-fill me-2';
         if (comentarioTextarea) comentarioTextarea.disabled = true;
+        if (inputArquivo) inputArquivo.disabled = true;
+        if (btnRemover) btnRemover.classList.add('d-none');
     } else if (statusConclusao === 'Concluída') {
         btn.disabled = false;
         btn.style.opacity = '';
         btn.style.cursor  = '';
         btn.classList.add('btn-atualizar');
-        if (texto) texto.textContent  = 'Atualizar Envio';
+        if (texto) texto.textContent  = 'Atualizar Minha Resposta';
         if (icone) icone.className = 'bi bi-arrow-repeat me-2';
     } else {
         btn.disabled = false;
         btn.style.opacity = '';
         btn.style.cursor  = '';
         btn.classList.remove('btn-atualizar');
-        if (texto) texto.textContent  = 'Marcar como Concluída';
+        if (texto) texto.textContent  = 'Enviar Resposta e Concluir';
         if (icone) icone.className = 'bi bi-check-circle-fill me-2';
     }
 }
 
 function renderizarAguardandoAvaliacao() {
-    // Se o elemento já existe, não renderiza de novo
     if (document.getElementById('card-aguardando-avaliacao')) return;
 
     const btnConcluir = document.getElementById('btn-concluir');
@@ -354,7 +467,7 @@ function renderizarAguardandoAvaliacao() {
         <div>
             <h5 style="margin: 0 0 0.4rem 0; color: #92400e; font-weight: 700;">Aguardando Avaliação</h5>
             <p style="margin: 0; color: #78350f; line-height: 1.6; font-size: 0.95rem;">
-                Sua atividade foi enviada com sucesso! O profissional responsável irá analisá-la
+                Sua resposta foi enviada com sucesso! O profissional responsável irá analisá-la
                 e em breve você receberá o feedback aqui nesta tela.
             </p>
         </div>
@@ -381,6 +494,15 @@ function renderizarFeedbackProfissional(feedback, dataFeedback) {
         border-left: 5px solid #16a34a;
     `;
 
+    function sanitizarHTML(texto) {
+        if (!texto) return '';
+        const div = document.createElement('div');
+        div.textContent = texto;
+        return div.innerHTML;
+    }
+
+    const feedbackSanitizado = sanitizarHTML(feedback);
+
     const dataFormatada = dataFeedback
         ? new Date(dataFeedback).toLocaleDateString('pt-BR')
         : 'Data não informada';
@@ -390,7 +512,7 @@ function renderizarFeedbackProfissional(feedback, dataFeedback) {
             <i class="bi bi-chat-left-quote" style="font-size: 1.5rem; color: #16a34a;"></i>
             <h5 style="margin: 0; color: #15803d; font-weight: 700;">Feedback do Profissional</h5>
         </div>
-        <p style="margin: 0.75rem 0; color: #1e293b; line-height: 1.6; font-size: 1rem;">${feedback}</p>
+        <p style="margin: 0.75rem 0; color: #1e293b; line-height: 1.6; font-size: 1rem; word-wrap: break-word; overflow-wrap: anywhere;">${feedbackSanitizado}</p>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #64748b;">
             <i class="bi bi-calendar-event me-1"></i>Recebido em ${dataFormatada}
         </p>

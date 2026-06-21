@@ -43,9 +43,19 @@ try {
     $atividade = $res->fetch_assoc();
     $check->close();
 
-    // Buscar submissões dos pacientes
+    // CORREÇÃO: Tirado o TO_BASE64 de pa.arquivo_resposta, pois ele já é LONGTEXT (Base64) no banco
     $stmt = $conexao->prepare(
-        "SELECT u.id_usuario, pa.id_pessoa_tea, u.nome, pa.status_conclusao, pa.comentario_paciente, pa.data_conclusao, pa.feedback_profissional, pa.data_feedback
+        "SELECT 
+            u.id_usuario, 
+            pa.id_pessoa_tea, 
+            u.nome, 
+            pa.status_conclusao, 
+            pa.comentario_paciente, 
+            pa.data_conclusao, 
+            pa.feedback_profissional, 
+            pa.data_feedback,
+            pa.tipo_arquivo_resposta,
+            pa.arquivo_resposta
          FROM PessoaTea_Atividade pa
          JOIN Usuario u ON u.id_usuario = pa.id_pessoa_tea
          WHERE pa.id_atividade = ?"
@@ -67,5 +77,4 @@ try {
 } finally {
     $conexao->close();
 }
-
 ?>

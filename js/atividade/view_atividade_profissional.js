@@ -53,14 +53,15 @@ async function carregarAtividadeComSubmissoes() {
             return;
         }
 
-        renderizarAtividade(data.atividade);
+        // Passando também as submissões para verificar se o botão de editar deve ser bloqueado
+        renderizarAtividade(data.atividade, data.submissoes);
         renderizarSubmissoes(data.submissoes);
 
     } catch (error) {
         console.error('Erro ao buscar atividade:', error);
         Swal.fire({
             title: 'Erro de Comunicação',
-            text: 'Não foi possível carregar os dados da atividade. Verifique sua conexão.',
+            text: 'Não foi possível carregar os dados da atividade.',
             icon: 'error',
             confirmButtonColor: '#dc3545'
         });
@@ -68,8 +69,37 @@ async function carregarAtividadeComSubmissoes() {
 }
 
 // Renderizar detalhes da atividade
-function renderizarAtividade(atividade) {
+function renderizarAtividade(atividade, submissoes) {
     tituloElement.textContent = atividade.titulo || 'Sem título';
+
+    // ==========================================
+    // LÓGICA DE BLOQUEIO DO BOTÃO DE EDITAR
+    // ==========================================
+    // Verifica se algum paciente já respondeu a atividade
+    const jaFoiRespondida = submissoes && submissoes.some(sub => sub.status_conclusao === 'Concluída' || sub.status_conclusao === 'Avaliada');
+
+    if (!document.getElementById('btn-edit-atividade')) {
+        const btnEdit = document.createElement('button');
+        btnEdit.id = 'btn-edit-atividade';
+        
+        if (jaFoiRespondida) {
+            // Botão Bloqueado
+            btnEdit.className = 'btn btn-sm btn-secondary rounded-pill fw-semibold shadow-sm float-end mt-1';
+            btnEdit.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Edição Bloqueada';
+            btnEdit.disabled = true;
+            btnEdit.title = 'Não é possível editar esta atividade pois um ou mais pacientes já a responderam.';
+            btnEdit.style.cursor = 'not-allowed';
+        } else {
+            // Botão Liberado
+            btnEdit.className = 'btn btn-sm btn-outline-primary rounded-pill fw-semibold shadow-sm float-end mt-1';
+            btnEdit.innerHTML = '<i class="bi bi-pencil-square me-1"></i> Editar Atividade';
+            btnEdit.onclick = () => {
+                window.location.href = `editar_atividade.html?id=${idAtividade}`;
+            };
+        }
+        tituloElement.insertAdjacentElement('beforebegin', btnEdit);
+    }
+
     categoriaElement.textContent = atividade.categoria || 'Geral';
     
     if (atividade.descricao && atividade.descricao.includes('\n')) {
@@ -87,7 +117,6 @@ function renderizarAtividade(atividade) {
         : 'Data não informada';
     dataElement.textContent = `Publicada em ${dataFormatada}`;
 
-    // Renderizar anexo se existir
     if (atividade.arquivo_anexo) {
         renderizarAnexo(atividade.arquivo_anexo, atividade.tipo_arquivo);
     } else {
@@ -95,24 +124,27 @@ function renderizarAtividade(atividade) {
     }
 }
 
-// Renderizar anexo (imagem ou PDF)
+// Renderizar anexo (imagem ou PDF direto na tela)
 function renderizarAnexo(arquivo, tipoArquivo) {
     anexoContainer.style.display = 'block';
 
     if (tipoArquivo && tipoArquivo.startsWith('image/')) {
         const img = document.createElement('img');
         img.src = `data:${tipoArquivo};base64,${arquivo}`;
-        img.className = 'imagem-atividade';
+        img.className = 'img-fluid rounded border shadow-sm';
+        img.style.maxHeight = '400px';
+        img.style.objectFit = 'contain';
         anexoContent.innerHTML = '';
         anexoContent.appendChild(img);
     } else {
-        const btnPdf = document.createElement('a');
-        btnPdf.href = `data:application/pdf;base64,${arquivo}`;
-        btnPdf.download = 'anexo.pdf';
-        btnPdf.className = 'btn-pdf';
-        btnPdf.innerHTML = '<i class="bi bi-file-pdf"></i> Baixar Anexo';
-        anexoContent.innerHTML = '';
-        anexoContent.appendChild(btnPdf);
+        anexoContent.innerHTML = `
+            <embed src="data:application/pdf;base64,${arquivo}#toolbar=0" type="application/pdf" width="100%" height="400px" class="rounded border shadow-sm">
+            <div class="mt-3 text-center">
+                <a href="data:application/pdf;base64,${arquivo}" download="anexo_atividade.pdf" class="btn btn-outline-secondary btn-sm rounded-pill fw-medium">
+                    <i class="bi bi-download me-1"></i> Baixar Original (Opcional)
+                </a>
+            </div>
+        `;
     }
 }
 
@@ -135,7 +167,7 @@ function renderizarSubmissoes(submissoes) {
             padding: 1.25rem;
             margin-bottom: 1rem;
             border-left: 4px solid #0284c7;
-            overflow: hidden; /* Adicionado para evitar que o conteudo vaze do card geral */
+            overflow: hidden; 
         `;
 
         const estaConcluida = (sub.status_conclusao === 'Concluída' || sub.status_conclusao === 'Avaliada');
@@ -151,7 +183,30 @@ function renderizarSubmissoes(submissoes) {
         const comentarioSanitizado = sanitizarHTML(sub.comentario_paciente);
         const feedbackSanitizado = sanitizarHTML(sub.feedback_profissional);
 
-        // CORREÇÃO VISUAL: Inserido "word-wrap: break-word; overflow-wrap: anywhere;" nos textos
+        let anexoPacienteHTML = '';
+        if (sub.arquivo_resposta && sub.tipo_arquivo_resposta) {
+            if (sub.tipo_arquivo_resposta.startsWith('image/')) {
+                anexoPacienteHTML = `
+                    <div class="mt-3 text-center bg-white p-2 border rounded-3">
+                        <p class="small text-muted mb-2 fw-semibold text-start"><i class="bi bi-image me-1"></i> Foto anexada pelo paciente:</p>
+                        <img src="data:${sub.tipo_arquivo_resposta};base64,${sub.arquivo_resposta}" alt="Resposta do Paciente" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: contain;">
+                    </div>
+                `;
+            } else {
+                anexoPacienteHTML = `
+                    <div class="mt-3 bg-white p-2 border rounded-3 text-center">
+                        <p class="small text-muted mb-2 fw-semibold text-start"><i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Arquivo anexado pelo paciente:</p>
+                        
+                        <embed src="data:${sub.tipo_arquivo_resposta};base64,${sub.arquivo_resposta}#toolbar=0" type="application/pdf" width="100%" height="400px" class="rounded border shadow-sm mb-3">
+                        
+                        <a href="data:${sub.tipo_arquivo_resposta};base64,${sub.arquivo_resposta}" download="resposta_paciente_${sub.nome.replace(/\s+/g, '_')}.pdf" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="bi bi-download me-1"></i> Baixar Arquivo Original
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
         const feedbackExistente = sub.feedback_profissional
             ? `
                 <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border-left: 3px solid #16a34a;">
@@ -166,8 +221,10 @@ function renderizarSubmissoes(submissoes) {
 
         let btnAcaoHTML = '';
         if (estaConcluida) {
+            const feedbackCodificado = encodeURIComponent(sub.feedback_profissional || '');
+            
             btnAcaoHTML = `
-                <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_pessoa_tea}', '${sub.nome.replace(/'/g, "\\'")}')">
+                <button class="btn btn-sm btn-primary" style="margin-top: ${feedbackExistente ? '1rem' : '0'};" onclick="abrirModalFeedback('${sub.id_pessoa_tea}', '${sub.nome.replace(/'/g, "\\'")}', '${feedbackCodificado}')">
                     <i class="bi bi-pencil"></i> ${sub.feedback_profissional ? 'Editar Feedback' : 'Dar Feedback'}
                 </button>
             `;
@@ -179,7 +236,6 @@ function renderizarSubmissoes(submissoes) {
             `;
         }
 
-        // CORREÇÃO VISUAL: Inserido "word-wrap: break-word; overflow-wrap: anywhere;" no comentário do paciente
         card.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <div>
@@ -190,23 +246,38 @@ function renderizarSubmissoes(submissoes) {
 
             <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
                 <p style="margin: 0.25rem 0;"><strong>Data de entrega:</strong> ${dataEntrega}</p>
-                ${sub.comentario_paciente ? `<p style="margin: 0.25rem 0; padding: 0.5rem; background: #fff; border-radius: 4px; border: 1px solid #e2e8f0; word-wrap: break-word; overflow-wrap: anywhere;"><strong>Comentário do Paciente/Responsável:</strong><br/> ${comentarioSanitizado}</p>` : ''}
+                
+                ${sub.comentario_paciente ? `
+                    <div style="margin-top: 0.5rem; padding: 0.75rem; background: #fff; border-radius: 6px; border: 1px solid #e2e8f0; word-wrap: break-word; overflow-wrap: anywhere;">
+                        <strong>Comentário do Paciente/Responsável:</strong><br/>
+                        <span style="color: #334155; display: inline-block; margin-top: 0.25rem;">${comentarioSanitizado}</span>
+                    </div>
+                ` : ''}
+                
+                ${anexoPacienteHTML}
             </div>
 
             ${feedbackExistente}
-            ${btnAcaoHTML}
+            
+            <div class="mt-3">
+                ${btnAcaoHTML}
+            </div>
         `;
 
         submissoesElement.appendChild(card);
     });
 }
 
-// Abrir modal para dar feedback
-function abrirModalFeedback(idPessoaTea, nome) {
+// Abrir modal para dar ou editar feedback
+function abrirModalFeedback(idPessoaTea, nome, feedbackCodificado) {
+    const feedbackSalvo = decodeURIComponent(feedbackCodificado || '');
+    
     currentFeedbackData = { id_pessoa_tea: idPessoaTea };
     modalPatientName.textContent = nome;
-    feedbackText.value = '';
-    charCount.textContent = '0/1000';
+    
+    feedbackText.value = feedbackSalvo;
+    charCount.textContent = `${feedbackSalvo.length}/1000`;
+    
     feedbackModal.show();
 }
 
@@ -234,7 +305,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
     try {
         submitFeedbackBtn.disabled = true;
-        submitFeedbackBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i> Enviando...';
+        submitFeedbackBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i> Salvando...';
 
         const response = await fetch('../../php/atividades/salvar_feedback.php', {
             method: 'POST',
@@ -249,7 +320,7 @@ submitFeedbackBtn.addEventListener('click', async () => {
 
             Swal.fire({
                 title: 'Sucesso!',
-                text: 'Feedback enviado com sucesso!',
+                text: 'Feedback salvo com sucesso!',
                 icon: 'success',
                 confirmButtonColor: '#059669',
                 timer: 2000,

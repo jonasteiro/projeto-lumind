@@ -1,8 +1,7 @@
 /**
  * tela_atividade.js
  * Realiza a atividade — PBI 04 + PBI 05
- * Funciona para PessoaTea e ResponsavelLegal.
- * ATUALIZAÇÃO: Carrega os dados (texto e anexo) de respostas anteriores e exibe alerta de reenvio!
+ * ATUALIZADO: Suporte nativo à Voz, Temas Globais e Correções visuais.
  */
 
 let tipoUsuarioLogado = 'PessoaTea';
@@ -36,15 +35,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const nomeEl = document.getElementById('nome-usuario');
         if (nomeEl) nomeEl.textContent = usuario.nome;
 
-        const linkBack        = document.getElementById('link-back');
-        const linkSidebarHome = document.getElementById('sidebar-home');
+        const linkBack = document.getElementById('link-back');
 
         if (tipoUsuarioLogado === 'ResponsavelLegal') {
-            if (linkBack)        linkBack.href        = '../atividades_responsavel.html';
-            if (linkSidebarHome) linkSidebarHome.href = '../tela_responsavel.html';
+            if (linkBack) linkBack.href = '../atividades_responsavel.html';
         } else {
-            if (linkBack)        linkBack.href        = '../atividades_paciente.html';
-            if (linkSidebarHome) linkSidebarHome.href = '../tela_pessoa_tea.html';
+            if (linkBack) linkBack.href = '../atividades_paciente.html';
         }
 
         if (!['PessoaTea', 'ResponsavelLegal'].includes(tipoUsuarioLogado)) {
@@ -85,6 +81,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* =========================================================================
    FUNÇÕES PRINCIPAIS
    ========================================================================= */
+
+// Função auxiliar para ativar a leitura de voz após injetar dados
+function ativarVozDinamicamente(elementoHTML, textoParaFalar) {
+    if(!elementoHTML) return;
+    elementoHTML.setAttribute('data-tts', textoParaFalar);
+    
+    elementoHTML.addEventListener('mouseenter', () => {
+        if (localStorage.getItem('leituraVozLumind') === 'true') {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(textoParaFalar);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+    });
+}
 
 function configurarPreviewResposta() {
     const inputArquivoResposta = document.getElementById('arquivo-resposta');
@@ -170,7 +182,11 @@ function renderizarAtividade(atv) {
     if (estadoLoading) estadoLoading.classList.add('d-none');
     if (corpoAtividade) corpoAtividade.classList.remove('d-none');
 
-    document.getElementById('titulo-atividade').textContent = atv.titulo || 'Atividade sem título';
+    // TÍTULO DA ATIVIDADE + TTS
+    const tituloEl = document.getElementById('titulo-atividade');
+    const tituloTexto = atv.titulo || 'Atividade sem título';
+    tituloEl.textContent = tituloTexto;
+    ativarVozDinamicamente(tituloEl, tituloTexto);
 
     const dataFormatada = atv.data_publicacao
         ? new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR')
@@ -180,7 +196,7 @@ function renderizarAtividade(atv) {
 
     document.getElementById('badge-categoria').textContent = atv.categoria || 'Sem categoria';
 
-    const badgeStatus    = document.getElementById('badge-status');
+    const badgeStatus  = document.getElementById('badge-status');
     const estaAvaliada   = atv.status_conclusao === 'Avaliada';
     const estaConcluida  = atv.status_conclusao === 'Concluída' || estaAvaliada;
     
@@ -197,7 +213,9 @@ function renderizarAtividade(atv) {
         }
     }
 
+    // DESCRIÇÃO DA ATIVIDADE + TTS
     const descricaoEl = document.getElementById('descricao-atividade');
+    const descricaoTexto = atv.descricao || 'Sem descrição.';
     if (descricaoEl) {
         if (atv.descricao && atv.descricao.includes('\n')) {
             descricaoEl.innerHTML = atv.descricao
@@ -206,11 +224,12 @@ function renderizarAtividade(atv) {
                 .map(l => `<p>${l.trim()}</p>`)
                 .join('');
         } else {
-            descricaoEl.textContent = atv.descricao || 'Sem descrição.';
+            descricaoEl.textContent = descricaoTexto;
         }
+        ativarVozDinamicamente(descricaoEl, descricaoTexto);
     }
 
-    // Material de Apoio (do Profissional)
+    // Material de Apoio
     if (atv.arquivo_anexo && atv.tipo_arquivo) {
         document.getElementById('card-anexo').classList.remove('d-none');
 
@@ -233,18 +252,14 @@ function renderizarAtividade(atv) {
         }
     }
 
-    // ==============================================================
-    // RESPOSTA DO PACIENTE (Preenchimento de Texto e Anexo Anterior)
-    // ==============================================================
+    // RESPOSTA DO PACIENTE
     const comentarioEl = document.getElementById('comentario-paciente');
     
     if (estaConcluida) {
-        // 1. Preenche o texto
         if (atv.comentario_paciente && comentarioEl) {
             comentarioEl.value = atv.comentario_paciente;
         }
 
-        // 2. Preenche a imagem/pdf que já foi enviado
         if (atv.arquivo_resposta && atv.tipo_arquivo_resposta) {
             const previewContainer = document.getElementById('preview-resposta-container');
             const previewContent = document.getElementById('preview-resposta-content');
@@ -268,11 +283,10 @@ function renderizarAtividade(atv) {
             }
         }
 
-        // 3. Alerta na tela avisando que pode ser editado
         if (!estaAvaliada) {
             Swal.fire({
                 title: 'Atividade já enviada!',
-                text: 'Os dados do seu envio anterior foram carregados. Você pode alterar o texto ou anexar um novo arquivo para atualizar a resposta.',
+                text: 'Você pode alterar o texto ou anexar um novo arquivo para atualizar a resposta.',
                 icon: 'info',
                 confirmButtonText: 'Entendi',
                 confirmButtonColor: '#0284c7'
@@ -298,14 +312,12 @@ async function concluirAtividade(idAtividade) {
     const comentario = txtAreaComentario ? txtAreaComentario.value.trim() : '';
     const arquivo = (inputArquivo && inputArquivo.files.length > 0) ? inputArquivo.files[0] : null;
 
-    // Se o preview está visível, significa que ele já tem um arquivo salvo no banco 
-    // OU acabou de selecionar um novo. Se não tem nenhum dos dois e não tem texto, bloqueia.
     const temArquivoAnterior = !previewContainer.classList.contains('d-none');
 
     if (!comentario && !arquivo && !temArquivoAnterior) {
         Swal.fire({
             title: 'Atividade Incompleta!',
-            text: 'Para enviar, você precisa escrever um comentário ou anexar uma foto/arquivo da sua resposta.',
+            text: 'Para enviar, você precisa escrever um comentário ou anexar uma foto/arquivo.',
             icon: 'warning',
             confirmButtonText: 'Entendi',
             confirmButtonColor: '#f59e0b'
@@ -323,13 +335,8 @@ async function concluirAtividade(idAtividade) {
         const formData = new FormData();
         formData.append('id_atividade', parseInt(idAtividade));
         
-        if (comentario) {
-            formData.append('comentario_paciente', comentario);
-        }
-        
-        if (arquivo) {
-            formData.append('arquivo_resposta', arquivo);
-        }
+        if (comentario) formData.append('comentario_paciente', comentario);
+        if (arquivo) formData.append('arquivo_resposta', arquivo);
 
         const resposta = await fetch('../../php/atividades/concluir_atividade.php', {
             method: 'POST',
@@ -353,7 +360,7 @@ async function concluirAtividade(idAtividade) {
 
             Swal.fire({
                 title: 'Sucesso!',
-                text: 'Sua resposta foi salva e atualizada com sucesso!',
+                text: 'Sua resposta foi enviada!',
                 icon: 'success',
                 confirmButtonText: 'Voltar para Atividades',
                 confirmButtonColor: '#0284c7'
@@ -363,11 +370,10 @@ async function concluirAtividade(idAtividade) {
 
         } else {
             Swal.fire({
-                title: 'Não foi possível enviar!',
-                text: resultado.mensagem || 'Ocorreu um erro no processamento da atividade.',
+                title: 'Erro!',
+                text: resultado.mensagem || 'Ocorreu um erro no processamento.',
                 icon: 'error',
-                confirmButtonText: 'Tentar Novamente',
-                confirmButtonColor: '#dc3545'
+                confirmButtonText: 'Tentar Novamente'
             });
         }
 
@@ -375,10 +381,9 @@ async function concluirAtividade(idAtividade) {
         console.error('Erro ao concluir:', erro);
         Swal.fire({
             title: 'Erro de Comunicação',
-            text: 'Falha ao comunicar com o servidor. Verifique sua conexão e tente novamente.',
+            text: 'Falha ao comunicar com o servidor. Verifique sua conexão.',
             icon: 'error',
-            confirmButtonText: 'Fechar',
-            confirmButtonColor: '#dc3545'
+            confirmButtonText: 'Fechar'
         });
     } finally {
         if (btnConcluir) {
@@ -387,7 +392,6 @@ async function concluirAtividade(idAtividade) {
         }
     }
 }
-
 
 /* =========================================================================
    AUXILIARES
@@ -416,7 +420,6 @@ function ajustarBotaoConclusao(statusConclusao) {
     if (statusConclusao === 'Avaliada') {
         btn.disabled = true;
         btn.classList.remove('btn-atualizar');
-        btn.classList.add('btn-bloqueado');
         btn.style.opacity    = '0.55';
         btn.style.cursor     = 'not-allowed';
         if (texto) texto.textContent = 'Atividade Avaliada';
@@ -452,9 +455,8 @@ function renderizarAguardandoAvaliacao() {
     const el = document.createElement('div');
     el.id = 'card-aguardando-avaliacao';
     el.style.cssText = `
-        background: linear-gradient(135deg, #fef9c3 0%, #fefce8 100%);
-        border: 2px solid #fde047;
-        border-left: 5px solid #ca8a04;
+        background: var(--theme-hover);
+        border: 1px solid var(--theme-border);
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
@@ -463,17 +465,17 @@ function renderizarAguardandoAvaliacao() {
         gap: 1rem;
     `;
     el.innerHTML = `
-        <i class="bi bi-hourglass-split" style="font-size: 2rem; color: #ca8a04; flex-shrink: 0;"></i>
+        <i class="bi bi-hourglass-split" style="font-size: 2rem; color: var(--theme-primary); flex-shrink: 0;"></i>
         <div>
-            <h5 style="margin: 0 0 0.4rem 0; color: #92400e; font-weight: 700;">Aguardando Avaliação</h5>
-            <p style="margin: 0; color: #78350f; line-height: 1.6; font-size: 0.95rem;">
-                Sua resposta foi enviada com sucesso! O profissional responsável irá analisá-la
-                e em breve você receberá o feedback aqui nesta tela.
+            <h5 style="margin: 0 0 0.4rem 0; color: var(--theme-primary); font-weight: 700;">Aguardando Avaliação</h5>
+            <p style="margin: 0; color: var(--theme-dark); line-height: 1.6; font-size: 0.95rem;">
+                Sua resposta foi enviada com sucesso! O profissional responsável irá analisá-la e em breve você receberá o feedback.
             </p>
         </div>
     `;
 
     ref.insertAdjacentElement('beforebegin', el);
+    ativarVozDinamicamente(el, "Aguardando Avaliação. Sua resposta foi enviada com sucesso!");
 }
 
 function renderizarFeedbackProfissional(feedback, dataFeedback) {
@@ -486,7 +488,7 @@ function renderizarFeedbackProfissional(feedback, dataFeedback) {
     const feedbackEl = document.createElement('div');
     feedbackEl.id = 'card-feedback-prof';
     feedbackEl.style.cssText = `
-        background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+        background: #dcfce7;
         border: 2px solid #86efac;
         border-radius: 12px;
         padding: 1.5rem;
@@ -519,4 +521,5 @@ function renderizarFeedbackProfissional(feedback, dataFeedback) {
     `;
 
     cardResposta.insertAdjacentElement('beforebegin', feedbackEl);
+    ativarVozDinamicamente(feedbackEl, `Feedback do Profissional: ${feedbackSanitizado}`);
 }

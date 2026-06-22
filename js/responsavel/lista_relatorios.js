@@ -1,24 +1,36 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('lista-relatorios');
+    const inputBusca = document.getElementById('inputBusca');
+    
+    // Variável para armazenar todos os relatórios originais
+    let todosRelatorios = [];
 
-    try {
-        const res = await fetch('../php/responsavel/relatorios_listar.php');
-        const relatorios = await res.json();
-
+    // Função que desenha os cards na tela
+    const renderizarRelatorios = (relatorios, termoPesquisa = '') => {
         container.innerHTML = '';
 
+        // Cenário: Nenhum relatório encontrado (banco vazio ou filtro sem resultados)
         if (!Array.isArray(relatorios) || relatorios.length === 0) {
-            container.innerHTML = `
-                <div class="col-12 text-center py-5">
-                    <i class="bi bi-journal-x fs-1 text-muted"></i>
-                    <p class="mt-3 fs-5 text-muted">Você ainda não enviou nenhum relatório.</p>
-                    <a href="relatorio_responsavel.html" class="btn btn-primary rounded-pill px-4 mt-2">
-                        <i class="bi bi-plus-lg me-1"></i> Criar primeiro relatório
-                    </a>
-                </div>`;
+            if (termoPesquisa) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-search fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                        <p class="fs-5 text-muted mb-1">Nenhum relatório encontrado para "<strong>${termoPesquisa}</strong>".</p>
+                    </div>`;
+            } else {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-journal-x fs-1 text-muted"></i>
+                        <p class="mt-3 fs-5 text-muted">Você ainda não enviou nenhum relatório.</p>
+                        <a href="relatorio_responsavel.html" class="btn btn-primary rounded-pill px-4 mt-2">
+                            <i class="bi bi-plus-lg me-1"></i> Criar primeiro relatório
+                        </a>
+                    </div>`;
+            }
             return;
         }
 
+        // Desenha os relatórios na tela
         relatorios.forEach(rel => {
             const dataFormatada = new Date(rel.data + 'T00:00:00').toLocaleDateString('pt-BR');
             const preview = rel.descricao.length > 120 ? rel.descricao.substring(0, 120) + '...' : rel.descricao;
@@ -45,6 +57,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>`;
         });
+    };
+
+    // 1. Carrega os dados do banco de dados
+    try {
+        const res = await fetch('../php/responsavel/relatorios_listar.php');
+        todosRelatorios = await res.json();
+
+        // Ordenar do mais recente para o mais antigo
+        todosRelatorios.sort((a, b) => new Date(b.data + 'T00:00:00') - new Date(a.data + 'T00:00:00'));
+
+        renderizarRelatorios(todosRelatorios);
 
     } catch (error) {
         console.error('Erro ao carregar relatórios:', error);
@@ -52,6 +75,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="alert alert-danger w-100 text-center">
                 Erro ao conectar com o servidor.
             </div>`;
+    }
+
+    // 2. Adiciona o evento de busca em tempo real
+    if (inputBusca) {
+        inputBusca.addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase().trim();
+
+            const filtrados = todosRelatorios.filter(rel => {
+                const descricao = (rel.descricao || '').toLowerCase();
+                const nomeDependente = (rel.nome_dependente || '').toLowerCase();
+                
+                // Pesquisa tanto pelo que está escrito no relatório quanto pelo nome do dependente
+                return descricao.includes(termo) || nomeDependente.includes(termo);
+            });
+
+            renderizarRelatorios(filtrados, termo);
+        });
     }
 });
 

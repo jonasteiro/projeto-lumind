@@ -1,34 +1,84 @@
 /**
  * atividades_paciente.js
- * Lista de atividades para PessoaTea e ResponsavelLegal.
- * CORRIGIDO:
- * - Nome exibido via validarAcesso (sessão real) e não localStorage
- * - Link "COMEÇAR" aponta para atividades/tela_atividade.html?id=
- * - Busca de status_conclusao exibida no card (Agora suporta o status "Avaliada")
+ * Lista de atividades para PessoaTea.
+ * ATUALIZADO: Suporte nativo à leitura de tela por Voz (TTS).
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('lista-atividades');
     const inputBusca = document.getElementById('inputBusca');
-    let todasAtividades = [];
+    const botoesFiltroStatus = document.querySelectorAll('.filtro-status');
+    const selectFiltroCategoria = document.getElementById('filtroCategoria');
 
-    function renderizarAtividades(lista) {
+    let todasAtividades = [];
+    
+    let estadoFiltros = {
+        texto: '',
+        status: 'Todos',
+        categoria: 'Todas'
+    };
+
+    // Função interna para vincular a voz do "tema_paciente.js" aos novos cards gerados
+    const reconfigurarLeituraCardsDinamicamente = () => {
+        const cardsTTS = document.querySelectorAll('.card-atividade[data-tts]');
+        cardsTTS.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                const leituraAtiva = localStorage.getItem('leituraVozLumind') === 'true';
+                if (leituraAtiva) {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(el.getAttribute('data-tts'));
+                    u.lang = 'pt-BR'; u.rate = 1.1;
+                    window.speechSynthesis.speak(u);
+                }
+            });
+        });
+    };
+
+    // ====================================================================
+    // FUNÇÃO PARA DESENHAR OS CARDS
+    // ====================================================================
+    const renderizarAtividades = (atividades) => {
         container.innerHTML = '';
 
-        if (!Array.isArray(lista) || lista.length === 0) {
+        if (!Array.isArray(atividades) || atividades.length === 0) {
+            let msgPrincipal = "Nenhuma atividade encontrada com estes filtros.";
+            let msgSecundaria = "Tente mudar a pesquisa, o status ou a especialidade.";
+            let icone = "bi-funnel-fill";
+
+            if (estadoFiltros.texto === '' && estadoFiltros.status === 'Todos' && estadoFiltros.categoria === 'Todas') {
+                msgPrincipal = "Nenhuma atividade foi atribuída a você ainda.";
+                msgSecundaria = "Quando o profissional publicar atividades, elas aparecerão aqui.";
+                icone = "bi-clipboard-x";
+            }
+
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
-                    <i class="bi bi-clipboard-x fs-1 text-muted"></i>
-                    <p class="mt-3 fs-5 text-muted">Nenhuma atividade encontrada.</p>
+                    <i class="bi ${icone} fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                    <p class="fs-5 text-muted mb-1">${msgPrincipal}</p>
+                    <small class="text-muted">${msgSecundaria}</small>
                 </div>`;
             return;
         }
 
-        lista.forEach(atv => {
-            
-            // ==========================================
-            // LÓGICA DE BADGE DE STATUS ATUALIZADA
-            // ==========================================
+        const obterPesoStatus = (status) => {
+            if (status === 'Pendente') return 1;
+            if (status === 'Concluída') return 2;
+            if (status === 'Avaliada') return 3;
+            return 4;
+        };
+
+        const listaOrdenada = [...atividades].sort((a, b) => {
+            const pesoA = obterPesoStatus(a.status_conclusao);
+            const pesoB = obterPesoStatus(b.status_conclusao);
+
+            if (pesoA !== pesoB) return pesoA - pesoB;
+            return new Date(b.data_publicacao + 'T00:00:00') - new Date(a.data_publicacao + 'T00:00:00');
+        });
+
+        // DESENHAR CARDS
+        listaOrdenada.forEach(atv => {
+            const dataFormatada = new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR');
+
             let statusBadge = '';
             let btnTexto = '<i class="bi bi-play-fill me-1"></i> COMEÇAR';
             let btnClasse = 'btn-primary';
@@ -45,13 +95,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statusBadge = '<span class="badge rounded-pill bg-warning text-dark shadow-sm">⏳ Pendente</span>';
             }
 
-            const dataFormatada = atv.data_publicacao
-                ? new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR')
-                : '—';
+            // O atributo data-tts foi adicionado aqui para descrever a atividade!
+            const textoVoz = `Atividade de ${atv.categoria}. Título: ${atv.titulo}. Status: ${atv.status_conclusao || 'Pendente'}.`;
 
             container.innerHTML += `
                 <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card-atividade h-100 position-relative">
+                    <div class="card-atividade h-100 position-relative" data-tts="${textoVoz}">
                         <div class="card-atividade-topo d-flex justify-content-between align-items-start mb-2">
                             <span class="badge-cat">${atv.categoria}</span>
                             ${statusBadge}
@@ -67,28 +116,79 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>`;
         });
+
+        // 🔥 Aciona a voz para os cards recém-criados
+        reconfigurarLeituraCardsDinamicamente();
+    };
+
+    // ====================================================================
+    // FUNÇÃO MESTRA PARA APLICAR TODOS OS FILTROS JUNTOS
+    // ====================================================================
+    const aplicarFiltrosGerais = () => {
+        const atividadesFiltradas = todasAtividades.filter(atv => {
+            const titulo = (atv.titulo || '').toLowerCase();
+            const categoriaTexto = (atv.categoria || '').toLowerCase();
+            const termo = estadoFiltros.texto;
+            const passouTexto = termo === '' || titulo.includes(termo) || categoriaTexto.includes(termo);
+
+            const statusReal = atv.status_conclusao || 'Pendente';
+            const passouStatus = estadoFiltros.status === 'Todos' || statusReal === estadoFiltros.status;
+
+            const passouCategoria = estadoFiltros.categoria === 'Todas' || atv.categoria === estadoFiltros.categoria;
+
+            return passouTexto && passouStatus && passouCategoria;
+        });
+
+        renderizarAtividades(atividadesFiltradas);
+    };
+
+    // ====================================================================
+    // VINCULAR EVENTOS DA INTERFACE (LISTENERS)
+    // ====================================================================
+    if (inputBusca) {
+        inputBusca.addEventListener('input', (e) => {
+            estadoFiltros.texto = e.target.value.toLowerCase().trim();
+            aplicarFiltrosGerais();
+        });
     }
 
-    try {
-        const response   = await fetch('../php/atividades/atividades_get.php');
-        todasAtividades = await response.json();
+    if (selectFiltroCategoria) {
+        selectFiltroCategoria.addEventListener('change', (e) => {
+            estadoFiltros.categoria = e.target.value;
+            aplicarFiltrosGerais();
+        });
+    }
 
-        renderizarAtividades(todasAtividades);
+    if (botoesFiltroStatus) {
+        botoesFiltroStatus.forEach(botao => {
+            botao.addEventListener('click', (e) => {
+                botoesFiltroStatus.forEach(b => {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-outline-secondary');
+                });
 
-        if (inputBusca) {
-            inputBusca.addEventListener('input', (e) => {
-                const termoDeBusca = e.target.value.toLowerCase().trim();
-                const atividadesFiltradas = todasAtividades.filter(atv => 
-                    atv.titulo.toLowerCase().includes(termoDeBusca)
-                );
-                renderizarAtividades(atividadesFiltradas);
+                const btnClicado = e.currentTarget;
+                btnClicado.classList.remove('btn-outline-secondary');
+                btnClicado.classList.add('btn-primary', 'active');
+
+                estadoFiltros.status = btnClicado.getAttribute('data-status');
+                aplicarFiltrosGerais();
             });
-        }
+        });
+    }
 
+    // ====================================================================
+    // CARREGAMENTO INICIAL DO BANCO
+    // ====================================================================
+    try {
+        const response = await fetch('../php/atividades/atividades_get.php');
+        todasAtividades = await response.json();
+        renderizarAtividades(todasAtividades);
     } catch (error) {
         console.error('Erro ao carregar atividades:', error);
         container.innerHTML = `
             <div class="alert alert-danger w-100 text-center">
+                <i class="bi bi-wifi-off fs-4 d-block mb-2"></i>
                 Erro ao conectar com o servidor. Verifique sua conexão.
             </div>`;
     }

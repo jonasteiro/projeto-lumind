@@ -1,43 +1,74 @@
+/**
+ * atividades_responsavel.js
+ * Lista de atividades para ResponsavelLegal.
+ * ATUALIZADO: Inclui Ordenação Inteligente e Filtros Rápidos.
+ */
+
 document.addEventListener('DOMContentLoaded', async () => {
     const container = document.getElementById('lista-atividades');
-    const inputBusca = document.getElementById('inputBusca'); 
-    
-    // Variável para armazenar todas as atividades carregadas do banco
-    let todasAtividades = [];
+    const inputBusca = document.getElementById('inputBusca');
+    const botoesFiltroStatus = document.querySelectorAll('.filtro-status');
+    const selectFiltroCategoria = document.getElementById('filtroCategoria');
 
-    // Função que desenha os cards na tela
-    const renderizarAtividades = (atividades, termoPesquisa = '') => {
+    let todasAtividades = [];
+    
+    // Objeto para controlar o estado de todos os filtros simultaneamente
+    let estadoFiltros = {
+        texto: '',
+        status: 'Todos',
+        categoria: 'Todas'
+    };
+
+    // ====================================================================
+    // FUNÇÃO PARA DESENHAR OS CARDS
+    // ====================================================================
+    const renderizarAtividades = (atividades) => {
         container.innerHTML = '';
 
-        // CENÁRIO 3 — Empty State: exibe mensagens diferentes se for busca vazia ou banco vazio
+        // Validação de Empty State (Estado Vazio)
         if (!Array.isArray(atividades) || atividades.length === 0) {
-            if (termoPesquisa) {
-                // Se a pessoa pesquisou algo e não achou
-                container.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-search fs-1 text-muted opacity-50 mb-3 d-block"></i>
-                        <p class="fs-5 text-muted mb-1">Nenhuma atividade encontrada para "<strong>${termoPesquisa}</strong>".</p>
-                    </div>`;
-            } else {
-                // Se o banco realmente estiver vazio
-                container.innerHTML = `
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-search fs-1 text-muted"></i>
-                        <p class="mt-3 fs-5 text-muted">Nenhuma atividade foi atribuída ao seu dependente ainda.</p>
-                        <small class="text-muted">Quando o profissional publicar atividades, elas aparecerão aqui.</small>
-                    </div>`;
+            let msgPrincipal = "Nenhuma atividade encontrada com estes filtros.";
+            let msgSecundaria = "Tente mudar a pesquisa, o status ou a especialidade.";
+            let icone = "bi-funnel-fill";
+
+            // Se o banco estiver zerado (sem filtros aplicados)
+            if (estadoFiltros.texto === '' && estadoFiltros.status === 'Todos' && estadoFiltros.categoria === 'Todas') {
+                msgPrincipal = "Nenhuma atividade foi atribuída ao dependente ainda.";
+                msgSecundaria = "Quando o profissional publicar atividades, elas aparecerão aqui.";
+                icone = "bi-clipboard-x";
             }
+
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="bi ${icone} fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                    <p class="fs-5 text-muted mb-1">${msgPrincipal}</p>
+                    <small class="text-muted">${msgSecundaria}</small>
+                </div>`;
             return;
         }
 
-        // Desenha os cards normalmente
-        atividades.forEach(atv => {
-            const dataFormatada = new Date(atv.data_publicacao + 'T00:00:00')
-                .toLocaleDateString('pt-BR');
+        // ORDENAÇÃO INTELIGENTE (Priorizando Pendentes no topo)
+        const obterPesoStatus = (status) => {
+            if (status === 'Pendente') return 1;
+            if (status === 'Concluída') return 2;
+            if (status === 'Avaliada') return 3;
+            return 4;
+        };
 
-            // ==========================================
-            // LÓGICA DE BADGE DE STATUS E BOTÕES ATUALIZADA
-            // ==========================================
+        const listaOrdenada = [...atividades].sort((a, b) => {
+            const pesoA = obterPesoStatus(a.status_conclusao);
+            const pesoB = obterPesoStatus(b.status_conclusao);
+
+            if (pesoA !== pesoB) return pesoA - pesoB;
+            
+            // Desempate por data
+            return new Date(b.data_publicacao + 'T00:00:00') - new Date(a.data_publicacao + 'T00:00:00');
+        });
+
+        // DESENHAR CARDS
+        listaOrdenada.forEach(atv => {
+            const dataFormatada = new Date(atv.data_publicacao + 'T00:00:00').toLocaleDateString('pt-BR');
+
             let statusBadge = '';
             let btnTexto = '<i class="bi bi-play-fill me-1"></i> COMEÇAR';
             let btnClasse = 'btn-primary';
@@ -54,7 +85,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statusBadge = '<span class="badge rounded-pill bg-warning text-dark shadow-sm">⏳ Pendente</span>';
             }
 
-            // CENÁRIO 4 — Redirecionamento de rota (sem modal)
             container.innerHTML += `
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card-atividade h-100 position-relative">
@@ -75,36 +105,79 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     };
 
-    // 1. Carrega os dados do banco via PHP
+    // ====================================================================
+    // FUNÇÃO MESTRA PARA APLICAR TODOS OS FILTROS JUNTOS
+    // ====================================================================
+    const aplicarFiltrosGerais = () => {
+        const atividadesFiltradas = todasAtividades.filter(atv => {
+            // 1. Filtro de Texto (Título ou Categoria)
+            const titulo = (atv.titulo || '').toLowerCase();
+            const categoriaTexto = (atv.categoria || '').toLowerCase();
+            const termo = estadoFiltros.texto;
+            const passouTexto = termo === '' || titulo.includes(termo) || categoriaTexto.includes(termo);
+
+            // 2. Filtro de Status (Chips)
+            const statusReal = atv.status_conclusao || 'Pendente';
+            const passouStatus = estadoFiltros.status === 'Todos' || statusReal === estadoFiltros.status;
+
+            // 3. Filtro de Categoria (Select Dropdown)
+            const passouCategoria = estadoFiltros.categoria === 'Todas' || atv.categoria === estadoFiltros.categoria;
+
+            return passouTexto && passouStatus && passouCategoria;
+        });
+
+        renderizarAtividades(atividadesFiltradas);
+    };
+
+    // ====================================================================
+    // VINCULAR EVENTOS DA INTERFACE (LISTENERS)
+    // ====================================================================
+    
+    if (inputBusca) {
+        inputBusca.addEventListener('input', (e) => {
+            estadoFiltros.texto = e.target.value.toLowerCase().trim();
+            aplicarFiltrosGerais();
+        });
+    }
+
+    if (selectFiltroCategoria) {
+        selectFiltroCategoria.addEventListener('change', (e) => {
+            estadoFiltros.categoria = e.target.value;
+            aplicarFiltrosGerais();
+        });
+    }
+
+    if (botoesFiltroStatus) {
+        botoesFiltroStatus.forEach(botao => {
+            botao.addEventListener('click', (e) => {
+                botoesFiltroStatus.forEach(b => {
+                    b.classList.remove('btn-primary', 'active');
+                    b.classList.add('btn-outline-secondary');
+                });
+
+                const btnClicado = e.currentTarget;
+                btnClicado.classList.remove('btn-outline-secondary');
+                btnClicado.classList.add('btn-primary', 'active');
+
+                estadoFiltros.status = btnClicado.getAttribute('data-status');
+                aplicarFiltrosGerais();
+            });
+        });
+    }
+
+    // ====================================================================
+    // CARREGAMENTO INICIAL DO BANCO
+    // ====================================================================
     try {
         const response = await fetch('../php/atividades/atividades_get.php');
         todasAtividades = await response.json();
-
-        // Renderiza tudo na primeira vez que a página carrega
         renderizarAtividades(todasAtividades);
-
     } catch (error) {
         console.error('Erro ao carregar atividades:', error);
         container.innerHTML = `
             <div class="alert alert-danger w-100 text-center">
+                <i class="bi bi-wifi-off fs-4 d-block mb-2"></i>
                 Erro ao conectar com o servidor. Verifique sua conexão.
             </div>`;
-    }
-
-    // 2. Evento da barra de pesquisa em tempo real
-    if (inputBusca) {
-        inputBusca.addEventListener('input', (e) => {
-            const termo = e.target.value.toLowerCase().trim();
-
-            // Filtra pelo título OU pela categoria
-            const filtradas = todasAtividades.filter(atv => {
-                const titulo = (atv.titulo || '').toLowerCase();
-                const categoria = (atv.categoria || '').toLowerCase();
-                return titulo.includes(termo) || categoria.includes(termo);
-            });
-
-            // Manda redesenhar a tela passando a lista filtrada e o termo digitado
-            renderizarAtividades(filtradas, termo);
-        });
     }
 });

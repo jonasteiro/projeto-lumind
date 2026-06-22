@@ -1,5 +1,22 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("form-alterar-responsavel");
+    const IDADE_MINIMA = 18;
+
+    // =======================================================
+    // BLOQUEIO DE DATAS NO CALENDÁRIO (Mínimo 18 Anos)
+    // =======================================================
+    const inputData = document.getElementById("data_nascimento");
+    if (inputData) {
+        const dataLimite = new Date();
+        dataLimite.setFullYear(dataLimite.getFullYear() - IDADE_MINIMA);
+        
+        const ano = dataLimite.getFullYear();
+        const mes = String(dataLimite.getMonth() + 1).padStart(2, '0');
+        const dia = String(dataLimite.getDate()).padStart(2, '0');
+        
+        // Impede de selecionar no calendário uma data menor que 18 anos atrás
+        inputData.setAttribute('max', `${ano}-${mes}-${dia}`); 
+    }
 
     // Captura o ID da URL
     const url = new URLSearchParams(window.location.search);
@@ -96,10 +113,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (el) el.textContent = "E-mail inválido."; 
                 temErro = true; 
             }
+            
+            // Validação rigorosa de Data de Nascimento (Idade Mínima 18 Anos)
             if (!data) { 
                 const el = document.getElementById("erroData");
                 if (el) el.textContent = "Data obrigatória."; 
                 temErro = true; 
+            } else {
+                const dataNasc = new Date(data);
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - dataNasc.getFullYear();
+
+                const mesAtual = hoje.getMonth();
+                const diaAtual = hoje.getDate();
+                const mesNasc = dataNasc.getMonth();
+                const diaNasc = dataNasc.getDate();
+
+                // Subtrai 1 ano se o mês/dia atual for menor que o mês/dia do aniversário
+                if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+                    idade--;
+                }
+
+                if (idade < IDADE_MINIMA) {
+                    const el = document.getElementById("erroData");
+                    if (el) el.textContent = `O responsável deve ter no mínimo ${IDADE_MINIMA} anos de idade.`; 
+                    temErro = true;
+                }
             }
 
             if (temErro) return;
@@ -137,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const resposta = await retorno.json();
 
                 if (resposta.status === "ok" || resposta.status === "sucesso") {
-                    // 2. EXIBE O ALERTA SWEET ALERT E REDIRECIONA
+                    // EXIBE O ALERTA SWEET ALERT E REDIRECIONA
                     Swal.fire({
                         icon: 'success',
                         title: 'Atualizado!',

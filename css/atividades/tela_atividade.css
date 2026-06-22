@@ -1,114 +1,27 @@
-
-:root {
-    --primary-color: #0284c7;
-    --primary-hover: #0369a1;
-    --bg-page: #f0f4f8;
-    --bg-card: #ffffff;
-    --text-dark: #1e293b;
-    --text-muted: #64748b;
-    --border-light: #e2e8f0;
-    --input-bg: #f8fafc;
-    --success-color: #16a34a;
-    --success-bg: #dcfce7;
-    --error-color: #ef4444;
-    --error-bg: #fee2e2;
-    --sidebar-width: 220px;
-    --topbar-height: 72px;
-}
-
+/* ==========================================================================
+   tela_atividade.css — Detalhes da atividade do Paciente / Responsável
+   ATUALIZADO PARA INTEGRAR AO MOTOR DE TEMAS GLOBAL
+   ========================================================================== */
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Removemos as variáveis root fixas e puxamos a força do tema_paciente.css */
 body {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg-page);
-    color: var(--text-dark);
 }
-
-
-.sidebar {
-    width: var(--sidebar-width);
-    min-height: 100vh;
-    background: linear-gradient(180deg, #c4ebff 0%, #dff8ff 100%);
-    border-right: 1px solid #b5e5f5;
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
-
-.brand-container {
-    padding: 1.25rem 1rem 1rem;
-    border-bottom: 1px solid #b5e5f5;
-}
-
-.brand-container .logo {
-    width: 42px;
-    height: 42px;
-    object-fit: contain;
-}
-
-.nav-menu {
-    display: flex;
-    flex-direction: column;
-    padding: 1rem 0.75rem;
-    gap: 0.25rem;
-}
-
-.nav-menu a {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 0.85rem;
-    border-radius: 0.75rem;
-    text-decoration: none;
-    font-size: 0.93rem;
-    font-weight: 500;
-    color: #1b85b5;
-    transition: background 0.2s ease;
-}
-
-.nav-menu a:hover,
-.nav-menu a.active {
-    background: rgba(2, 132, 199, 0.12);
-    color: var(--primary-color);
-}
-
-.nav-menu hr {
-    border-color: #b5e5f5;
-    margin: 0.5rem 0;
-}
-
-.nav-menu a.text-danger { color: #dc2626 !important; }
-.nav-menu a.text-danger:hover { background: #fee2e2; }
-
 
 .main-panel {
-    margin-left: var(--sidebar-width);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
 .topbar {
-    background: linear-gradient(90deg, #c4ebff 0%, #dff8ff 100%);
-    border-bottom: 1px solid #b5e5f5;
-    min-height: var(--topbar-height);
+    min-height: 72px;
     position: sticky;
     top: 0;
     z-index: 99;
-}
-
-.topbar h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #1c86c1;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .btn-back {
@@ -118,52 +31,34 @@ body {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: rgba(2, 132, 199, 0.1);
-    color: var(--primary-color);
+    background: var(--theme-hover);
+    color: var(--theme-primary);
     text-decoration: none;
     font-size: 1.1rem;
-    margin-right: 0.85rem;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .btn-back:hover {
-    background: rgba(2, 132, 199, 0.2);
-    color: var(--primary-hover);
-}
-
-.user-profile { gap: 0.5rem; }
-
-.user-name {
-    font-weight: 700;
-    color: #1a7091;
-    font-size: 0.95rem;
-}
-
-.user-img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #90cef6;
+    background: var(--theme-primary);
+    color: var(--theme-text-btn);
 }
 
 .content {
-    max-width: 760px;
+    max-width: 1180px;
     width: 100%;
     margin: 0 auto;
-    padding: 1.75rem 1.25rem 3rem;
+    padding: 1.75rem 1.5rem 3rem;
 }
 
-
 .activity-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-light);
+    background: var(--theme-card);
+    border: 1px solid var(--theme-border);
     border-radius: 1.2rem;
     padding: 1.75rem;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
 }
 
-/* Cabeçalho */
 .activity-header {
     display: flex;
     align-items: center;
@@ -171,20 +66,20 @@ body {
     gap: 0.5rem;
 }
 
-.badge-categoria {
+/* Badges Dinâmicos */
+.badge-cat {
     display: inline-block;
     padding: 0.3rem 0.9rem;
     border-radius: 999px;
     font-size: 0.78rem;
     font-weight: 600;
-    background: #e0f2fe;
-    color: var(--primary-color);
-    border: 1px solid #bae6fd;
+    background: var(--theme-hover);
+    color: var(--theme-dark);
+    border: 1px solid var(--theme-border);
     text-transform: uppercase;
     letter-spacing: 0.4px;
 }
 
-/* Badge de status */
 .badge-status {
     display: inline-block;
     padding: 0.3rem 0.9rem;
@@ -200,94 +95,69 @@ body {
 }
 
 .badge-status.concluida {
-    background: var(--success-bg);
-    color: var(--success-color);
+    background: #dcfce7;
+    color: #16a34a;
     border: 1px solid #86efac;
 }
 
-/* Título e meta */
 .activity-title {
     margin: 0.75rem 0 0.35rem;
     font-size: 1.55rem;
     font-weight: 700;
-    color: var(--text-dark);
     line-height: 1.3;
 }
 
 .activity-meta {
     font-size: 0.88rem;
-    color: var(--text-muted);
     margin-bottom: 0;
 }
 
 .divider {
-    border-color: #e2e8f0;
+    border-color: var(--theme-border);
     margin: 1.25rem 0;
 }
 
-/* Rótulo de seção */
 .section-label {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.6px;
     margin-bottom: 0.75rem;
 }
 
-/* Corpo do texto da descrição */
 .activity-description {
     font-size: 1rem;
-    color: #334155;
     line-height: 1.75;
-    white-space: pre-wrap; /* Preserva quebras de linha */
+    white-space: pre-wrap; 
 }
 
-/* ==========================================================================
-   IMAGEM ANEXA
-   ========================================================================== */
 .imagem-atividade {
     max-width: 100%;
     max-height: 480px;
     border-radius: 0.8rem;
     object-fit: contain;
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--theme-border);
 }
-
-
 
 .btn-pdf {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0.9rem 1.25rem;
-    background: #fff5f5;
-    border: 2px dashed #fca5a5;
+    border: 2px dashed var(--theme-primary);
     border-radius: 0.9rem;
-    color: #dc2626;
     font-weight: 600;
     font-size: 0.95rem;
     text-decoration: none;
-    transition: background 0.2s, border-color 0.2s;
+    transition: all 0.2s;
     cursor: pointer;
 }
 
-.btn-pdf:hover {
-    background: #fee2e2;
-    border-color: #ef4444;
-    color: #b91c1c;
-}
-
-/* ==========================================================================
-   CANVAS DE CONCLUSÃO (PBI 05)
-   ========================================================================== */
 .textarea-resposta {
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--theme-border);
     border-radius: 0.75rem;
     font-size: 0.97rem;
     font-family: inherit;
-    color: var(--text-dark);
-    background: #f8fafc;
     padding: 0.9rem 1rem;
     resize: vertical;
     min-height: 120px;
@@ -296,97 +166,33 @@ body {
 
 .textarea-resposta:focus {
     outline: none;
-    border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    border-color: var(--theme-primary);
+    background: var(--theme-card) !important;
+    color: var(--theme-dark) !important;
+    box-shadow: 0 0 0 3px var(--theme-hover);
 }
 
-/* Botão principal de conclusão */
 .btn-concluir {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0.85rem 1.5rem;
-    background: var(--primary-color);
-    color: #fff;
-    border: none;
     border-radius: 999px;
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.3px;
     cursor: pointer;
-    transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+    transition: all 0.25s ease;
 }
 
-.btn-concluir:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
-}
-
-.btn-concluir:disabled {
-    background: var(--text-muted);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-/* Variante "Atualizar Envio" — quando já está concluída */
 .btn-concluir.btn-atualizar {
-    background: var(--success-color);
-    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+    background: #16a34a !important;
+    border-color: #16a34a !important;
+    color: #fff !important;
 }
-
-.btn-concluir.btn-atualizar:hover:not(:disabled) {
-    background: #15803d;
-    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
-}
-
-/* Mensagem de feedback */
-.feedback-msg {
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    font-size: 0.93rem;
-    font-weight: 500;
-}
-
-.feedback-msg.sucesso {
-    background: var(--success-bg);
-    color: var(--success);
-    border: 1px solid var(--success-border);
-}
-
-.feedback-msg.erro {
-    background: var(--error-bg);
-    color: var(--error);
-    border: 1px solid #fca5a5;
-}
-
 
 @media (max-width: 768px) {
-    .sidebar {
-        width: 64px;
-        overflow: hidden;
-    }
-
-    .sidebar .brand-container .logo { width: 36px; height: 36px; }
-
-    .nav-menu a span,
-    .nav-menu a { font-size: 0; }
-
-    .nav-menu a i { font-size: 1.3rem; margin: 0 auto; }
-
-    .nav-menu a {
-        justify-content: center;
-        padding: 0.65rem 0;
-    }
-
-    .main-panel { margin-left: 64px; }
-
     .topbar h2 { font-size: 1rem; }
-
     .activity-title { font-size: 1.25rem; }
-
     .content { padding: 1rem 0.75rem 2.5rem; }
 }

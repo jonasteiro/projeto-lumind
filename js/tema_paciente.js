@@ -1,9 +1,99 @@
 /**
  * tema_paciente.js
- * Injeta Valores Nativos no CSS (:root) e Gerencia toda Acessibilidade 
- * (Cores, Fontes, Modo Escuro, Leitura por Voz e Cursores Lúdicos)
+ * MOTOR SUPREMO COM YOUTUBE API 
+ * Gerencia: Cores, Fontes, Modo Escuro, Leitura por Voz, Cursores e Rádio do YouTube.
  */
 
+// =========================================================
+// 1. INTEGRAÇÃO COM A API DO YOUTUBE (Cria o rádio invisível)
+// =========================================================
+let ytPlayer;
+let ytReady = false;
+let musicaPendente = false; // Guarda o play caso a API demore a carregar
+
+// Injeta o script oficial do YouTube na página
+const scriptAPI = document.createElement('script');
+scriptAPI.src = "https://www.youtube.com/iframe_api";
+const firstScript = document.getElementsByTagName('script')[0];
+firstScript.parentNode.insertBefore(scriptAPI, firstScript);
+
+// Cria a div invisível onde o vídeo vai rodar
+const ytDiv = document.createElement('div');
+ytDiv.id = 'youtube-hidden-player';
+ytDiv.style.display = 'none'; 
+document.body.appendChild(ytDiv);
+
+// Função global obrigatória que o YouTube chama quando estiver pronto
+window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('youtube-hidden-player', {
+        height: '0',
+        width: '0',
+        playerVars: { 
+            'autoplay': 0, 
+            'controls': 0, 
+            'disablekb': 1 
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+};
+
+function onPlayerReady(event) {
+    ytReady = true;
+    ytPlayer.setVolume(25); // Volume baixinho para relaxar sem atrapalhar a voz TTS
+    if (musicaPendente || localStorage.getItem('musicaPacienteLumind') !== 'nenhuma') {
+        const musicaSalva = localStorage.getItem('musicaPacienteLumind');
+        if(musicaSalva && musicaSalva !== 'nenhuma') {
+            aplicarMusica(musicaSalva, musicaPendente);
+        }
+    }
+}
+
+// Quando o vídeo acabar, essa função faz ele repetir (Loop infinito)
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        ytPlayer.playVideo(); 
+    }
+}
+
+// 🔥 NOSSOS NOVOS IDs DE VÍDEOS DO YOUTUBE
+const trilhasYouTube = {
+    lofi: 'AMcVJmb5mvk',     // Novo Lo-Fi escolhido por você
+    natureza: 'xMyGzcJVUkA', // Nova Floresta escolhida por você
+    chuva: 'mPZkdNFkNps'     // Chuva mantida (Relaxing Rain)
+};
+
+const aplicarMusica = (trilha, iniciarTocando = false) => {
+    const iconeMusica = document.getElementById('iconeMusica');
+    
+    // Se a API ainda não carregou, guarda na memória para tocar daqui a pouco
+    if (!ytReady) {
+        musicaPendente = iniciarTocando;
+        return;
+    }
+
+    if (trilha === 'nenhuma' || !trilhasYouTube[trilha]) {
+        ytPlayer.stopVideo();
+        if (iconeMusica) iconeMusica.className = "bi bi-music-note fs-5";
+    } else {
+        if (iconeMusica) iconeMusica.className = "bi bi-music-note-beamed fs-5 text-primary";
+        
+        // Puxa o vídeo do YouTube pelo ID
+        ytPlayer.loadVideoById(trilhasYouTube[trilha]);
+        
+        if (!iniciarTocando) {
+            ytPlayer.pauseVideo();
+        } else {
+            ytPlayer.playVideo();
+        }
+    }
+};
+
+// =========================================================
+// 2. LÓGICA PRINCIPAL (Cores, Fontes, TTS, etc)
+// =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     const seletorTema = document.getElementById('seletorTema');
     const btnResetTema = document.getElementById('btnResetTema');
@@ -13,23 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const iconeVoz = document.getElementById('iconeVoz');
     const btnAumentar = document.getElementById('btnAumentarFonte');
     const btnDiminuir = document.getElementById('btnDiminuirFonte');
+    
     const opcoesCursor = document.querySelectorAll('.cursor-option');
+    const opcoesMusica = document.querySelectorAll('.musica-option');
+    const iconeMusica = document.getElementById('iconeMusica');
 
     const COR_PADRAO = '#167ebc';
 
-    // Estados do LocalStorage
     let escalaFonteAtual = parseFloat(localStorage.getItem('fontePacienteLumind')) || 1.0;
     let modoEscuroAtivo  = localStorage.getItem('modoEscuroLumind') === 'true';
     let leituraVozAtiva  = localStorage.getItem('leituraVozLumind') === 'true';
     let corSelecionada   = localStorage.getItem('temaPacienteLumind') || COR_PADRAO;
     let cursorSelecionado = localStorage.getItem('cursorPacienteLumind') || 'padrao';
+    let musicaSelecionada = localStorage.getItem('musicaPacienteLumind') || 'nenhuma';
 
-    // =========================================================
-    // 1. TAMANHO DA FONTE
-    // =========================================================
-    const aplicarFonte = (escala) => {
-        document.documentElement.style.fontSize = (escala * 100) + '%';
-    };
+    // ── FONTE ──────────────────────────────────────────────
+    const aplicarFonte = (escala) => document.documentElement.style.fontSize = (escala * 100) + '%';
 
     if (btnAumentar) {
         btnAumentar.addEventListener('click', () => {
@@ -51,19 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================
-    // 2. CONVERSOR DE CORES (HEX -> HSL)
-    // =========================================================
+    // ── CORES (HEX -> HSL) ──────────────────────────────────
     function hexToHSL(hex) {
         let r = 0, g = 0, b = 0;
         if (hex.length === 4) {
-            r = parseInt("0x" + hex[1] + hex[1]);
-            g = parseInt("0x" + hex[2] + hex[2]);
-            b = parseInt("0x" + hex[3] + hex[3]);
+            r = parseInt("0x" + hex[1] + hex[1]); g = parseInt("0x" + hex[2] + hex[2]); b = parseInt("0x" + hex[3] + hex[3]);
         } else if (hex.length === 7) {
-            r = parseInt("0x" + hex[1] + hex[2]);
-            g = parseInt("0x" + hex[3] + hex[4]);
-            b = parseInt("0x" + hex[5] + hex[6]);
+            r = parseInt("0x" + hex[1] + hex[2]); g = parseInt("0x" + hex[3] + hex[4]); b = parseInt("0x" + hex[5] + hex[6]);
         }
         r /= 255; g /= 255; b /= 255;
         let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
@@ -73,18 +156,11 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (cmax === r) h = ((g - b) / delta) % 6;
         else if (cmax === g) h = (b - r) / delta + 2;
         else h = (r - g) / delta + 4;
-
-        h = Math.round(h * 60);
-        if (h < 0) h += 360;
-        l = (cmax + cmin) / 2;
-        s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-        s = +(s * 100).toFixed(1);
-        return { h, s };
+        h = Math.round(h * 60); if (h < 0) h += 360;
+        l = (cmax + cmin) / 2; s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1); return { h, s };
     }
 
-    // =========================================================
-    // 3. APLICADOR DE VARIÁVEIS CSS (CORE E LOGO)
-    // =========================================================
     const aplicarTemaCores = (hex, isDark) => {
         const hsl = hexToHSL(hex);
         const H = hsl.h;
@@ -128,9 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================
-    // 4. LEITURA POR VOZ (TEXT-TO-SPEECH)
-    // =========================================================
+    // ── LEITURA POR VOZ ──────────────────────────────────────
     const falarTexto = (texto) => {
         if (!leituraVozAtiva) return;
         window.speechSynthesis.cancel(); 
@@ -141,11 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (btnVozTema) {
-        iconeVoz.className = leituraVozAtiva ? "bi bi-volume-up-fill fs-5" : "bi bi-volume-mute-fill fs-5";
+        iconeVoz.className = leituraVozAtiva ? "bi bi-volume-up-fill fs-5 text-primary" : "bi bi-volume-mute-fill fs-5";
         btnVozTema.addEventListener('click', () => {
             leituraVozAtiva = !leituraVozAtiva;
             localStorage.setItem('leituraVozLumind', leituraVozAtiva);
-            iconeVoz.className = leituraVozAtiva ? "bi bi-volume-up-fill fs-5" : "bi bi-volume-mute-fill fs-5";
+            iconeVoz.className = leituraVozAtiva ? "bi bi-volume-up-fill fs-5 text-primary" : "bi bi-volume-mute-fill fs-5";
             if (leituraVozAtiva) falarTexto("Leitura de tela ativada!");
             else window.speechSynthesis.cancel();
         });
@@ -164,33 +238,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // =========================================================
-    // 5. MOTOR DE CURSOR (ACESSIBILIDADE VISUAL)
-    // =========================================================
+    // ── CURSOR LÚDICO ────────────────────────────────────────
     const aplicarCursor = (tipo) => {
-        // Remove classes antigas
         document.body.classList.remove('cursor-gigante', 'cursor-patinha', 'cursor-estrela');
-        
-        // Adiciona a nova classe (se não for o padrão)
-        if (tipo !== 'padrao') {
-            document.body.classList.add(`cursor-${tipo}`);
-        }
+        if (tipo !== 'padrao') document.body.classList.add(`cursor-${tipo}`);
     };
 
-    // Monitorar clique nos itens do menu dropdown de cursores
     opcoesCursor.forEach(opcao => {
         opcao.addEventListener('click', (e) => {
             e.preventDefault();
-            const tipoCursor = e.currentTarget.getAttribute('data-cursor');
-            cursorSelecionado = tipoCursor;
+            cursorSelecionado = e.currentTarget.getAttribute('data-cursor');
             aplicarCursor(cursorSelecionado);
             localStorage.setItem('cursorPacienteLumind', cursorSelecionado);
         });
     });
 
-    // =========================================================
-    // 6. START GERAL E BOTÃO RESET
-    // =========================================================
+    // ── EVENTO DO BOTÃO DE MÚSICA ────────────────────────────
+    opcoesMusica.forEach(opcao => {
+        opcao.addEventListener('click', (e) => {
+            e.preventDefault();
+            musicaSelecionada = e.currentTarget.getAttribute('data-musica');
+            localStorage.setItem('musicaPacienteLumind', musicaSelecionada);
+            musicaPendente = true; // Força tocar quando API carregar
+            aplicarMusica(musicaSelecionada, true); 
+        });
+    });
+
+    // O navegador bloqueia autoplay sem clique. 
+    // Então, ao primeiro clique em QUALQUER lugar da página, soltamos o som do YouTube
+    document.body.addEventListener('click', () => {
+        if (musicaSelecionada !== 'nenhuma' && ytReady) {
+            const state = ytPlayer.getPlayerState();
+            if (state !== 1) { // 1 = YT.PlayerState.PLAYING
+                ytPlayer.playVideo();
+            }
+        }
+    }, { once: true });
+
+
+    // ── INICIALIZAÇÃO GERAL E RESET ──────────────────────────
     aplicarFonte(escalaFonteAtual);
     aplicarTemaCores(corSelecionada, modoEscuroAtivo);
     aplicarCursor(cursorSelecionado);
@@ -209,21 +295,20 @@ document.addEventListener('DOMContentLoaded', () => {
         btnResetTema.addEventListener('click', () => {
             window.speechSynthesis.cancel();
             
-            // Limpa Cache
             localStorage.removeItem('temaPacienteLumind');
             localStorage.removeItem('modoEscuroLumind');
             localStorage.removeItem('fontePacienteLumind');
             localStorage.removeItem('leituraVozLumind');
             localStorage.removeItem('cursorPacienteLumind');
+            localStorage.removeItem('musicaPacienteLumind');
 
-            // Reseta Variáveis Globais
             corSelecionada = COR_PADRAO;
             modoEscuroAtivo = false;
             leituraVozAtiva = false;
             escalaFonteAtual = 1.0;
             cursorSelecionado = 'padrao';
+            musicaSelecionada = 'nenhuma';
 
-            // Aplica as Mudanças Visuais
             if(seletorTema) seletorTema.value = COR_PADRAO;
             iconeModoEscuro.className = "bi bi-moon-fill fs-5";
             iconeVoz.className = "bi bi-volume-mute-fill fs-5";
@@ -231,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             aplicarFonte(escalaFonteAtual);
             aplicarTemaCores(corSelecionada, modoEscuroAtivo);
             aplicarCursor(cursorSelecionado);
+            aplicarMusica(musicaSelecionada, false);
         });
     }
 });

@@ -41,7 +41,7 @@ O **Lumind** é uma plataforma web de gestão desenvolvida com foco empático pa
 
 Nascido como solução para a disciplina de *Experiência Criativa: Projetando Soluções Computacionais*, o sistema organiza informações críticas de prontuários de forma **acessível, segura e confortável**, operando com uma interface assíncrona de baixo impacto sensorial.
 
-O Lumind não é apenas um CRUD; é uma decisão arquitetural onde cada componente de UI foi escolhido para reduzir a carga cognitiva e a ansiedade na interação com software.
+O Lumind não é apenas um CRUD; é uma decisão arquitetural onde cada componente de UI foi escolhido com o objetivo de reduzir a carga cognitiva e a ansiedade na interação com software.
 
 ---
 
@@ -60,10 +60,13 @@ A interface foi projetada sob rigorosos critérios de acessibilidade, reconhecen
 
 ## 🚀 Funcionalidades Principais
 
-- 🔐 **Autenticação Segura** — Login com validação de sessão PHP e feedback visual claro de erros
-- 📊 **Painel de Controle (Dashboard)** — Visualização em formato *Data Grid* limpo para leitura de registros e perfis ativos
-- 👤 **Gestão de Pacientes (CRUD)** — Formulários com *Floating Labels* e *Toggle Switches* para cadastro e atualização de prontuários
-- ⚡ **Processamento Assíncrono** — Requisições via Fetch API (AJAX) que preservam a estabilidade visual, sem recarregamentos abruptos de página
+- 🔐 **Autenticação Segura** — Login com validação de sessão PHP, recuperação de senha e feedback visual de erros
+- 📊 **Painel de Controle por Perfil** — Dashboards distintos para Administrador, Profissional, Responsável e Pessoa TEA
+- 👤 **Gestão Completa de Usuários (CRUD)** — Cadastro e atualização de administradores, profissionais, responsáveis e pacientes TEA
+- 📋 **Módulo de Atividades** — Publicação, edição, visualização e acompanhamento de atividades terapêuticas
+- 📄 **Análise de Documentação** — Fluxo de aprovação de documentos de profissionais pelo administrador
+- 📈 **Relatórios** — Geração e listagem de relatórios por profissional e responsável
+- ⚡ **Processamento Assíncrono** — Todas as operações via Fetch API (AJAX), sem recarregamentos abruptos de página
 
 ---
 
@@ -72,46 +75,181 @@ A interface foi projetada sob rigorosos critérios de acessibilidade, reconhecen
 ### Front-end
 | Tecnologia | Versão | Função |
 |---|---|---|
-| HTML5 Semântico | — | Estrutura e acessibilidade |
-| CSS3 Modular | — | Estilização customizada |
-| JavaScript Vanilla | ES6+ | Lógica de UI e Fetch API |
-| Bootstrap | 5.3 | Grid responsivo e componentes |
-| Bootstrap Icons | 1.x | Iconografia da interface |
+| HTML5 Semântico | — | Estrutura e acessibilidade das páginas |
+| CSS3 Modular | — | Estilização customizada por módulo/perfil |
+| JavaScript Vanilla | ES6+ | Lógica de UI, Fetch API e validação de sessão |
+| Bootstrap | 5.3 | Grid responsivo e componentes de UI |
+| Bootstrap Icons | 1.x | Iconografia acessível da interface |
 
 ### Back-end & Banco de Dados
 | Tecnologia | Versão | Função |
 |---|---|---|
-| PHP | 8+ | Regras de negócio, sessões e API interna |
-| MySQL | 8.x | Persistência relacional de prontuários |
-| Apache | 2.4+ | Servidor HTTP local |
+| PHP | 8+ | Regras de negócio, sessões e endpoints internos |
+| MySQL | 8.x | Persistência relacional de prontuários e relatórios |
+| Apache | 2.4+ | Servidor HTTP local (via XAMPP / Laragon) |
 
 ---
 
 ## 📁 Arquitetura do Projeto
 
+A organização segue uma separação por **camada** (css, js, php) e, dentro de cada camada, por **perfil de usuário ou módulo funcional**.
+
 ```
 projeto-lumind/
 │
-├── login/
-│   └── index.html          # Ponto de entrada da aplicação
+├── 📄 lumind_db.sql               # Dump completo do banco de dados
+├── 📄 README.md
 │
-├── dashboard/              # Painel de controle principal
+├── 📂 login/
+│   └── index.html                 # ✅ Ponto de entrada da aplicação
 │
-├── assets/
-│   ├── css/                # Folhas de estilo modulares
-│   ├── js/                 # Scripts JavaScript (Fetch API, UI)
-│   └── img/                # Imagens e ícones
+├── 📂 home/                       # Páginas HTML por módulo
+│   ├── atividades/
+│   │   ├── editar_atividade.html
+│   │   ├── publicar_atividade.html
+│   │   ├── tela_atividade.html
+│   │   └── view_atividade_profissional.html
+│   ├── profissional/
+│   │   ├── alterar_profissional.html
+│   │   ├── analisar_documentacao.html
+│   │   └── listar-profissionais.html
+│   ├── index.html                 # Dashboard principal
+│   ├── tela_administrador.html
+│   ├── tela_pessoa_tea.html
+│   ├── tela_profissional.html
+│   ├── tela_responsavel.html
+│   ├── cadastro_admin.html
+│   ├── cadastro_pessoa_tea.html
+│   ├── cadastro_profissional.html
+│   ├── cadastro_responsavel.html
+│   ├── aprovacoes_admin.html
+│   ├── atividades_painel.html
+│   ├── lista_administrador.html
+│   ├── lista_pessoa_tea.html
+│   ├── lista_responsavel.html
+│   ├── lista_relatorios_profissional.html
+│   ├── lista_relatorios_responsavel.html
+│   ├── relatorio_responsavel.html
+│   ├── status_profissional.html
+│   └── feedback.html
+│   └── ...
 │
-├── api/                    # Endpoints PHP (back-end)
-│   └── *.php
+├── 📂 css/                        # Estilos modulares por perfil
+│   ├── administrador/
+│   │   ├── alterar_admin.css
+│   │   ├── cadastro_admin.css
+│   │   ├── decisao-admin.css
+│   │   └── lista_administrador.css
+│   ├── atividades/
+│   │   ├── painel_atividades.css
+│   │   ├── publicar_atividade.css
+│   │   └── tela_atividade.css
+│   ├── pessoa_tea/
+│   │   ├── alterar-cadastro.css
+│   │   ├── cadastro_pessoa_tea.css
+│   │   └── lista_pessoa_tea.css
+│   ├── profissional/
+│   │   ├── alterar_profissional.css
+│   │   ├── analisar_documentacao.css
+│   │   ├── exibir-detalhes.css
+│   │   ├── listar-profissionais.css
+│   │   └── profissional.css
+│   ├── responsavel/
+│   │   └── listar-responsavel.css
+│   ├── login.css
+│   ├── tela_administrador.css
+│   ├── tela_paciente.css
+│   ├── tela_profissional.css
+│   ├── tela_responsavel.css
+│   ├── tema_paciente.css
+│   └── logo-lumind.png
 │
-├── config/
-│   └── connection.php      # Configuração da conexão com o banco
+├── 📂 js/                         # Scripts por perfil de usuário
+│   ├── admin/
+│   │   ├── admin_alterar.js
+│   │   ├── admin_aprovacoes.js
+│   │   ├── admin_novo.js
+│   │   ├── lista_admin.js
+│   │   ├── listar-profissional.js
+│   │   └── tela_administrador.js
+│   ├── atividade/
+│   │   ├── atividades_paciente.js
+│   │   ├── atividades_responsavel.js
+│   │   ├── editar_atividade.js
+│   │   ├── painel_atividades.js
+│   │   ├── publicar_atividade.js
+│   │   ├── tela_atividade.js
+│   │   └── view_atividade_profissional.js
+│   ├── pessoa_tea.js/
+│   │   ├── lista_pessoa_tea.js
+│   │   ├── pessoa_tea_alterar.js
+│   │   └── pessoa_tea_novo.js
+│   ├── profissional/
+│   │   ├── alterar_profissional.js
+│   │   ├── analisar_documentacao.js
+│   │   ├── lista_relatorios.js
+│   │   ├── listar-profissionais.js
+│   │   ├── profissional_novo.js
+│   │   ├── profissional_status.js
+│   │   └── tela_profissional.js
+│   ├── responsavel/
+│   │   ├── lista_relatorios.js
+│   │   ├── lista_responsavel.js
+│   │   ├── relatorio.js
+│   │   ├── responsavel_alterar.js
+│   │   └── responsavel_novo.js
+│   ├── index.js
+│   ├── recuperar_senha.js
+│   ├── tema_paciente.js
+│   ├── usuario_login.js
+│   └── valida_sessao.js           # Middleware de sessão no front-end
 │
-└── database.sql            # Script de dump para criação das tabelas
+└── 📂 php/                        # Back-end: endpoints e utilitários
+    ├── admin/
+    │   ├── administrador_alterar.php
+    │   ├── administrador_get.php
+    │   ├── listar_pendentes.php
+    │   ├── status_aprovacao.php
+    │   └── visualizar_documentacao.php
+    ├── atividades/
+    │   ├── criar_atividade.php
+    │   ├── editar_atividade.php
+    │   ├── deletar_atividade.php
+    │   ├── atualizar_atividade.php
+    │   ├── atividades_get.php
+    │   ├── atividade_detalhes.php
+    │   ├── atividade_submissoes.php
+    │   ├── buscar_pacientes.php
+    │   ├── concluir_atividade.php
+    │   └── salvar_feedback.php
+    ├── login/
+    │   ├── redefinir_senha.php
+    │   └── solicitar_recuperacao.php
+    ├── pessoa_tea/
+    │   ├── pessoa_tea_alterar.php
+    │   └── pessoa_tea_get.php
+    ├── profissional/
+    │   ├── alterar_profissional.php
+    │   ├── atualizar_status_doc.php
+    │   ├── buscar_documentos.php
+    │   ├── listar-profissionais.php
+    │   ├── profissional_status.php
+    │   └── relatorios_listar.php
+    ├── responsavel/
+    │   ├── dependentes_get.php
+    │   ├── relatorio_salvar.php
+    │   ├── relatorios_atualizar.php
+    │   ├── relatorios_listar.php
+    │   ├── responsavel_alterar.php
+    │   └── responsavel_get.php
+    ├── conexao.php                # Configuração da conexão com o banco
+    ├── valida_sessao.php          # Middleware de autenticação PHP
+    ├── get_sessao.php
+    ├── usuario_login.php
+    ├── usuario_novo.php
+    ├── usuario_excluir.php
+    └── cliente_logoff.php
 ```
-
-> ⚠️ **Nota:** A estrutura acima é uma representação baseada no padrão do projeto. Verifique o repositório para confirmar os caminhos exatos.
 
 ---
 
@@ -169,19 +307,19 @@ No painel de controle do seu ambiente (ex: XAMPP Control Panel), inicie os servi
 http://localhost/phpmyadmin
 ```
 
-2. Crie um novo banco de dados com o nome esperado pelo sistema:
+2. Crie um novo banco de dados:
 
 ```sql
 CREATE DATABASE lumind_db;
 ```
 
-> ⚠️ **Verifique** o nome exato do banco no arquivo `config/connection.php` antes de criá-lo.
-
 3. Com o banco selecionado, importe o arquivo de dump SQL localizado na raiz do projeto:
 
 ```
-phpMyAdmin → Selecione "lumind_db" → Aba "Importar" → Escolha o arquivo "database.sql" → Executar
+phpMyAdmin → Selecione "lumind_db" → Aba "Importar" → Escolha "lumind_db.sql" → Executar
 ```
+
+> ⚠️ O arquivo de dump está na raiz do repositório com o nome **`lumind_db.sql`**. Confirme as credenciais de acesso no arquivo `php/conexao.php` e ajuste se necessário.
 
 ### Passo 5 — Acessar a Aplicação
 

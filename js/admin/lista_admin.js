@@ -135,7 +135,7 @@ function preencherTabela(dados, tbody) {
                         <a href="alterar_admin.html?id=${adm.id_usuario}" class="btn btn-sm btn-outline-primary rounded-pill me-1" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger rounded-pill" title="Excluir">
+                        <button id="excluir" onclick="excluir(${adm.id_usuario})" class="btn btn-sm btn-outline-danger rounded-pill" title="Excluir">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -159,7 +159,10 @@ async function excluir(id) {
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<i class="bi bi-trash3"></i> Sim, excluir!',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        didOpen: () => {
+            Swal.getConfirmButton().id = 'btn-confirmar-exclusao-admin';
+        }
     });
 
     // 2. Se o usuário confirmar, faz a requisição PHP

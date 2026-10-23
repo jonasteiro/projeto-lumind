@@ -46,7 +46,7 @@ async function carregarPendentes() {
                     </div>
                 </td>
                 <td class="text-end pe-4">
-                    <button class="btn btn-success btn-sm me-1" onclick="processarDecisao(${prof.id_usuario}, 'Aprovado')">
+                    <button id="btn-aprovar" class="btn btn-success btn-sm me-1" onclick="processarDecisao(${prof.id_usuario}, 'Aprovado')">
                         <i class="bi bi-check-lg"></i> Aprovar
                     </button>
                     <button class="btn btn-danger btn-sm" onclick="abrirModalReprovar(${prof.id_usuario})">
@@ -128,7 +128,10 @@ window.processarDecisao = async function(id, status) {
         confirmButtonColor: '#198754',
         cancelButtonColor: '#6c757d',
         confirmButtonText: '<i class="bi bi-check-circle"></i> Sim, aprovar!',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        didOpen: () => {
+            Swal.getConfirmButton().id = 'btn-confirmar-aprovacao';
+        }
     });
 
     if (confirmacao.isConfirmed) {
